@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -15,6 +16,75 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         public ArenaContext( string connectionString )
             : base( connectionString )
         {
+
+        }
+
+        public static ArenaContext BuildContext( Dictionary<string, string> connectionSettings )
+        {
+            try
+            {
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+                if ( connectionSettings.ContainsKey( "DatabaseServer" ) )
+                {
+                    sb.AppendFormat( "Data Source={0};", connectionSettings["DatabaseServer"] );
+                }
+                else
+                {
+                    throw new Exception( "Database Server not provided" );
+                }
+
+                if ( connectionSettings.ContainsKey( "DatabaseName" ) )
+                {
+                    sb.AppendFormat( "Initial Catalog={0};", connectionSettings["DatabaseName"] );
+
+                }
+                else
+                {
+                    throw new Exception( "Database Name not provided." );
+                }
+
+                bool useIntegratedSecurity = false;
+
+                if ( connectionSettings.ContainsKey( "IntegratedSecurity" ) )
+                {
+                    bool.TryParse( connectionSettings["IntegratedSecurity"], out useIntegratedSecurity );
+                }
+
+                if ( useIntegratedSecurity )
+                {
+                    sb.Append( "Integrated Security=SSPI;" );
+                }
+                else
+                {
+                    if ( connectionSettings.ContainsKey( "UserName" ) )
+                    {
+                        sb.AppendFormat( "User Id={0};", connectionSettings["UserName"] );
+                    }
+                    else
+                    {
+                        throw new Exception( "Database User Name not provided." );
+                    }
+
+                    if ( connectionSettings.ContainsKey( "Password" ) )
+                    {
+                        sb.AppendFormat( "Password={0};", connectionSettings["Password"] );
+                    }
+                    else
+                    {
+                        throw new Exception( "Database Password not provided." );
+                    }
+                }
+
+                sb.Append( "MultipleActiveResultSets=true" );
+
+                return new ArenaContext(sb.ToString());
+            }
+            catch ( Exception ex )
+            {
+
+                throw new Exception( "Connection string invalid", ex );
+            }
 
         }
 

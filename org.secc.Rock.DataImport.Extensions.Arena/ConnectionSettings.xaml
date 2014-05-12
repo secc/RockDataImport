@@ -1,0 +1,41 @@
+﻿<ic:IntegrationConnectionControl x:Class="org.secc.Rock.DataImport.Extensions.Arena.ConnectionSettings"
+             xmlns:ic ="clr-namespace:org.secc.Rock.DataImport.BAL.Integration;assembly=org.secc.Rock.DataImport.BAL"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="400">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Rock.Wpf;component/StyleResources.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions> 
+        <StackPanel Grid.Row="0">
+            <Label Style="{StaticResource labelStyle }" 
+                   Content="Database Server" />
+            <TextBox Name="txtDatabaseServer" 
+                    Style="{StaticResource textboxStyle}" />
+            <Label Style="{StaticResource labelStyle}"
+                   Content="Database Name" />
+            <TextBox Name="txtDatabaseName"
+                Style="{StaticResource textboxStyle}" />
+            <Label Style="{StaticResource labelStyle}"
+                   Content="Database Username" />
+            <TextBox Name="txtUserName" 
+                     Style="{StaticResource textboxStyle}" />
+            <Label Style="{StaticResource labelStyle}"
+                   Content="Database Password" />
+            <PasswordBox Name="txtPassword" 
+                Style="{StaticResource textboxStyle}" />
+            <CheckBox Name="chkIntegratedSecurity" 
+                      Style="{StaticResource textboxStyle}"
+                      Content="Use Integrated Security"
+                      Checked="chkIntegratedSecurity_Checked" 
+                      Unchecked="chkIntegratedSecurity_Checked"  />     
+        </StackPanel>
+    </Grid>
+</ic:IntegrationConnectionControl>

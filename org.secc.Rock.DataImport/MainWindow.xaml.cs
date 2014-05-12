@@ -18,11 +18,18 @@ namespace org.secc.Rock.DataImport
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : NavigationWindow
     {
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        private void mainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
+        {
+
+            Application.Current.Shutdown();
+        }
+
     }
 }

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL.Integration;
+using org.secc.Rock.DataImport.Extensions.Arena.Model;
 
 namespace org.secc.Rock.DataImport.Extensions.Arena
 {
@@ -18,18 +17,16 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
         [ImportMany(ArenaIntegration.IDENTIFIER, typeof(iExportMapComponent))]
         public List<Lazy<iExportMapComponent, iExportMapData>> ExportMaps { get; set; }
 
-
         public const string IDENTIFIER = "Arena";
 
-        public bool TestConnection(out string errorMessage)
+        public bool TestConnection(Dictionary<string,string> connectSettings, out string errorMessage)
         {
-            string connectionString = "Data Source=p10-ardevsql01;Initial Catalog=ArenaDB_ChrisF;Integrated Security=SSPI;MultipleActiveResultSets=true;";
             bool isSuccessful = true;
             errorMessage = null;
 
             try
             {
-                using ( Model.ArenaContext context = new Model.ArenaContext( connectionString ) )
+                using ( ArenaContext context = ArenaContext.BuildContext(connectSettings) )
                 {
                     int peopleCount = context.Person.Count();
 
@@ -37,7 +34,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
             }
             catch ( Exception ex )
             {
-                errorMessage = ex.Message;
+                errorMessage = "Unable to connect to database. Please verify connection settings and retry.";
                 isSuccessful = false;
             }
 
@@ -45,6 +42,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
 
         }
 
+        public IntegrationConnectionControl GetConnectionControl()
+        {
+            return new ConnectionSettings();
+        }
 
 
     }
