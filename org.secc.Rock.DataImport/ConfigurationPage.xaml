@@ -66,9 +66,11 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Bottom">
                     <Label Name="lblWarning" 
                        Style="{StaticResource labelStyleAlert}"
+                
                        Visibility="Collapsed" />
                     <Label Name="lblSuccessAlert"
                        Style="{StaticResource labelStyleAlertInfo}" 
