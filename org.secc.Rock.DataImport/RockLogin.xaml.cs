@@ -17,9 +17,6 @@ namespace org.secc.Rock.DataImport
     {
 
         const string SETTING_CATEGORY = "Rock Login";
-        string Url;
-        string Username;
-        string Password;
 
         #region Constructor
         public RockLogin() 
@@ -28,7 +25,6 @@ namespace org.secc.Rock.DataImport
         }
 
         #endregion
-
 
         #region Event Handlers
         private void Page_Loaded( object sender, RoutedEventArgs e )
@@ -56,46 +52,6 @@ namespace org.secc.Rock.DataImport
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void btnLogin_Click( object sender, RoutedEventArgs e )
         {
-            btnLogin.IsEnabled = false;
-
-            Url = txtRockURL.Text;
-            Username = txtRockUser.Text;
-            Password = txtRockPassword.Password;
-
-            this.Cursor = Cursors.Wait;
-            BackgroundWorker loginWorker = new BackgroundWorker();
-            loginWorker.DoWork += loginWorker_DoWork;
-            loginWorker.RunWorkerCompleted += loginWorker_RunWorkerCompleted;
-            loginWorker.RunWorkerAsync();
-        }
-
-        void loginWorker_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
-        {
-            this.Cursor = null;
-            btnLogin.IsEnabled = true;
-
-            if(e.Error != null)
-            {
-                throw e.Error;
-            }
-
-            if ( App.RockConnection != null && App.RockConnection.Client != null )
-            {
-                SaveLoginSettings();
-
-                if(this.NavigationService.CanGoBack)
-                {
-                    this.NavigationService.GoBack();
-                }
-                else
-                {
-                    this.NavigationService.Navigate(new ConfigurationPage());
-                }
-            }
-        }
-
-        void loginWorker_DoWork( object sender, DoWorkEventArgs e )
-        {
             Login();
         }
 
@@ -113,17 +69,13 @@ namespace org.secc.Rock.DataImport
 
         #endregion
 
-
-
         #region Private
         private void ClearForm()
         {
             txtRockURL.Text = String.Empty;
             txtRockUser.Text = String.Empty;
             txtRockPassword.Password = String.Empty;
-            Url = null;
-            Username = null;
-            Password = null;
+            SetWarningMessage( String.Empty );
         }
 
 
@@ -142,41 +94,77 @@ namespace org.secc.Rock.DataImport
 
         }
 
-        private bool Login()
+        private void Login()
         {
-            try
+            SetWarningMessage(String.Empty);
+            string url = txtRockURL.Text;
+            string userName = txtRockUser.Text;
+            string password = txtRockPassword.Password;
+
+            App.RockConnection = new BAL.RockConnection();
+
+            BackgroundWorker worker = new BackgroundWorker();
+
+            worker.DoWork += delegate( object s, DoWorkEventArgs ee )
             {
-                App.RockConnection = new BAL.RockConnection();
-                App.RockConnection.Connect( Url, Username, Password );
+                ee.Result = null;
+                App.RockConnection.Connect( url, userName, password );
 
-                return true;
-            }
-            catch (Exception wEx )
+            };
+
+            worker.RunWorkerCompleted += delegate( object s, RunWorkerCompletedEventArgs ee )
             {
+                this.Cursor = null;
+                btnLogin.IsEnabled = true;
 
-                ////System.Net.HttpWebResponse response = wEx.Response as System.Net.HttpWebResponse;
+                try
+                {
+                    if ( ee.Error != null )
+                    {
+                        throw ee.Error;
+                    }
 
-                //if ( response != null )
-                //{
-                //    if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized )
-                //    {
-                //        lblLoginWarning.Content = "Invalid Login";
-                //        lblLoginWarning.Visibility = System.Windows.Visibility.Visible;
-                //    }
-                //    else
-                //    {
-                //        StringBuilder messageBuilder = new StringBuilder();
-                //        messageBuilder.Append( wEx.Message );
+                    SaveLoginSettings();
 
-                //        if ( wEx.InnerException != null )
-                //        {
-                //            messageBuilder.AppendLine( wEx.InnerException.Message );
-                //        }
-                //    }
-                //}
+                    if ( this.NavigationService.CanGoBack )
+                    {
+                        this.NavigationService.GoBack();
+                    }
+                    else
+                    {
+                        this.NavigationService.Navigate( new ConfigurationPage() );
+                    }
+                }
 
-                return false;
-            }
+                catch ( System.Net.WebException wEx )
+                {
+                    System.Net.HttpWebResponse response = wEx.Response as System.Net.HttpWebResponse;
+
+                    if ( response != null )
+                    {
+                        if ( response.StatusCode.Equals( System.Net.HttpStatusCode.Unauthorized ) )
+                        {
+                            SetWarningMessage( "Invalid Login" );
+                            return;
+                        }
+                    }
+
+                    StringBuilder messageBuilder = new StringBuilder();
+                    messageBuilder.AppendLine( wEx.Message );
+                    if ( wEx.InnerException != null )
+                    {
+                        messageBuilder.AppendLine( wEx.InnerException.Message );
+                    }
+
+                    SetWarningMessage( messageBuilder.ToString() );
+                    return;
+
+                }
+            };
+
+            this.Cursor = Cursors.Wait;
+            btnLogin.IsEnabled = false;
+            worker.RunWorkerAsync();
         }
 
         private void SaveLoginSettings()
@@ -200,6 +188,13 @@ namespace org.secc.Rock.DataImport
                 Setting.SaveSettings();
             }
 
+        }
+
+        private void SetWarningMessage( string message )
+        {
+            lblLoginWarning.Content = message;
+
+            lblLoginWarning.Visibility = String.IsNullOrWhiteSpace( message ) ? Visibility.Hidden : Visibility.Visible;
         }
 
         #endregion

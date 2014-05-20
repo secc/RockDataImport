@@ -8,7 +8,7 @@ namespace org.secc.Rock.DataImport.BAL.Integration
 {
     public abstract class IntegrationConnectionControl : System.Windows.Controls.UserControl
     {
-        public abstract Dictionary<string, string> Value { get; }
+        public abstract Dictionary<string, string> Value { get; set; }
 
         public IntegrationConnectionControl() : base ()
         {

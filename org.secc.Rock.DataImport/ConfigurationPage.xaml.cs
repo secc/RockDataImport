@@ -26,6 +26,9 @@ namespace org.secc.Rock.DataImport
 
         List<ExportIntegrations> Integrations = null;
         IntegrationConnectionControl ConnectionControl = null;
+
+        const string SETTING_CATEGORY = "Datasource";
+
         public ConfigurationPage()
         {
             InitializeComponent();
@@ -36,6 +39,7 @@ namespace org.secc.Rock.DataImport
         {
             GetIntegrations();
             BindDataSourceList();
+            LoadSettings();
         }
 
         private void cboDataSource_SelectionChanged( object sender, SelectionChangedEventArgs e )
@@ -66,7 +70,6 @@ namespace org.secc.Rock.DataImport
             cboDataSource.Items.Clear();
             if ( Integrations.Count > 0 )
             {
-                //cboDataSource.ItemsSource = Integrations.Select( i => i.Name );
                 cboDataSource.Items.Insert( 0, "--Select--" );
 
                 foreach ( var i in Integrations )
@@ -121,6 +124,31 @@ namespace org.secc.Rock.DataImport
             return controlLoaded;
         }
 
+        private void LoadSettings()
+        {
+            string dataSourceName = Setting.GetSettingValue( SETTING_CATEGORY, "DataSourceName" );
+
+            if ( !String.IsNullOrWhiteSpace( dataSourceName ) && cboDataSource.Items.Contains( dataSourceName ) )
+            {
+                cboDataSource.SelectedValue = dataSourceName;
+                LoadIntegrationConnectionControl( dataSourceName );
+            }
+            else
+            {
+                return;
+            }
+
+            var dsSettings = Setting.GetSettingsByCategory( SETTING_CATEGORY )
+                                .Where(s => s.Name != "DataSourceName");
+
+            Dictionary<string, string> settingDictionary = new Dictionary<string, string>();
+
+            foreach ( var setting in dsSettings )
+            {
+                settingDictionary.Add( setting.Name, setting.Value );
+            }
+        }
+
         private void SetControlVisibility( bool isVisible )
         {
             if ( isVisible )
@@ -146,6 +174,32 @@ namespace org.secc.Rock.DataImport
         {
             lblSuccessAlert.Content = message;
             lblSuccessAlert.Visibility = !String.IsNullOrWhiteSpace( message ) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void SaveConnectionSettings()
+        {
+            bool settingsUpdated = false;
+
+            if ( !String.IsNullOrWhiteSpace( Setting.GetSettingValue( SETTING_CATEGORY, "DataSourceName" ) ) || Setting.GetSettingValue( SETTING_CATEGORY, "DataSourceName" ) != cboDataSource.SelectedValue.ToString() )
+            {
+                settingsUpdated = true;
+                Setting.UpdateSettingValue( SETTING_CATEGORY, "DataSourceName", cboDataSource.SelectedValue.ToString() );
+            }
+
+            foreach ( var connectionSetting in ConnectionControl.Value )
+            {
+                if ( !String.IsNullOrWhiteSpace( Setting.GetSettingValue( SETTING_CATEGORY, connectionSetting.Key ) ) || Setting.GetSettingValue( SETTING_CATEGORY, connectionSetting.Key ) != connectionSetting.Value )
+                {
+                    settingsUpdated = true;
+                    Setting.UpdateSettingValue( SETTING_CATEGORY, connectionSetting.Key, connectionSetting.Value );
+                }
+            }
+
+            if ( settingsUpdated )
+            {
+                Setting.SaveSettings();
+            }
+
         }
 
         private bool TestConnection()
@@ -188,8 +242,22 @@ namespace org.secc.Rock.DataImport
 
         private void btnNext_Click( object sender, RoutedEventArgs e )
         {
-            TestConnection();
+            if ( TestConnection() )
+            {
+                SaveConnectionSettings();
+
+                if ( this.NavigationService.CanGoBack )
+                {
+                    this.NavigationService.GoBack();
+                }
+                else
+                {
+                    this.NavigationService.Navigate( new SelectImportsPage( ConnectionControl.Value ) );
+                }
+            }
         }
+
+
 
     }
 }

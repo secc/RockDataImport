@@ -22,6 +22,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
             {
                 return GetFieldValues();
             }
+            set
+            {
+                BindFields( value );
+            }
         }
 
         public ConnectionSettings() : base()
@@ -39,9 +43,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
         {
             Clear();
 
+
+
             if ( settings.Count > 0 )
             {
-                BindFields(settings);
+                Value = settings;
             }
         }
 

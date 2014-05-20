@@ -60,6 +60,9 @@
     <Compile Include="RockLogin.xaml.cs">
       <DependentUpon>RockLogin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectImportsPage.xaml.cs">
+      <DependentUpon>SelectImportsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Setting.cs" />
     <Page Include="ConfigurationPage.xaml">
       <SubType>Designer</SubType>
@@ -86,6 +89,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="RockLogin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SelectImportsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
