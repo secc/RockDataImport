@@ -103,13 +103,25 @@ namespace org.secc.Rock.DataImport
                 .Where( s => s.Name == name )
                 .FirstOrDefault();
 
+
             if ( setting == null )
             {
-                App.ApplicaitonSettings.Add( new Setting( category, name, value ) );
+                if ( !String.IsNullOrWhiteSpace( value ) )
+                {
+                    App.ApplicaitonSettings.Add( new Setting( category, name, value ) );
+                }
+
             }
             else
             {
-                setting.Value = value;
+                if ( !String.IsNullOrWhiteSpace( value ) )
+                {
+                    setting.Value = value;
+                }
+                else
+                {
+                    App.ApplicaitonSettings.Remove( setting );
+                }
             }
 
             if ( saveSettingFile )

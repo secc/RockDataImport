@@ -132,6 +132,7 @@ namespace org.secc.Rock.DataImport
             {
                 cboDataSource.SelectedValue = dataSourceName;
                 LoadIntegrationConnectionControl( dataSourceName );
+                SetControlVisibility( true );
             }
             else
             {
@@ -147,6 +148,8 @@ namespace org.secc.Rock.DataImport
             {
                 settingDictionary.Add( setting.Name, setting.Value );
             }
+
+            ConnectionControl.Value = settingDictionary;
         }
 
         private void SetControlVisibility( bool isVisible )
@@ -188,7 +191,7 @@ namespace org.secc.Rock.DataImport
 
             foreach ( var connectionSetting in ConnectionControl.Value )
             {
-                if ( !String.IsNullOrWhiteSpace( Setting.GetSettingValue( SETTING_CATEGORY, connectionSetting.Key ) ) || Setting.GetSettingValue( SETTING_CATEGORY, connectionSetting.Key ) != connectionSetting.Value )
+                if ( String.IsNullOrWhiteSpace( Setting.GetSettingValue( SETTING_CATEGORY, connectionSetting.Key ) ) || Setting.GetSettingValue( SETTING_CATEGORY, connectionSetting.Key ) != connectionSetting.Value )
                 {
                     settingsUpdated = true;
                     Setting.UpdateSettingValue( SETTING_CATEGORY, connectionSetting.Key, connectionSetting.Value );
@@ -245,15 +248,13 @@ namespace org.secc.Rock.DataImport
             if ( TestConnection() )
             {
                 SaveConnectionSettings();
+                //}
+                ExportIntegrations integration = Integrations.Where( x => x.Name == cboDataSource.SelectedValue.ToString() ).FirstOrDefault();
+                integration.Component.ConnectionInfo = ConnectionControl.Value;
+                //integration.Component.LoadExportMaps( ConnectionControl.Value, Setting.GetPluginFolderPath() );
 
-                if ( this.NavigationService.CanGoBack )
-                {
-                    this.NavigationService.GoBack();
-                }
-                else
-                {
-                    this.NavigationService.Navigate( new SelectImportsPage( ConnectionControl.Value ) );
-                }
+                SetSuccessMessage( string.Format( "{0} export maps found.", integration.Component.ExportMaps.Count ) );
+
             }
         }
 

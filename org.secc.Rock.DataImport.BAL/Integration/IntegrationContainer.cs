@@ -33,6 +33,7 @@ namespace org.secc.Rock.DataImport.BAL.Integration
             try
             {
                 var container = new CompositionContainer( catalog );
+                container.ComposeExportedValue( "PluginFolder", pluginFolder );
                 container.ComposeParts( this );
             }
             catch(Exception ex)

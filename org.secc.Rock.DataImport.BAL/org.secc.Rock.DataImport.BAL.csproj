@@ -48,6 +48,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Integration\ExportMapContainer.cs" />
     <Compile Include="Integration\iExportMapComponent.cs" />
     <Compile Include="Integration\iExportMapData.cs" />
     <Compile Include="Integration\IIntegrationComponent.cs" />

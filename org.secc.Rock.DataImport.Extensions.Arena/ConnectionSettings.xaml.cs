@@ -148,15 +148,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
         {
             Dictionary<string, string> fieldValues = new Dictionary<string, string>();
 
-            if ( !String.IsNullOrWhiteSpace( txtDatabaseServer.Text ) )
-            {
-                fieldValues.Add( "DatabaseServer", txtDatabaseServer.Text.Trim() );
-            }
+           fieldValues.Add( "DatabaseServer", txtDatabaseServer.Text.Trim() );
 
-            if ( !String.IsNullOrWhiteSpace( txtDatabaseName.Text ) )
-            {
-                fieldValues.Add( "DatabaseName", txtDatabaseName.Text.Trim() );
-            }
+
+           fieldValues.Add( "DatabaseName", txtDatabaseName.Text.Trim() );
 
             if ( chkIntegratedSecurity.IsChecked == null )
             {
@@ -167,18 +162,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
                 fieldValues.Add( "IntegratedSecurity", ((bool)chkIntegratedSecurity.IsChecked).ToString() );
             }
 
-            if ( chkIntegratedSecurity.IsChecked == false )
-            {
-                if(!String.IsNullOrWhiteSpace(txtUserName.Text))
-                {
-                    fieldValues.Add( "UserName", txtUserName.Text.Trim() );                
-                }
 
-                if ( !String.IsNullOrWhiteSpace( txtPassword.Password ) )
-                {
-                    fieldValues.Add( "Password", txtPassword.Password.Trim() );
-                }
-            }
+            fieldValues.Add( "UserName", txtUserName.Text.Trim() );                
+            
+
+            fieldValues.Add( "Password", txtPassword.Password.Trim() );
+            
 
             return fieldValues;
 
