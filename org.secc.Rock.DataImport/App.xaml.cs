@@ -14,7 +14,7 @@ namespace org.secc.Rock.DataImport
     {
 
         public static List<Setting> ApplicaitonSettings = null;
-        public static  RockConnection RockConnection = null;
+        public static  RockService RockService = null;
 
 
         public App()

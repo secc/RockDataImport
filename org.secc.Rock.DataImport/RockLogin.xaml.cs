@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using org.secc.Rock.DataImport.BAL;
+
 namespace org.secc.Rock.DataImport
 {
     /// <summary>
@@ -101,14 +103,14 @@ namespace org.secc.Rock.DataImport
             string userName = txtRockUser.Text;
             string password = txtRockPassword.Password;
 
-            App.RockConnection = new BAL.RockConnection();
 
             BackgroundWorker worker = new BackgroundWorker();
 
             worker.DoWork += delegate( object s, DoWorkEventArgs ee )
             {
                 ee.Result = null;
-                App.RockConnection.Connect( url, userName, password );
+                App.RockService = new BAL.RockService( url );
+                App.RockService.Login( userName, password );
 
             };
 
@@ -136,24 +138,20 @@ namespace org.secc.Rock.DataImport
                     }
                 }
 
-                catch ( System.Net.WebException wEx )
+                catch ( RockServiceException rex )
                 {
-                    System.Net.HttpWebResponse response = wEx.Response as System.Net.HttpWebResponse;
 
-                    if ( response != null )
+                    if ( rex.StatusCode.Equals( System.Net.HttpStatusCode.Unauthorized ) )
                     {
-                        if ( response.StatusCode.Equals( System.Net.HttpStatusCode.Unauthorized ) )
-                        {
-                            SetWarningMessage( "Invalid Login" );
-                            return;
-                        }
+                        SetWarningMessage( "Invalid Login" );
+                        return;
                     }
 
                     StringBuilder messageBuilder = new StringBuilder();
-                    messageBuilder.AppendLine( wEx.Message );
-                    if ( wEx.InnerException != null )
+                    messageBuilder.AppendLine( rex.Message );
+                    if ( rex.InnerException != null )
                     {
-                        messageBuilder.AppendLine( wEx.InnerException.Message );
+                        messageBuilder.AppendLine( rex.InnerException.Message );
                     }
 
                     SetWarningMessage( messageBuilder.ToString() );
