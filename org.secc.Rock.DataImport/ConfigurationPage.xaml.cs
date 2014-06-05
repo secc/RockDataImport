@@ -251,10 +251,8 @@ namespace org.secc.Rock.DataImport
                 //}
                 ExportIntegrations integration = Integrations.Where( x => x.Name == cboDataSource.SelectedValue.ToString() ).FirstOrDefault();
                 integration.Component.ConnectionInfo = ConnectionControl.Value;
-                //integration.Component.LoadExportMaps( ConnectionControl.Value, Setting.GetPluginFolderPath() );
 
-                SetSuccessMessage( string.Format( "{0} export maps found.", integration.Component.ExportMaps.Count ) );
-
+                this.NavigationService.Navigate( new SelectImportsPage( integration ) );
             }
         }
 

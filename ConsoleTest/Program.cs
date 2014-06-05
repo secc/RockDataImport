@@ -31,7 +31,7 @@ namespace ConsoleTest
 
                     foreach ( var m in i.Component.ExportMaps )
                     {
-                        Console.WriteLine( string.Format( "Export Map - {0}:{1}", i.Name, m.Key ) );
+                        Console.WriteLine( string.Format( "Export Map - {0}:{1}", i.Name, m.Name ) );
 
                        // Console.WriteLine( string.Format( "{0}: {1} record{2}.", m.Metadata.Name, m.Value.RecordCount, m.Value.RecordCount == 1 ? String.Empty : "s" ) );
                     }

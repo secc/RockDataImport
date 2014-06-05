@@ -48,9 +48,42 @@ namespace org.secc.Rock.DataImport.BAL.Integration
 
         }
 
-        public Dictionary<string, iExportMapComponent> GetExportMaps(string integrationIdentifier)
+        public List<ExportMap> GetExportMaps(string integrationIdentifier)
         {
-            return Components.Where( c => c.Metadata.Integration == integrationIdentifier ).ToDictionary( c => c.Metadata.Name, c => c.Value );
+            return Components.Where( c => c.Metadata.Integration == integrationIdentifier )
+                    .Select( c => new ExportMap
+                    {
+                        Name = c.Metadata.Name,
+                        Description = c.Metadata.Description,
+                        Component = c.Value
+                    } ).ToList();
         }
+    }
+
+    public class ExportMap
+    {
+        #region Fields
+        private bool mSelected = false;
+        #endregion
+
+        #region Properties
+        public string Name { get; set; }
+        
+        public string Description { get; set; }
+        
+        public iExportMapComponent Component { get; set; }
+        
+        public bool Selected
+        {
+            get
+            {
+                return mSelected;
+            }
+            set
+            {
+                mSelected = value;
+            }
+        }
+        #endregion
     }
 }

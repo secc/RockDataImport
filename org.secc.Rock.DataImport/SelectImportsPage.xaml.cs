@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using org.secc.Rock.DataImport.BAL.Integration;
+
 namespace org.secc.Rock.DataImport
 {
     /// <summary>
@@ -20,16 +22,45 @@ namespace org.secc.Rock.DataImport
     /// </summary>
     public partial class SelectImportsPage : Page
     {
-        private Dictionary<string,string> ConnectionSettings { get; set; }
+        public ExportIntegrations Integration { get; set; }
+
 
         private SelectImportsPage()
         {
             InitializeComponent();
         }
 
-        public SelectImportsPage( Dictionary<string, string> connectionSettings )
+        public SelectImportsPage( ExportIntegrations integration )
         {
-            ConnectionSettings = connectionSettings;
+            Integration = integration;
+            InitializeComponent();
         }
+
+        private void Page_Loaded( object sender, RoutedEventArgs e )
+        {
+            if ( Integration != null )
+            {
+                grdEntities.DataContext = Integration.Component.ExportMaps;
+            }
+        }
+
+        private void grdEntities_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+
+        }
+
+        private void btnBack_Click( object sender, RoutedEventArgs e )
+        {
+
+        }
+
+        private void btnNext_Click( object sender, RoutedEventArgs e )
+        {
+
+        }
+
+
     }
+
+
 }

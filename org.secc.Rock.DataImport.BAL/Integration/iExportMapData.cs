@@ -10,5 +10,6 @@ namespace org.secc.Rock.DataImport.BAL.Integration
     {
         string Name { get; }
         string Integration { get; }
+        string Description { get; }
     }
 }

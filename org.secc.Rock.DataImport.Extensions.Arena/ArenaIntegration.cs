@@ -17,11 +17,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
     {
         #region Fields
         public const string IDENTIFIER = "Arena";
-        private Dictionary<string, iExportMapComponent> mExportMaps = null;
+        private List<ExportMap> mExportMaps = null;
         #endregion
 
         #region Properties
-        public Dictionary<string, iExportMapComponent> ExportMaps
+        public List<ExportMap> ExportMaps
         {
             get
             {
@@ -86,7 +86,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
         #endregion
 
         #region Private Methods
-        private Dictionary<string, iExportMapComponent> LoadExportMaps()
+        private List<ExportMap> LoadExportMaps()
         {
             ExportMapContainer container = new ExportMapContainer(ConnectionInfo, PluginFolder );
             return container.GetExportMaps( IDENTIFIER );
