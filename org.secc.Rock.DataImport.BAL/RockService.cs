@@ -86,6 +86,29 @@ namespace org.secc.Rock.DataImport.BAL
         }
 
 
+        public void DeleteData( string apiPath)
+        {
+            var request = new RestRequest( apiPath, Method.DELETE );
+            request.RequestFormat = DataFormat.Json;
+            var response = Client.Execute( request );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attemptCount == 0 )
+            {
+                attemptCount++;
+                Login();
+                DeleteData( apiPath );
+            }
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                attemptCount = 0;
+            }
+            else
+            {
+                throw new RockServiceException( response.StatusCode, "Unexpected Status Code returned.", response.ErrorException );
+            }
+        }
+
+
         /// <summary>
         /// Performs a Get request against the Rock API
         /// </summary>
@@ -136,6 +159,60 @@ namespace org.secc.Rock.DataImport.BAL
             }
 
             return Data;
+        }
+
+        public T GetDataByGuid<T>(string apiPath, Guid guid)
+        {
+            string filter = string.Format( "Guid eq '{0}'", guid );
+            return GetData<List<T>>( apiPath, filter ).FirstOrDefault();
+
+        }
+
+        public void  PostData<T>( string apiPath, T entity )
+        {
+            var request = new RestRequest( apiPath, Method.POST );
+            request.RequestFormat = DataFormat.Json;
+            request.AddBody(entity);
+            var response = Client.Execute( request );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            {
+                attemptCount++;
+                Login();
+                PostData<T>( apiPath, entity );
+            }
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            {
+                attemptCount = 0;
+            }
+            else
+            {
+                throw new RockServiceException( response.StatusCode, "Unexpected Status Code returned.", response.ErrorException );
+            }
+
+        }
+
+        public void PutData<T>( string apiPath, T entity )
+        {
+            var request = new RestRequest( apiPath, Method.PUT );
+            request.RequestFormat = DataFormat.Json;
+            request.AddBody( entity );
+            var response = Client.Execute( request );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attemptCount == 0 )
+            {
+                attemptCount++;
+                Login();
+                PutData<T>( apiPath, entity );
+            }
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            {
+                attemptCount = 0;
+            }
+            else
+            {
+                throw new RockServiceException( response.StatusCode, "Unexpected Status Code returned.", response.ErrorException );
+            }
         }
 
         /// <summary>
@@ -195,7 +272,8 @@ namespace org.secc.Rock.DataImport.BAL
 
             if ( LoggedInPerson != null )
             {
-                LoggedInPerson.Aliases = Controllers.PersonAliasController.GetByPersonId( this, LoggedInPerson.Id );
+                Controllers.PersonAliasController AliasController = new Controllers.PersonAliasController(this);
+                LoggedInPerson.Aliases =  AliasController.GetByPersonId(LoggedInPerson.Id );
             }
         }
 
