@@ -68,6 +68,7 @@
     <Compile Include="Integration\IntegrationConnectionControl.cs" />
     <Compile Include="Integration\IntegrationContainer.cs" />
     <Compile Include="LoginHelper.cs" />
+    <Compile Include="Maps\CampusMap.cs" />
     <Compile Include="RockService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
