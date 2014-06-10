@@ -268,7 +268,8 @@ namespace org.secc.Rock.DataImport.BAL
                 throw new RockServiceException( response.StatusCode, string.Format( "Unexpected status code returned. {0} - {1}.", (int)response.StatusCode, response.StatusDescription ), response.ErrorException );
             }
 
-            LoggedInPerson = Controllers.PersonController.GetByUserName( this, UserName );
+            Controllers.PersonController PersonController = new Controllers.PersonController( this );
+            LoggedInPerson = PersonController.GetByUserName( UserName );
 
             if ( LoggedInPerson != null )
             {
