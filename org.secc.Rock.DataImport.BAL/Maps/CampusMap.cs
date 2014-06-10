@@ -26,7 +26,7 @@ namespace org.secc.Rock.DataImport.BAL.Maps
         }
 
         /// <summary>
-        /// Adds a Campus to the Rock instance.
+        /// Saves a Campus to the Rock instance.  If the <see cref="campusId"/> is null, an add will be attempted, otherwise an update will be attempted.
         /// </summary>
         /// <param name="isSystem">A <see cref="System.Boolean"/> value that is <c>true<c> if the Campus is a system generated value.</param>
         /// <param name="name">A <see cref="System.String"/> representing the unique name of the campus..</param>
@@ -37,10 +37,29 @@ namespace org.secc.Rock.DataImport.BAL.Maps
         /// who is the leader of the campus.</param>
         /// <param name="serviceTimes">A <see cref="System.String"/> representing a delimited list of service times for the campus.</param>
         /// <param name="foreignKey">A <see cref="System.String"/> representing the identifier of the Campus in the foreign system that it was imported from.</param>
-        /// <returns></returns>
-        public int AddCampus(bool isSystem, string name, string shortCode = null, int? locationId = null, string phoneNumber = null,  int? leaderPersonAliasId = null, string serviceTimes = null, string foreignKey = null  )
+        /// <param name="campusId">A nullable <see cref="System.Int32"/> representing the internal Campus Identifier (primary key) of the campus. This will allow for the support of updates.</param>
+        /// <returns>A nullable <see cref="System.Int32"/> representing the Id of the campus that was either added or updated. Will be null if an update is attempted and the campus was not found. </returns>
+        public int? SaveCampus(bool isSystem, string name, string shortCode = null, int? locationId = null, string phoneNumber = null,  int? leaderPersonAliasId = null, string serviceTimes = null, string foreignKey = null, int? campusId = null )
         {
-            Campus c = new Campus();
+            Campus c = null;
+
+            CampusController controller = new CampusController( Service );
+
+            if ( campusId == null || campusId <= 0 )
+            {
+                c = new Campus();
+            }
+            else
+            {
+                c = controller.GetById( (int)campusId );
+            }
+
+            // Update was attempted and campus was not found in Arena instance.
+            if ( c == null )
+            {
+                return null;
+            }
+
             c.IsSystem = isSystem;
             c.Name = name;
             c.ShortCode = shortCode;
@@ -48,11 +67,19 @@ namespace org.secc.Rock.DataImport.BAL.Maps
             c.LeaderPersonAliasId = leaderPersonAliasId;
             c.PhoneNumber = phoneNumber;
             c.ServiceTimes = serviceTimes;
-            c.CreatedByPersonAliasId = Service.LoggedInPerson.Aliases.First().Id;
             c.ForeignId = foreignKey;
 
-            CampusController controller = new CampusController( Service );
-            controller.Add( c );
+            int? personAliasId = Service.GetCurrentPersonAliasId();
+            if ( c.Id > 0 )
+            {
+                c.ModifiedByPersonAliasId = personAliasId;
+                controller.Update(c);
+            }
+            else
+            {
+                c.CreatedByPersonAliasId = personAliasId;
+                controller.Add( c );
+            }
 
             c = controller.GetByGuid( c.Guid );
 
@@ -87,6 +114,7 @@ namespace org.secc.Rock.DataImport.BAL.Maps
             return ToDictionary( campus );
         }
 
+
         /// <summary>
         /// Gets a dictionary that contains all the Campuses in Rock RMS.
         /// </summary>
@@ -108,6 +136,9 @@ namespace org.secc.Rock.DataImport.BAL.Maps
             return campusDictionary;
         }
 
+
+
+        #region Private Methods
         /// <summary>
         /// Returns the Campus entity as a dictionary. This extends the model's ToDictionary method
         /// by including the Id and Guid properties.
@@ -127,6 +158,8 @@ namespace org.secc.Rock.DataImport.BAL.Maps
 
             return entityDictionary;
         }
+        #endregion
+
 
 
     }

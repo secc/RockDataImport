@@ -215,6 +215,24 @@ namespace org.secc.Rock.DataImport.BAL
             }
         }
 
+        public int? GetCurrentPersonAliasId()
+        {
+            int? aliasId = null;
+
+            if ( LoggedInPerson != null && LoggedInPerson.Aliases != null )
+            {
+                aliasId = LoggedInPerson.Aliases.FirstOrDefault( a => a.PersonId == a.AliasPersonId ).Id;
+    
+                if(aliasId == null)
+                {
+                    aliasId = LoggedInPerson.Aliases.FirstOrDefault().Id;
+
+                }
+            }
+
+            return aliasId;
+        }
+
         /// <summary>
         /// Sets the user's credentials and logs them into the Rock API.
         /// </summary>
@@ -236,6 +254,7 @@ namespace org.secc.Rock.DataImport.BAL
             Client = new RestClient( baseUrl );
             Client.CookieContainer = new System.Net.CookieContainer();
         }
+
 
         /// <summary>
         /// Logs the user into the Rock API
