@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using org.secc.Rock.DataImport.BAL;
 using org.secc.Rock.DataImport.BAL.Integration;
 
-namespace org.secc.Rock.DataImport.Extensions.Arena.Mapping
+namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 {
     [Export(typeof(iExportMapComponent))]
     [ExportMetadata("Name", "Campus")]
@@ -56,14 +57,34 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Mapping
             }
         }
 
-        public void ExportRecord( string identifier )
+        public void ExportRecord( string identifier, RockService service  )
         {
-            throw new NotImplementedException();
+            int campusId = 0;
+            if ( !int.TryParse( identifier, out campusId ) )
+            {
+                OnExportAttemptCompleted( identifier, false );
+                return;
+            }
+
+            
         }
 
-        public event EventHandler<EventArgs> OnExportSuccess;
+        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess )
+        {
+            ExportMapEventArgs args = new ExportMapEventArgs();
+            args.Identifier = identifier;
+            args.IsSuccess = isSuccess;
 
-        public event EventHandler<EventArgs> OnExportFailure;
+            EventHandler<ExportMapEventArgs> handler = ExportAttemptCompleted;
+
+            if(handler != null)
+            {
+                handler( this, args );
+            }
+        }
+
+        public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
+
 
 
         private int? GetRecordCount()

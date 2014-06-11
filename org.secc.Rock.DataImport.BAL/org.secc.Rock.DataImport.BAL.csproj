@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CampusController.cs" />
+    <Compile Include="Controllers\DefinedTypeController.cs" />
+    <Compile Include="Controllers\DefinedValueController.cs" />
     <Compile Include="Controllers\PersonAliasControler.cs" />
     <Compile Include="Controllers\PersonController.cs" />
     <Compile Include="Integration\ExportMapContainer.cs" />
@@ -67,10 +69,11 @@
     <Compile Include="Integration\IIntegrationData.cs" />
     <Compile Include="Integration\IntegrationConnectionControl.cs" />
     <Compile Include="Integration\IntegrationContainer.cs" />
+    <Compile Include="Integration\ExportMapEventArgs.cs" />
     <Compile Include="LoginHelper.cs" />
-    <Compile Include="Maps\CampusMap.cs" />
-    <Compile Include="Maps\FamilyMap.cs" />
-    <Compile Include="Maps\PersonMap.cs" />
+    <Compile Include="RockMaps\CampusMap.cs" />
+    <Compile Include="RockMaps\FamilyMap.cs" />
+    <Compile Include="RockMaps\PersonMap.cs" />
     <Compile Include="RockService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
