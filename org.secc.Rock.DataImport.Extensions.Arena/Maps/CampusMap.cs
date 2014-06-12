@@ -66,7 +66,29 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 return;
             }
 
-            
+            Model.Campus arenaCampus = GetArenaCampus( campusId );
+
+            if ( arenaCampus == null )
+            {
+                OnExportAttemptCompleted( identifier, false );
+                return; 
+            }
+
+            BAL.RockMaps.CampusMap rockCampusMap = new BAL.RockMaps.CampusMap( service );
+            Dictionary<string, object> rockCampus = rockCampusMap.GetByForeignKey( campusId.ToString() );
+
+            if ( rockCampus == null )
+            {
+                int? rockCampusId = rockCampusMap.SaveCampus( isSystem: false, name: arenaCampus.name, foreignKey: arenaCampus.campus_id.ToString() );
+                if ( rockCampusId == null )
+                {
+                    OnExportAttemptCompleted( identifier, false );
+                    return;
+                }
+            }
+
+            OnExportAttemptCompleted( identifier, true );        
+
         }
 
         public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess )
@@ -86,6 +108,13 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
 
+        private Model.Campus GetArenaCampus( int campusId )
+        {
+            using ( Model.ArenaContext context = Model.ArenaContext.BuildContext( ConnectionInfo ) )
+            {
+                return context.Campus.FirstOrDefault( c => c.campus_id == campusId );
+            }
+        }
 
         private int? GetRecordCount()
         {

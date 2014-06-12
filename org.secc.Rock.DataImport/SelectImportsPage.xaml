@@ -45,8 +45,7 @@
                           CellStyle="{StaticResource gridCellStyle}"
                           CanUserAddRows="False"
                           CanUserDeleteRows="False"
-                          IsReadOnly="True"
-                          SelectionMode="Extended"
+                          SelectionMode="Single"
                           ColumnWidth="SizeToHeader"
                           Style="{StaticResource gridStyle}"
                           MaxHeight="250"
@@ -57,28 +56,52 @@
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
                           SelectionChanged="grdEntities_SelectionChanged"
                           FontSize="12" >
+                    <DataGrid.Resources>
+                        <Style x:Key="CellStyle" TargetType="{x:Type DataGridCell}">
+                            <Setter Property="Foreground" Value="Black" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{x:Null}" />
+                                    <Setter Property="BorderBrush" Value="{x:Null}" />
+                                </Trigger>
+                                
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.Resources>
                     <DataGrid.Columns>
-                        <DataGridCheckBoxColumn Binding="{Binding Selected}"
+                        <DataGridTemplateColumn Width="20"
+                                                CanUserReorder="False"
+                                                CanUserResize="False"
+                                                IsReadOnly="False"
                                                 HeaderStyle="{StaticResource gridHeaderStyle}"
-                                                CellStyle="{StaticResource gridCellStyle}"
-                                                Width="20" />
+                                                CellStyle="{StaticResource gridCellStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Name="chkSelect"
+                                              IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Binding="{Binding Name}"
                                             HeaderStyle="{StaticResource gridHeaderStyle}"
                                             CellStyle="{StaticResource gridCellStyle}"
                                             Header="Name"
                                             Width="*"
                                             CanUserResize="True"
-                                            CanUserSort="False" />
+                                            CanUserSort="False"
+                                            IsReadOnly="True"/>
                         <DataGridTextColumn Binding="{Binding Description}"
                                                 HeaderStyle="{StaticResource gridHeaderStyle}"
                                                 CellStyle="{StaticResource gridCellStyle}"
                                                 Header="Description"
                                                 Width="*"
                                                 CanUserResize="False"
-                                                CanUserSort="False" />
+                                                CanUserSort="False"
+                                                IsReadOnly="True"/>
                         <DataGridTemplateColumn CellStyle="{StaticResource gridCellStyle}"
                                                 HeaderStyle="{StaticResource gridHeaderStyle}"
-                                                Width="50">
+                                                Width="60"
+                                                IsReadOnly="True">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="Count" TextAlignment="Right"  />
@@ -86,13 +109,14 @@
                             </DataGridTemplateColumn.HeaderTemplate>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Component.RecordCount, StringFormat={}{0:N0}}" TextAlignment="Right" />
+                                    <TextBlock Text="{Binding Component.RecordCount, StringFormat={}{0:N0}}" TextAlignment="Right" Margin="0,0,5,0" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
-                                
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+                <Label Name="lblAlert" Style="{StaticResource labelStyleAlertInfo}"
+                       Visibility="Collapsed" />
             </StackPanel>
             <Button x:Name="btnBack"
                     Grid.Row="2"

@@ -51,14 +51,25 @@ namespace org.secc.Rock.DataImport
 
         private void btnBack_Click( object sender, RoutedEventArgs e )
         {
-
+            if ( this.NavigationService.CanGoBack )
+            {
+                this.NavigationService.GoBack();
+            }
         }
 
         private void btnNext_Click( object sender, RoutedEventArgs e )
         {
+            int selectedMaps = Integration.Component.ExportMaps.Count( m => m.Selected );
 
+            SetAlertMessage( string.Format( "{0} selected", selectedMaps ) );
         }
 
+
+        private void SetAlertMessage( string message )
+        {
+            lblAlert.Content = message;
+            lblAlert.Visibility = String.IsNullOrWhiteSpace( message ) ? Visibility.Collapsed : Visibility.Visible;
+        }
 
     }
 
