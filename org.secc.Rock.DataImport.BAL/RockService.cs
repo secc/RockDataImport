@@ -136,7 +136,7 @@ namespace org.secc.Rock.DataImport.BAL
            
             if(!String.IsNullOrWhiteSpace(filterExpression))
             {
-                request.AddParameter( "$filter", filterExpression );
+                request.AddParameter( "$filter", filterExpression, ParameterType.QueryString );
             }
 
             var response = Client.Execute( request );
@@ -163,7 +163,7 @@ namespace org.secc.Rock.DataImport.BAL
 
         public T GetDataByGuid<T>(string apiPath, Guid guid)
         {
-            string filter = string.Format( "Guid eq '{0}'", guid );
+            string filter = string.Format( "Guid eq (guid'{0}')", guid.ToString() );
             return GetData<List<T>>( apiPath, filter ).FirstOrDefault();
 
         }
@@ -172,16 +172,17 @@ namespace org.secc.Rock.DataImport.BAL
         {
             var request = new RestRequest( apiPath, Method.POST );
             request.RequestFormat = DataFormat.Json;
-            request.AddBody(entity);
+            string json = JsonConvert.SerializeObject( entity );
+            request.AddParameter( "text/json", json, ParameterType.RequestBody );
             var response = Client.Execute( request );
 
-            if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized  )
             {
                 attemptCount++;
                 Login();
                 PostData<T>( apiPath, entity );
             }
-            else if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.Created )
             {
                 attemptCount = 0;
             }

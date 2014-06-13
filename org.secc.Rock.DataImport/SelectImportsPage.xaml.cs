@@ -23,7 +23,8 @@ namespace org.secc.Rock.DataImport
     public partial class SelectImportsPage : Page
     {
         public ExportIntegrations Integration { get; set; }
-
+        int successCount = 0;
+        int failureCount = 0;
 
         private SelectImportsPage()
         {
@@ -46,7 +47,7 @@ namespace org.secc.Rock.DataImport
 
         private void grdEntities_SelectionChanged( object sender, SelectionChangedEventArgs e )
         {
-
+           
         }
 
         private void btnBack_Click( object sender, RoutedEventArgs e )
@@ -59,9 +60,33 @@ namespace org.secc.Rock.DataImport
 
         private void btnNext_Click( object sender, RoutedEventArgs e )
         {
-            int selectedMaps = Integration.Component.ExportMaps.Count( m => m.Selected );
+            if ( Integration.Component.ExportMaps.Where( m => m.Selected && m.Name == "Campus" ).Count() > 0 )
+            {
+                var Component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus" ).First().Component;
+                
+                var identifiers = Component.GetSubsetIDs( 0, 1000 );
+                Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
 
-            SetAlertMessage( string.Format( "{0} selected", selectedMaps ) );
+                foreach ( var campusIdentiifer in identifiers )
+                {
+                    Component.ExportRecord( campusIdentiifer, App.RockService );
+                   
+                }
+
+                SetAlertMessage( string.Format( "{0} succeed, {1} failed", successCount, failureCount ) );
+            }
+        }
+
+        void Component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )
+        {
+            if ( e.IsSuccess )
+            {
+                successCount++;
+            }
+            else
+            {
+                failureCount++;
+            }
         }
 
 

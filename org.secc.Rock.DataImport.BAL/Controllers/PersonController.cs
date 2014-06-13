@@ -50,9 +50,9 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             return Service.GetData<List<Person>>( baseAPIPath, expression );
         }
 
-        public override Person GetByForeignKey( string foreignKey )
+        public override Person GetByForeignId( string foreignId )
         {
-            string expression = string.Format( "ForeignKey eq {0}", foreignKey );
+            string expression = string.Format( "ForeignId eq {0}", foreignId );
             return (GetByFilter( expression )).FirstOrDefault();
         }
 

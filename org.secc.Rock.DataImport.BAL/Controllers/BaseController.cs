@@ -23,7 +23,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
         public abstract T GetByGuid( Guid guid );
         public abstract List<T> GetAll();
         public abstract List<T> GetByFilter(string expression);
-        public abstract T GetByForeignKey( string foreignKey );
+        public abstract T GetByForeignId( string foreignId );
         public abstract void Update( T entity );
     }
 }

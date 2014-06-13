@@ -36,10 +36,10 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         /// <param name="leaderPersonAliasId">A <see cref="System.Int32"/> that represents the PersonAliasId of a <see cref="Rock.Model.PersonAlias"/> that is associated with the <see cref="Rock.Model.Person"/>
         /// who is the leader of the campus.</param>
         /// <param name="serviceTimes">A <see cref="System.String"/> representing a delimited list of service times for the campus.</param>
-        /// <param name="foreignKey">A <see cref="System.String"/> representing the identifier of the Campus in the foreign system that it was imported from.</param>
+        /// <param name="foreignId">A <see cref="System.String"/> representing the identifier of the Campus in the foreign system that it was imported from.</param>
         /// <param name="campusId">A nullable <see cref="System.Int32"/> representing the internal Campus Identifier (primary key) of the campus. This will allow for the support of updates.</param>
         /// <returns>A nullable <see cref="System.Int32"/> representing the Id of the campus that was either added or updated. Will be null if an update is attempted and the campus was not found. </returns>
-        public int? SaveCampus(bool isSystem, string name, string shortCode = null, int? locationId = null, string phoneNumber = null,  int? leaderPersonAliasId = null, string serviceTimes = null, string foreignKey = null, int? campusId = null )
+        public int? SaveCampus(bool isSystem, string name, string shortCode = null, int? locationId = null, string phoneNumber = null,  int? leaderPersonAliasId = null, string serviceTimes = null, string foreignId = null, int? campusId = null )
         {
             Campus c = null;
 
@@ -67,7 +67,8 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             c.LeaderPersonAliasId = leaderPersonAliasId;
             c.PhoneNumber = phoneNumber;
             c.ServiceTimes = serviceTimes;
-            c.ForeignId = foreignKey;
+            c.ForeignId = foreignId;
+            c.IsActive = true;
 
             int? personAliasId = Service.GetCurrentPersonAliasId();
             if ( c.Id > 0 )
@@ -89,13 +90,13 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         /// <summary>
         /// Gets Campus by an external system's foreign key value.
         /// </summary>
-        /// <param name="foreignKey"> A <see cref="System.String"/> representing the foreign key value to find the Campus by.</param>
+        /// <param name="foreignId"> A <see cref="System.String"/> representing the foreign key value to find the Campus by.</param>
         /// <returns> A <see cref="System.Collections.Generic.Dictionary(String,Object)"/> representing the properties of the Campus. The key value represents the property name
         /// and the value represents the property value.</returns>
-        public Dictionary<string, object> GetByForeignKey( string foreignKey )
+        public Dictionary<string, object> GetByForeignId( string foreignId )
         {
             CampusController controller = new CampusController( Service );
-            Campus campus = controller.GetByForeignKey( foreignKey );
+            Campus campus = controller.GetByForeignId( foreignId );
 
             return ToDictionary( campus );
         }
@@ -151,9 +152,27 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             if(c != null)
             {
                 entityDictionary = c.ToDictionary();
-                entityDictionary.Add( "Id", c.Id );
-                entityDictionary.Add( "Guid", c.Guid );
+
+                if ( !entityDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
+                {
+                    entityDictionary.Add( "CreatedByPersonAliasId", c.CreatedByPersonAliasId );
+                }
+
+                if ( !entityDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
+                {
+                    entityDictionary.Add( "ModifiedByPersonAliasId", c.ModifiedByPersonAliasId );
+                }
                 
+                if(!entityDictionary.ContainsKey("CreatedDateTime"))
+                {
+                    entityDictionary.Add( "CreatedDateTime", c.CreatedDateTime );
+                }
+
+                if ( !entityDictionary.ContainsKey( "ModifiedDateTime" ) )
+                {
+                    entityDictionary.Add( "ModifiedDateTime", c.ModifiedDateTime );
+                }
+
             }
 
             return entityDictionary;

@@ -49,9 +49,9 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             return Service.GetData<List<DefinedValue>>( baseApiPath, expression );
         }
 
-        public override DefinedValue GetByForeignKey( string foreignKey )
+        public override DefinedValue GetByForeignId( string foreignId )
         {
-            string expression = string.Format( "ForeignKey eq {0}", foreignKey );
+            string expression = string.Format( "ForeignId eq {0}", foreignId );
             return (Service.GetData<List<DefinedValue>>( baseApiPath, expression  )).FirstOrDefault();
         }
 

@@ -98,21 +98,15 @@
                                                 CanUserResize="False"
                                                 CanUserSort="False"
                                                 IsReadOnly="True"/>
-                        <DataGridTemplateColumn CellStyle="{StaticResource gridCellStyle}"
-                                                HeaderStyle="{StaticResource gridHeaderStyle}"
-                                                Width="60"
-                                                IsReadOnly="True">
-                            <DataGridTemplateColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="Count" TextAlignment="Right"  />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.HeaderTemplate>
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Component.RecordCount, StringFormat={}{0:N0}}" TextAlignment="Right" Margin="0,0,5,0" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Binding="{Binding Component.RecordCount, StringFormat={}{0:N0}}"
+                                            Width="60"
+                                            CellStyle="{StaticResource gridCellStyleNumber}"
+                                            HeaderStyle="{StaticResource gridHeaderStyleNumber}"
+                                            IsReadOnly="True"
+                                            CanUserReorder="False"
+                                            CanUserResize="False"
+                                            CanUserSort="False"
+                                            Header="Count"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <Label Name="lblAlert" Style="{StaticResource labelStyleAlertInfo}"

@@ -48,9 +48,9 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             return Service.GetData<List<PersonAlias>>( baseAPIPath, expression );
         }
 
-        public override PersonAlias GetByForeignKey( string foreignKey )
+        public override PersonAlias GetByForeignId( string foreignId )
         {
-            string filter = string.Format( "ForeignKey eq '{0}'", foreignKey );
+            string filter = string.Format( "ForeignId eq '{0}'", foreignId );
             return ( Service.GetData<List<PersonAlias>>( baseAPIPath, filter ) ).FirstOrDefault();
         }
 

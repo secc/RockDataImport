@@ -46,6 +46,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext( ConnectionInfo ) )
             {
                 var query = Context.Campus
+                            .OrderBy(c => c.campus_id)
                             .Skip( startingRecord );
 
                 if ( size > 0 )
@@ -75,11 +76,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
 
             BAL.RockMaps.CampusMap rockCampusMap = new BAL.RockMaps.CampusMap( service );
-            Dictionary<string, object> rockCampus = rockCampusMap.GetByForeignKey( campusId.ToString() );
+            Dictionary<string, object> rockCampus = rockCampusMap.GetByForeignId( campusId.ToString() );
 
             if ( rockCampus == null )
             {
-                int? rockCampusId = rockCampusMap.SaveCampus( isSystem: false, name: arenaCampus.name, foreignKey: arenaCampus.campus_id.ToString() );
+                int? rockCampusId = rockCampusMap.SaveCampus( isSystem: false, name: arenaCampus.name, foreignId: arenaCampus.campus_id.ToString() );
                 if ( rockCampusId == null )
                 {
                     OnExportAttemptCompleted( identifier, false );

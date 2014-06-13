@@ -48,9 +48,9 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             return Service.GetData<List<Campus>>( baseAPIPath, expression );
         }
 
-        public override Campus GetByForeignKey( string foreignKeyValue )
+        public override Campus GetByForeignId( string foreignId )
         {
-            string filter = string.Format( "foreignkey eq '{0}'", foreignKeyValue );
+            string filter = string.Format( "ForeignId eq '{0}'", foreignId );
             return ( Service.GetData<List<Campus>>( baseAPIPath, filter ) ).FirstOrDefault();
         }
 
