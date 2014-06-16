@@ -197,7 +197,8 @@ namespace org.secc.Rock.DataImport.BAL
         {
             var request = new RestRequest( apiPath, Method.PUT );
             request.RequestFormat = DataFormat.Json;
-            request.AddBody( entity );
+            string json = JsonConvert.SerializeObject( entity );
+            request.AddParameter( "text/json", json, ParameterType.RequestBody );
             var response = Client.Execute( request );
 
             if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attemptCount == 0 )
