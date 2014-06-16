@@ -8,15 +8,61 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.Controllers
 {
-    public class PersonAliasController
+    public class PersonAliasController : BaseController<PersonAlias>
     {
+        string baseAPIPath = "/api/PersonAlias/";
 
-        public static List<PersonAlias> GetByPersonId(RockService service, int personId)
+        private PersonAliasController() : base() { }
+
+        public PersonAliasController( RockService service ) : base( service ) { }
+
+        public override void Add( PersonAlias entity )
         {
-            string apiPath = string.Format( "api/PersonAlias/" );
-            string filterExpression = string.Format( "PersonId eq {0}", personId );
+            Service.PostData<PersonAlias>( baseAPIPath, entity );
+        }
 
-            return service.GetData<List<PersonAlias>>( apiPath, filterExpression );
+        public override void Delete( int id )
+        {
+            string apiPath = string.Format( baseAPIPath + "{0}", id );
+            Service.DeleteData( apiPath );
+        }
+
+        public override PersonAlias GetById( int id )
+        {
+            string apiPath = string.Format( baseAPIPath + "{0}", id );
+            return Service.GetData<PersonAlias>( apiPath );
+        }
+
+        public override PersonAlias GetByGuid( Guid guid )
+        {
+            return Service.GetDataByGuid<PersonAlias>( baseAPIPath, guid );
+        }
+
+        public override List<PersonAlias> GetAll()
+        {
+            return Service.GetData<List<PersonAlias>>( baseAPIPath );
+        }
+
+        public override List<PersonAlias> GetByFilter( string expression )
+        {
+            return Service.GetData<List<PersonAlias>>( baseAPIPath, expression );
+        }
+
+        public override PersonAlias GetByForeignId( string foreignId )
+        {
+            string filter = string.Format( "ForeignId eq '{0}'", foreignId );
+            return ( Service.GetData<List<PersonAlias>>( baseAPIPath, filter ) ).FirstOrDefault();
+        }
+
+        public override void Update( PersonAlias entity )
+        {
+            string apiPath = string.Format( baseAPIPath + "{0}", entity.Id );
+            Service.PutData<PersonAlias>( apiPath, entity );
+        }
+
+        public List<PersonAlias> GetByPersonId( int personId )
+        {
+            return GetByFilter( string.Format( "PersonId eq {0}", personId ) );
         }
     }
 }

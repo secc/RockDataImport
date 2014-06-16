@@ -31,21 +31,11 @@ namespace org.secc.Rock.DataImport
         #region Event Handlers
         private void Page_Loaded( object sender, RoutedEventArgs e )
         {
-            HideLoginWarning( null, null );
+            HideLoginWarning();
             LoadCachedLoginCredentials();
 
         }
 
-        /// <summary>
-        /// Hides the login warning.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="System.Windows.Input.KeyEventArgs"/> instance containing the event data.</param>
-        private void HideLoginWarning( object sender, System.Windows.Input.KeyEventArgs e )
-        {
-            lblLoginWarning.Visibility = Visibility.Hidden;
-
-        }
         
         /// <summary>
         /// Handles the Click event of the btnLogin control.
@@ -64,9 +54,34 @@ namespace org.secc.Rock.DataImport
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void btnReset_Click( object sender, RoutedEventArgs e )
         {
-            HideLoginWarning( null, null );
+            HideLoginWarning( );
             ClearForm();
             LoadCachedLoginCredentials();
+        }
+
+        /// <summary>
+        /// Handles the KeyDown event of the txtRockPassword control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void txtRockPassword_KeyDown( object sender, KeyEventArgs e )
+        {
+            HideLoginWarning();
+
+            if ( e.Key == Key.Enter )
+            {
+                Login();
+            }
+        }
+
+        /// <summary>
+        /// Handles the KeyDown event of the txtRockUser control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void txtRockUser_KeyDown( object sender, KeyEventArgs e )
+        {
+            HideLoginWarning();
         }
 
         #endregion
@@ -80,6 +95,14 @@ namespace org.secc.Rock.DataImport
             SetWarningMessage( String.Empty );
         }
 
+
+        /// <summary>
+        /// Hides the login warning.
+        /// </summary>
+        private void HideLoginWarning()
+        {
+            lblLoginWarning.Visibility = Visibility.Hidden;
+        }
 
         /// <summary>
         /// Loads the cached login credentials from settings.
@@ -196,6 +219,9 @@ namespace org.secc.Rock.DataImport
         }
 
         #endregion
+
+
+
 
     }
 }

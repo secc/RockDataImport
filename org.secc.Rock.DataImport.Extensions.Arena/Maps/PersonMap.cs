@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using org.secc.Rock.DataImport.BAL;
 using org.secc.Rock.DataImport.BAL.Integration;
 
-namespace org.secc.Rock.DataImport.Extensions.Arena.Mapping
+
+namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 {
     [Export(typeof(iExportMapComponent))]
     [ExportMetadata("Name", "Person")]
@@ -43,14 +45,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Mapping
             throw new NotImplementedException();
         }
 
-        public void ExportRecord( string identifier )
+        public void ExportRecord( string identifier, RockService service)
         {
             throw new NotImplementedException();
         }
 
-        public event EventHandler<EventArgs> OnExportSuccess;
-
-        public event EventHandler<EventArgs> OnExportFailure;
+        public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
         private int? GetRecordCount()
         {

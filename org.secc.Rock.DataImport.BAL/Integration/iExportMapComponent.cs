@@ -10,11 +10,8 @@ namespace org.secc.Rock.DataImport.BAL.Integration
     {
         int? RecordCount { get; }
         List<string> GetSubsetIDs( int startingRecord, int size );
-        void ExportRecord( string identifier );
+        void ExportRecord( string identifier, RockService service );
 
-        event EventHandler<EventArgs> OnExportSuccess;
-        event EventHandler<EventArgs> OnExportFailure;
-        
-
+        event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
     }
 }

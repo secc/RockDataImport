@@ -86,6 +86,29 @@ namespace org.secc.Rock.DataImport.BAL
         }
 
 
+        public void DeleteData( string apiPath)
+        {
+            var request = new RestRequest( apiPath, Method.DELETE );
+            request.RequestFormat = DataFormat.Json;
+            var response = Client.Execute( request );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attemptCount == 0 )
+            {
+                attemptCount++;
+                Login();
+                DeleteData( apiPath );
+            }
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                attemptCount = 0;
+            }
+            else
+            {
+                throw new RockServiceException( response.StatusCode, "Unexpected Status Code returned.", response.ErrorException );
+            }
+        }
+
+
         /// <summary>
         /// Performs a Get request against the Rock API
         /// </summary>
@@ -113,7 +136,7 @@ namespace org.secc.Rock.DataImport.BAL
            
             if(!String.IsNullOrWhiteSpace(filterExpression))
             {
-                request.AddParameter( "$filter", filterExpression );
+                request.AddParameter( "$filter", filterExpression, ParameterType.QueryString );
             }
 
             var response = Client.Execute( request );
@@ -138,6 +161,80 @@ namespace org.secc.Rock.DataImport.BAL
             return Data;
         }
 
+        public T GetDataByGuid<T>(string apiPath, Guid guid)
+        {
+            string filter = string.Format( "Guid eq (guid'{0}')", guid.ToString() );
+            return GetData<List<T>>( apiPath, filter ).FirstOrDefault();
+
+        }
+
+        public void  PostData<T>( string apiPath, T entity )
+        {
+            var request = new RestRequest( apiPath, Method.POST );
+            request.RequestFormat = DataFormat.Json;
+            string json = JsonConvert.SerializeObject( entity );
+            request.AddParameter( "text/json", json, ParameterType.RequestBody );
+            var response = Client.Execute( request );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized  )
+            {
+                attemptCount++;
+                Login();
+                PostData<T>( apiPath, entity );
+            }
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.Created )
+            {
+                attemptCount = 0;
+            }
+            else
+            {
+                throw new RockServiceException( response.StatusCode, "Unexpected Status Code returned.", response.ErrorException );
+            }
+
+        }
+
+        public void PutData<T>( string apiPath, T entity )
+        {
+            var request = new RestRequest( apiPath, Method.PUT );
+            request.RequestFormat = DataFormat.Json;
+            string json = JsonConvert.SerializeObject( entity );
+            request.AddParameter( "text/json", json, ParameterType.RequestBody );
+            var response = Client.Execute( request );
+
+            if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attemptCount == 0 )
+            {
+                attemptCount++;
+                Login();
+                PutData<T>( apiPath, entity );
+            }
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            {
+                attemptCount = 0;
+            }
+            else
+            {
+                throw new RockServiceException( response.StatusCode, "Unexpected Status Code returned.", response.ErrorException );
+            }
+        }
+
+        public int? GetCurrentPersonAliasId()
+        {
+            int? aliasId = null;
+
+            if ( LoggedInPerson != null && LoggedInPerson.Aliases != null )
+            {
+                aliasId = LoggedInPerson.Aliases.FirstOrDefault( a => a.PersonId == a.AliasPersonId ).Id;
+    
+                if(aliasId == null)
+                {
+                    aliasId = LoggedInPerson.Aliases.FirstOrDefault().Id;
+
+                }
+            }
+
+            return aliasId;
+        }
+
         /// <summary>
         /// Sets the user's credentials and logs them into the Rock API.
         /// </summary>
@@ -159,6 +256,7 @@ namespace org.secc.Rock.DataImport.BAL
             Client = new RestClient( baseUrl );
             Client.CookieContainer = new System.Net.CookieContainer();
         }
+
 
         /// <summary>
         /// Logs the user into the Rock API
@@ -191,11 +289,13 @@ namespace org.secc.Rock.DataImport.BAL
                 throw new RockServiceException( response.StatusCode, string.Format( "Unexpected status code returned. {0} - {1}.", (int)response.StatusCode, response.StatusDescription ), response.ErrorException );
             }
 
-            LoggedInPerson = Controllers.PersonController.GetByUserName( this, UserName );
+            Controllers.PersonController PersonController = new Controllers.PersonController( this );
+            LoggedInPerson = PersonController.GetByUserName( UserName );
 
             if ( LoggedInPerson != null )
             {
-                LoggedInPerson.Aliases = Controllers.PersonAliasController.GetByPersonId( this, LoggedInPerson.Id );
+                Controllers.PersonAliasController AliasController = new Controllers.PersonAliasController(this);
+                LoggedInPerson.Aliases =  AliasController.GetByPersonId(LoggedInPerson.Id );
             }
         }
 

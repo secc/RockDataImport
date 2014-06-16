@@ -118,14 +118,14 @@
                     </Label>
                     <TextBox Name="txtRockUser"
                              Style="{StaticResource textboxStyle}" 
-                             KeyDown="HideLoginWarning"/>
+                             KeyDown="txtRockUser_KeyDown"/>
                     <Label Name="lblRockPassword"
                            Style="{StaticResource labelStyle}">
                         Password
                     </Label>
                     <PasswordBox Name="txtRockPassword"
                                  Style="{StaticResource textboxStyle}"
-                                 KeyDown="HideLoginWarning" />
+                                 KeyDown="txtRockPassword_KeyDown" />
                 </StackPanel>
                 <Label Name="lblLoginWarning"
                        Grid.Row="1"
