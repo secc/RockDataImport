@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL;
 using org.secc.Rock.DataImport.BAL.Attribute;
+using org.secc.Rock.DataImport.BAL.Helper;
 using org.secc.Rock.DataImport.BAL.Integration;
 
 
@@ -81,7 +82,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 } ).ToDictionary(a => a.Name, a => a.Attribute);
                 
         }
-        public BAL.Model.DefinedTypeSummary GetRockDefinedType( string definedTypeName, RockService service )
+        public DefinedTypeSummary GetRockDefinedType( string definedTypeName, RockService service )
         {
             var dtAttribute = GetAttributes( typeof( DefinedTypeAttribute ) )
                                 .Where( dta => dta.Key == definedTypeName ).FirstOrDefault();
@@ -97,7 +98,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             return DTMap.GetDefinedTypeSummary( rockDefinedTypeGuid );
         }
 
-        public BAL.Model.DefinedTypeSummary GetSourceDefinedType( string definedTypeName )
+        public DefinedTypeSummary GetSourceDefinedType( string definedTypeName )
         {
             var dtAttribute = GetAttributes( typeof( DefinedTypeAttribute ) )
                                 .Where( dta => dta.Key == definedTypeName ).FirstOrDefault();
@@ -112,13 +113,13 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext( ConnectionInfo ) )
             {
                 return Context.LookupType.Where( lt => lt.guid == lookupTypeGuid )
-                            .Select( lt => new BAL.Model.DefinedTypeSummary()
+                            .Select( lt => new DefinedTypeSummary()
                                             {
                                                 Id = lt.lookup_type_id.ToString(),
                                                 Name = lt.lookup_type_name,
                                                 Description = lt.lookup_type_desc,
                                                 UniqueIdentifier = lt.guid,
-                                                ValueSummaries = lt.Lookup.Select( l => new BAL.Model.DefinedValueSummary()
+                                                ValueSummaries = lt.Lookup.Select( l => new DefinedValueSummary()
                                                         {
                                                             Id = l.lookup_id.ToString(),
                                                             DefinedTypeId = l.lookup_type_id.ToString(),

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Rock.Model;
 
-namespace org.secc.Rock.DataImport.BAL.Model
+namespace org.secc.Rock.DataImport.BAL.Helper
 {
     public class DefinedTypeSummary
     {

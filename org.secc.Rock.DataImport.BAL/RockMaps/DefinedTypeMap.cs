@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL.Controllers;
-using org.secc.Rock.DataImport.BAL.Model;
+using org.secc.Rock.DataImport.BAL.Helper;
 using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps

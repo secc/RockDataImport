@@ -73,10 +73,11 @@
     <Compile Include="Integration\IntegrationContainer.cs" />
     <Compile Include="Integration\ExportMapEventArgs.cs" />
     <Compile Include="LoginHelper.cs" />
-    <Compile Include="Model\DefinedTypeSummary.cs" />
-    <Compile Include="Model\DefinedValueSummary.cs" />
+    <Compile Include="Helper\DefinedTypeSummary.cs" />
+    <Compile Include="Helper\DefinedValueSummary.cs" />
     <Compile Include="RockMaps\CampusMap.cs" />
     <Compile Include="RockMaps\DefinedTypeMap.cs" />
+    <Compile Include="RockMaps\DefinedValueMap.cs" />
     <Compile Include="RockMaps\FamilyMap.cs" />
     <Compile Include="RockMaps\PersonMap.cs" />
     <Compile Include="RockService.cs" />

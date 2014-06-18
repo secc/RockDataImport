@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace org.secc.Rock.DataImport.BAL.Model
+namespace org.secc.Rock.DataImport.BAL.Helper
 {
     public class DefinedValueSummary
     {
