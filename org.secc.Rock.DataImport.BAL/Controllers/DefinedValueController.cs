@@ -61,6 +61,12 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             Service.PutData<DefinedValue>( apiPath, entity );
         }
 
+        public  List<DefinedValue> GetByDefinedTypeId( int definedTypeId )
+        {
+            string expression = string.Format( string.Format( "DefinedTypeId eq {0}", definedTypeId ) );
+            return GetByFilter( expression );
+        }
+
         public List<DefinedValue> GetByDefinedTypeGuid( Guid definedTypeGuid )
         {
             DefinedTypeController definedTypeController = new DefinedTypeController( Service );
@@ -77,5 +83,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             }
 
         }
+
+
     }
 }

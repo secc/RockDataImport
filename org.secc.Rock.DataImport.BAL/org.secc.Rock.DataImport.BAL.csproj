@@ -56,6 +56,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute\DefinedTypeAttribute.cs" />
+    <Compile Include="Attribute\DependencyAttribute.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CampusController.cs" />
     <Compile Include="Controllers\DefinedTypeController.cs" />
@@ -71,7 +73,10 @@
     <Compile Include="Integration\IntegrationContainer.cs" />
     <Compile Include="Integration\ExportMapEventArgs.cs" />
     <Compile Include="LoginHelper.cs" />
+    <Compile Include="Model\DefinedTypeSummary.cs" />
+    <Compile Include="Model\DefinedValueSummary.cs" />
     <Compile Include="RockMaps\CampusMap.cs" />
+    <Compile Include="RockMaps\DefinedTypeMap.cs" />
     <Compile Include="RockMaps\FamilyMap.cs" />
     <Compile Include="RockMaps\PersonMap.cs" />
     <Compile Include="RockService.cs" />
@@ -87,6 +92,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

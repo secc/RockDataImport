@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL;
+using org.secc.Rock.DataImport.BAL.Attribute;
 using org.secc.Rock.DataImport.BAL.Integration;
 
 namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
@@ -14,9 +15,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [ExportMetadata("Name", "Campus")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
     [ExportMetadata("Description", "Campus locations from ArenaChMS.")]
+    [Dependency("Person", typeof(PersonMap), 10)]
+    [Dependency("person2", typeof(PersonMap), 0)]
     public class CampusMap : iExportMapComponent
     {
         private int? mRecordCount;
+        private int? mDefinedTypeCount;
 
         private Dictionary<string,string> ConnectionInfo{get;set;}
 
@@ -30,6 +34,19 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
 
                 return mRecordCount;
+            }
+        }
+
+        public int? DefinedTypeCount
+        {
+            get
+            {
+                if(mDefinedTypeCount == null)
+                {
+                    mDefinedTypeCount = GetDefinedTypeCount();
+                }
+
+                return mDefinedTypeCount;
             }
         }
 
@@ -92,6 +109,17 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         }
 
+        public List<string> GetDependencies()
+        {
+            return System.Attribute.GetCustomAttributes( this.GetType() )
+                    .Where( a => a.GetType() == typeof( DependencyAttribute ) )
+                    .OrderBy(a => a.GetType().GetProperties().Where(p => p.Name == "Order").Select(p => (int)p.GetValue(a)).FirstOrDefault())
+                    .Select( a => a.GetType().GetProperties().Where( p => p.Name == "FriendlyName" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString() ).ToList();
+
+
+                        
+        }
+
         public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess )
         {
             ExportMapEventArgs args = new ExportMapEventArgs();
@@ -123,6 +151,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             {
                 return Context.Campus.Count();
             }
+        }
+
+        private int? GetDefinedTypeCount()
+        {
+            return System.Attribute.GetCustomAttributes( this.GetType() )
+                .Where( a => a.GetType() == typeof( DefinedTypeAttribute ) ).Count();
         }
     }
 }

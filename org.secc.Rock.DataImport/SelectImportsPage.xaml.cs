@@ -64,16 +64,16 @@ namespace org.secc.Rock.DataImport
             {
                 var Component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus" ).First().Component;
                 
-                var identifiers = Component.GetSubsetIDs( 0, 1000 );
-                Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
+                //var identifiers = Component.GetSubsetIDs( 0, 1000 );
+                //Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
 
-                foreach ( var campusIdentiifer in identifiers )
-                {
-                    Component.ExportRecord( campusIdentiifer, App.RockService );
+                //foreach ( var campusIdentiifer in identifiers )
+                //{
+                //    Component.ExportRecord( campusIdentiifer, App.RockService );
                    
-                }
+                //}
 
-                SetAlertMessage( string.Format( "{0} succeed, {1} failed", successCount, failureCount ) );
+                //SetAlertMessage( string.Format( "{0} succeed, {1} failed", successCount, failureCount ) );
             }
         }
 
