@@ -103,27 +103,10 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         {
             Dictionary<string, object> selectedCampus = null;
 
-            selectedCampus = GetCampuses().FirstOrDefault( c => c.Value["ForeignId"] != null && c.Value["ForeignId"].ToString() == foreignId ).Value;
-
-            //foreach ( var c in GetCampuses().Select(c => c.Value) )
-            //{
-            //    if ( c.ContainsKey( "ForeignId" ) && c["ForeignId"] != null && c["ForeignId"].ToString() == foreignId )
-            //    {
-            //        selectedCampus = c;
-            //    }
-            //}
-                                                    
+            selectedCampus = GetCampuses().FirstOrDefault( c => c.Value["ForeignId"] != null && c.Value["ForeignId"].ToString() == foreignId ).Value;                                                  
 
             if ( selectedCampus == null  )
             {
-                //foreach ( var c in GetCampuses(true).Select(c => c.Value) )
-                //{
-                //    if ( c.ContainsKey( "ForeignId" ) && c["ForeignId"] != null && c["ForeignId"].ToString() == foreignId )
-                //    {
-                //        selectedCampus = c;
-                //    }
-                //}
-
                 selectedCampus = GetCampuses( true ).FirstOrDefault( c => c.Value["ForeignId"] != null && c.Value["ForeignId"].ToString() == foreignId ).Value;
             }
 
