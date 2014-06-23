@@ -47,6 +47,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -64,7 +65,8 @@
     <Compile Include="Controllers\DefinedTypeController.cs" />
     <Compile Include="Controllers\DefinedValueController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
-    <Compile Include="Controllers\GroupLocation.cs" />
+    <Compile Include="Controllers\GroupLocationController.cs" />
+    <Compile Include="Controllers\GroupTypeController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\PersonAliasControler.cs" />
     <Compile Include="Controllers\PersonController.cs" />

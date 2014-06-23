@@ -10,44 +10,52 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 {
     public class LocationController : BaseController<Location>
     {
+        string BaseAPIPath = "/api/Locations/";
+
+        private LocationController() : base() { }
+
+        public LocationController( RockService service ) : base( service ) { }
+
         public override void Add( Location entity )
         {
-            throw new NotImplementedException();
+            Service.PostData<Location>( BaseAPIPath, entity );
         }
 
         public override void Delete( int id )
         {
-            throw new NotImplementedException();
+            Service.DeleteData( string.Format( BaseAPIPath + "{0}", id ) );
         }
 
         public override Location GetById( int id )
         {
-            throw new NotImplementedException();
+           return Service.GetData<Location>( string.Format( BaseAPIPath + "{0}", id ) );
         }
 
         public override Location GetByGuid( Guid guid )
         {
-            throw new NotImplementedException();
+            return Service.GetDataByGuid<Location>( BaseAPIPath, guid );
         }
 
         public override List<Location> GetAll()
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<Location>>( BaseAPIPath );
         }
 
         public override List<Location> GetByFilter( string expression )
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<Location>>( BaseAPIPath, expression );
         }
 
         public override Location GetByForeignId( string foreignId )
         {
-            throw new NotImplementedException();
+            string expression = string.Format( "ForeignId eq '{0}'", foreignId );
+            return GetByFilter( expression ).FirstOrDefault();
         }
 
         public override void Update( Location entity )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( BaseAPIPath + "{0}", entity.Id );
+            Service.PostData<Location>( apiPath, entity );
         }
     }
 }

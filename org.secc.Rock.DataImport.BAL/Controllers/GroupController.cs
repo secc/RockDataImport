@@ -11,44 +11,51 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 {
     public class GroupController : BaseController<Group>
     {
+        string BaseApiPath = "api/Groups/";
+        private GroupController() : base() { }
+        public GroupController( RockService service ) : base( service ) { }
+
+
         public override void Add( Group entity )
         {
-            throw new NotImplementedException();
+            Service.PostData<Group>( BaseApiPath, entity );
         }
 
         public override void Delete( int id )
         {
-            throw new NotImplementedException();
+            Service.DeleteData( string.Format( BaseApiPath + "{0}", id ) );
         }
 
         public override Group GetById( int id )
         {
-            throw new NotImplementedException();
+            return Service.GetData<Group>( string.Format( BaseApiPath + "{0}", id ) );
         }
 
         public override Group GetByGuid( Guid guid )
         {
-            throw new NotImplementedException();
+            return Service.GetDataByGuid<Group>( BaseApiPath, guid );
         }
 
         public override List<Group> GetAll()
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<Group>>( BaseApiPath );
         }
 
         public override List<Group> GetByFilter( string expression )
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<Group>>( BaseApiPath, expression );
         }
 
         public override Group GetByForeignId( string foreignId )
         {
-            throw new NotImplementedException();
+            string expression = string.Format( "ForeignId eq '{0}'", foreignId );
+            return ( Service.GetData<List<Group>>( BaseApiPath, expression ) ).FirstOrDefault();
         }
 
         public override void Update( Group entity )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( BaseApiPath + "{0}", entity.Id );
+            Service.PutData<Group>( apiPath, entity );
         }
     }
 }
