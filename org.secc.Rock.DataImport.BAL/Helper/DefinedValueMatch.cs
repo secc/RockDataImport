@@ -72,9 +72,14 @@ namespace org.secc.Rock.DataImport.BAL.Helper
             return definedValues;
         }
 
-        public  static string GetDefinedValueFilePath()
+        public static string GetDefinedValueFilePath()
         {
             return Path.Combine( AppDomain.CurrentDomain.BaseDirectory, DEFINED_VALUE_FILE_NAME );
+        }
+
+        public static int? GetDefinedValueMatch( string sourceId )
+        {
+            return GetMatchedDefinedValues().FirstOrDefault( dv => dv.SourceDefinedValueId == sourceId ).RockDefinedValueId;
         }
     }
 

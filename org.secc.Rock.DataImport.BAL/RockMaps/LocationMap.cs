@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class FamilyMap
+    class LocationMap
     {
     }
 }

@@ -63,6 +63,9 @@
     <Compile Include="Controllers\CampusController.cs" />
     <Compile Include="Controllers\DefinedTypeController.cs" />
     <Compile Include="Controllers\DefinedValueController.cs" />
+    <Compile Include="Controllers\GroupController.cs" />
+    <Compile Include="Controllers\GroupLocation.cs" />
+    <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\PersonAliasControler.cs" />
     <Compile Include="Controllers\PersonController.cs" />
     <Compile Include="Helper\DefinedValueMatch.cs" />
@@ -80,7 +83,8 @@
     <Compile Include="RockMaps\CampusMap.cs" />
     <Compile Include="RockMaps\DefinedTypeMap.cs" />
     <Compile Include="RockMaps\DefinedValueMap.cs" />
-    <Compile Include="RockMaps\FamilyMap.cs" />
+    <Compile Include="RockMaps\GroupMap.cs" />
+    <Compile Include="RockMaps\LocationMap.cs" />
     <Compile Include="RockMaps\PersonMap.cs" />
     <Compile Include="RockService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

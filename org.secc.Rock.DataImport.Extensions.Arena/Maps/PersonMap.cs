@@ -10,6 +10,7 @@ using org.secc.Rock.DataImport.BAL.Attribute;
 using org.secc.Rock.DataImport.BAL.Helper;
 using org.secc.Rock.DataImport.BAL.Integration;
 
+using org.secc.Rock.DataImport.Extensions.Arena.Model;
 
 namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 {
@@ -22,12 +23,16 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [DefinedType("Record Status Reason", "E17D5988-0372-4792-82CF-9E37C79F7319", "011E6A99-2006-4392-B66E-98B6262E8A45")]
     [DefinedType( "Connection Status", "2E6540EA-63F0-40FE-BE50-F2A84735E600", "0B4532DB-3188-40F5-B188-E7E6E4448C85" )]
     [DefinedType( "Marital Status", "B4B92C3F-A935-40E1-A00B-BA484EAD613B", "0AAD26C7-AD9D-4FE8-96B1-C9BCD033BB5B" )]
+    
     public class PersonMap : iExportMapComponent
     {
+        #region Fields
         private int? mRecordCount;
         private int? mDefinedTypeCount;
         private Dictionary<string,string> ConnectionInfo{get;set;}
+        #endregion
 
+        #region Properties
         public int? RecordCount
         {
             get 
@@ -52,7 +57,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 return mDefinedTypeCount;
             }
         }
+        #endregion
 
+        #region Constructors
         private PersonMap() {}
 
         [ImportingConstructor]
@@ -60,15 +67,52 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         {
             ConnectionInfo = connectionInfo;
         }
+        #endregion
 
+        #region Public Methods
         public List<string> GetSubsetIDs( int startingRecord, int size )
         {
-            throw new NotImplementedException();
+            using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext(ConnectionInfo) )
+            {
+                var query = Context.Person
+                               .OrderBy( p => p.person_id )
+                               .Skip( startingRecord );
+
+                if ( size > 0 )
+                {
+                    query = query.Take( size );
+                }
+
+                return query.Select( p => p.person_id.ToString() ).ToList();
+            }
         }
 
         public void ExportRecord( string identifier, RockService service)
         {
-            throw new NotImplementedException();
+            int personId = 0;
+
+            if ( !int.TryParse( identifier, out personId ) )
+            {
+                OnExportAttemptCompleted( identifier, false );
+                return;
+            }
+
+            Person arenaPerson = GetArenaPerson( personId );
+
+            if ( arenaPerson == null )
+            {
+                OnExportAttemptCompleted( identifier, false );
+            }
+
+            BAL.RockMaps.PersonMap rockPersonMap = new BAL.RockMaps.PersonMap( service );
+            Dictionary<string, object> rockPerson = rockPersonMap.GetByForeignId( identifier );
+
+            if ( rockPerson != null && !rockPerson.Equals( default( Dictionary<string, object> ) ) )
+            {
+                OnExportAttemptCompleted( identifier, true );
+            }
+           
+            
         }
 
         public Dictionary<string, Dictionary<string,object>> GetAttributes( Type attributeType )
@@ -82,6 +126,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 } ).ToDictionary(a => a.Name, a => a.Attribute);
                 
         }
+
         public DefinedTypeSummary GetRockDefinedType( string definedTypeName, RockService service )
         {
             var dtAttribute = GetAttributes( typeof( DefinedTypeAttribute ) )
@@ -103,7 +148,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             var dtAttribute = GetAttributes( typeof( DefinedTypeAttribute ) )
                                 .Where( dta => dta.Key == definedTypeName ).FirstOrDefault();
 
-            if ( dtAttribute.Equals( default( Dictionary<string, Dictionary<string, object>> ) ) )
+            if ( dtAttribute.Equals( default( Dictionary<string, Dictionary<string, object>> )  ) )
             {
                 return null;
             }
@@ -131,14 +176,38 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
+        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess )
+        {
+            ExportMapEventArgs args = new ExportMapEventArgs();
+            args.Identifier = identifier;
+            args.IsSuccess = isSuccess;
+
+            EventHandler<ExportMapEventArgs> handler = ExportAttemptCompleted;
+
+            if ( handler != null )
+            {
+                handler( this, args );
+            }
+        }
+
+        #endregion
+
         public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
+
+        #region Private Methods
+
+        private Person GetArenaPerson( int personId )
+        {
+            using ( ArenaContext Context = ArenaContext.BuildContext( ConnectionInfo ) )
+            {
+                return Context.Person.FirstOrDefault( p => p.person_id == personId );
+            }
+        }
 
         private int GetDefinedTypeCount()
         {
             return System.Attribute.GetCustomAttributes( this.GetType() )
                     .Where( a => a.GetType() == typeof( DefinedTypeAttribute ) ).Count();
-
-
         }
 
         private int? GetRecordCount()
@@ -148,5 +217,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 return Context.Person.Count();
             }
         }
+
+        #endregion
     }
 }
