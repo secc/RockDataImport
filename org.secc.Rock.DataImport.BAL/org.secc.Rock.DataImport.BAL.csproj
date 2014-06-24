@@ -60,13 +60,18 @@
   <ItemGroup>
     <Compile Include="Attribute\DefinedTypeAttribute.cs" />
     <Compile Include="Attribute\DependencyAttribute.cs" />
+    <Compile Include="Controllers\AttributeController.cs" />
+    <Compile Include="Controllers\AttributeQualifiersController.cs" />
+    <Compile Include="Controllers\AttributeValuesController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CampusController.cs" />
     <Compile Include="Controllers\DefinedTypeController.cs" />
     <Compile Include="Controllers\DefinedValueController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\GroupLocationController.cs" />
+    <Compile Include="Controllers\GroupMembersController.cs" />
     <Compile Include="Controllers\GroupTypeController.cs" />
+    <Compile Include="Controllers\GroupTypeRoleController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\PersonAliasControler.cs" />
     <Compile Include="Controllers\PersonController.cs" />
