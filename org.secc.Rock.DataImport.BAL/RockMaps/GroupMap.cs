@@ -9,8 +9,6 @@ using org.secc.Rock.DataImport.BAL.Controllers;
 using SystemGuid = Rock.SystemGuid;
 using Rock.Model;
 
-
-
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
     public class GroupMap 
@@ -33,7 +31,17 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return ToDictionary( family );
         }
 
+        public int GetFamilyAdultGroupRoleId()
+        {
+            Guid adultRoleGuid = new Guid( SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_ADULT );
+            return GetGroupTypeRoleByGuid( adultRoleGuid ).Id;
+        }
 
+        public int GetFamilyChildGroupRoleId()
+        {
+            Guid childRoleGuid = new Guid( SystemGuid.GroupRole.GROUPROLE_FAMILY_MEMBER_CHILD );
+            return GetGroupTypeRoleByGuid( childRoleGuid ).Id;
+        }
 
         public int? SaveFamily(int campusId, string familyName, string foreignId = null, int? familyId = null)
         {
@@ -63,7 +71,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return impliedGroupId;
         }
 
-        public int? SaveKnownRelationshipsGroup(int ownerPersonId, bool isBusiness = false, int? groupId = null)
+        public int? SaveKnownRelationshipsGroup(int ownerPersonId, int? groupId = null)
         {
             Guid knownRelationshipTypeGuid = new Guid( SystemGuid.GroupType.GROUPTYPE_KNOWN_RELATIONSHIPS );
             int knownRelationshipTypeId = GetGroupTypeByGuid( knownRelationshipTypeGuid ).Id;
@@ -73,18 +81,8 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             if ( knownGroupId != null )
             {
                 GroupTypeRoleController roleController = new GroupTypeRoleController( Service );
-                Guid roleGuid = Guid.Empty;
-
-                if ( isBusiness )
-                {
-                    roleGuid = new Guid( SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_BUSINESS );
-                }
-                else
-                {
-                    roleGuid = new Guid( SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_OWNER );
-                }
-
-
+                Guid roleGuid = new Guid( SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_OWNER );
+  
                 int roleId = roleController.GetByGuid( roleGuid ).Id;
 
                 SaveGroupMember( (int)knownGroupId, ownerPersonId, roleId );
@@ -94,7 +92,9 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return knownGroupId;
         }
 
-        public int? SaveGroup( int groupTypeId, string name, int? parentGroupId = null, bool isSystem = false, int? campusId = null, string description = null, bool isSecurityRole = false, bool isActive = true, int order = 0, string foreignId = null, int? groupId = null )
+        public int? SaveGroup( int groupTypeId, string name, int? parentGroupId = null, bool isSystem = false, int? campusId = null, 
+                        string description = null, bool isSecurityRole = false, bool isActive = true, int order = 0, string foreignId = null, 
+                        int? groupId = null )
         {
             Group group = null;
             GroupController controller = new GroupController( Service );
