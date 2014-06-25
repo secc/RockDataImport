@@ -112,32 +112,32 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
         private Dictionary<string,object> ToDictionary(Person p)
         {
-            Dictionary<string, object> personDictionary = null;
+                Dictionary<string, object> personDictionary = null;
 
-            if ( p != null )
-            {
-                personDictionary = p.ToDictionary();
-
-                if ( !personDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
+                if ( p != null )
                 {
-                    personDictionary.Add( "CreatedByPersonAliasId", p.CreatedByPersonAliasId );
-                }
+                    personDictionary = p.ToDictionary();
 
-                if ( !personDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    personDictionary.Add( "ModifiedByPersonAliasId", p.ModifiedByPersonAliasId );
-                }
+                    if ( !personDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
+                    {
+                        personDictionary.Add( "CreatedByPersonAliasId", p.CreatedByPersonAliasId );
+                    }
 
-                if ( !personDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    personDictionary.Add( "CreatedDateTime", p.CreatedDateTime );
-                }
+                    if ( !personDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
+                    {
+                        personDictionary.Add( "ModifiedByPersonAliasId", p.ModifiedByPersonAliasId );
+                    }
 
-                if ( !personDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    personDictionary.Add( "ModifiedDateTime", p.ModifiedDateTime );
+                    if ( !personDictionary.ContainsKey( "CreatedDateTime" ) )
+                    {
+                        personDictionary.Add( "CreatedDateTime", p.CreatedDateTime );
+                    }
+
+                    if ( !personDictionary.ContainsKey( "ModifiedDateTime" ) )
+                    {
+                        personDictionary.Add( "ModifiedDateTime", p.ModifiedDateTime );
+                    }
                 }
-            }
 
             return personDictionary;
         }

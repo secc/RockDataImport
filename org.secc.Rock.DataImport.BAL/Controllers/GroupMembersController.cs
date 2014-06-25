@@ -12,6 +12,10 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
     {
         string BaseAPIPath = "/api/GroupMembers/";
 
+        public GroupMembersController() : base() { }
+
+        public GroupMembersController( RockService service ) : base( service ) { }
+
         public override void Add( GroupMember entity )
         {
             Service.PostData<GroupMember>( BaseAPIPath, entity );

@@ -52,6 +52,12 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             return ( Service.GetData<List<Group>>( BaseApiPath, expression ) ).FirstOrDefault();
         }
 
+        public Group GetByForeignIdGroupType( string foreignId, int groupTypeId )
+        {
+            string expression = string.Format( "ForeignId eq '{0}' AND GroupTypeId eq {1}", foreignId, groupTypeId );
+            return GetByFilter( expression ).FirstOrDefault();
+        }
+
         public override void Update( Group entity )
         {
             string apiPath = string.Format( BaseApiPath + "{0}", entity.Id );
