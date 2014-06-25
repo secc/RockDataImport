@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL.Controllers;
+using SystemGuid = Rock.SystemGuid;
 using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
@@ -36,6 +37,20 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Dictionary<string, object> personDictionary = ToDictionary( person );
 
             return personDictionary;
+        }
+
+        public int GetRecordTypeBusiness()
+        {
+            DefinedValueMap dvm = new DefinedValueMap( Service );
+            Guid businessGuid = new Guid( SystemGuid.DefinedValue.PERSON_RECORD_TYPE_BUSINESS );
+            return dvm.GetDefinedValueByGuid( businessGuid ).Id;
+        }
+
+        public int GetRecordTypePerson()
+        {
+            DefinedValueMap dvm = new DefinedValueMap( Service );
+            Guid personGuid = new Guid( SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON );
+            return dvm.GetDefinedValueByGuid( personGuid ).Id;
         }
 
         public int? Save(bool isSystem, int? recordTypeValueId = null, int? recordStatusValueId = 0, int? recordStatusReasonValueId = null, int? connectionStatusValueId = null, bool isDeceased = false, 

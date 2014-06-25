@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,6 +41,25 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             }
 
             throw new NotImplementedException();
+        }
+
+        internal DefinedValue GetDefinedValueByGuid( Guid guid )
+        {
+            ObjectCache cache = MemoryCache.Default;
+            CacheItemPolicy policy = new CacheItemPolicy();
+            policy.SlidingExpiration = new TimeSpan( 0, 5, 0 );
+
+            DefinedValue dv = cache[string.Format( "DefinedValue_{0}", guid )] as DefinedValue;
+
+            if ( dv == null )
+            {
+                DefinedValueController controller = new DefinedValueController( Service );
+                dv = controller.GetByGuid( guid );
+
+                cache.Set( string.Format( "DefinedValue_{0}", guid ), dv, policy );
+            }
+
+            return dv;
         }
     }
 }
