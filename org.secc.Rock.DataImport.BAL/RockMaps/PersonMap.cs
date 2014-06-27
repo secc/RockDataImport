@@ -39,6 +39,34 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return personDictionary;
         }
 
+        public int GetRecordStatusIdActive()
+        {
+            DefinedValueMap dvm = new DefinedValueMap( Service );
+            Guid recordStatusActiveGuid = new Guid( SystemGuid.DefinedValue.PERSON_RECORD_STATUS_ACTIVE );
+            return dvm.GetDefinedValueByGuid( recordStatusActiveGuid ).Id;
+        }
+
+        public int GetRecordStatusIdInactive()
+        {
+            DefinedValueMap dvm = new DefinedValueMap( Service );
+            Guid recordStatusInactiveGuid = new Guid( SystemGuid.DefinedValue.PERSON_RECORD_STATUS_INACTIVE );
+            return dvm.GetDefinedValueByGuid( recordStatusInactiveGuid ).Id;
+        }
+
+        public int GetRecordStatusIdPending()
+        {
+            DefinedValueMap dvm = new DefinedValueMap( Service );
+            Guid recordStatusPendingGuid = new Guid( SystemGuid.DefinedValue.PERSON_RECORD_STATUS_PENDING );
+            return dvm.GetDefinedValueByGuid( recordStatusPendingGuid ).Id;
+        }
+
+        public int GetRecordStatusReasonIdDeceased()
+        {
+            DefinedValueMap dvm = new DefinedValueMap( Service );
+            Guid reasonDeceasedGuid = new Guid( "05D35BC4-5816-4210-965F-1BF44F35A16A" );
+            return dvm.GetDefinedValueByGuid( reasonDeceasedGuid ).Id;
+        }
+
         public int GetRecordTypeBusiness()
         {
             DefinedValueMap dvm = new DefinedValueMap( Service );
@@ -52,6 +80,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Guid personGuid = new Guid( SystemGuid.DefinedValue.PERSON_RECORD_TYPE_PERSON );
             return dvm.GetDefinedValueByGuid( personGuid ).Id;
         }
+
 
         public int? Save(bool isSystem, int? recordTypeValueId = null, int? recordStatusValueId = 0, int? recordStatusReasonValueId = null, int? connectionStatusValueId = null, bool isDeceased = false, 
                 int? titleValueId = null, string firstName = null, string nickName = null, string middleName = null, string lastName = null, int? suffixValueId = null, int? photoId = null, int? birthDay = null,

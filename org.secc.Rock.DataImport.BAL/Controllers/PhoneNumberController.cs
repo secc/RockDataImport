@@ -8,13 +8,13 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.Controllers
 {
-    public class PhoneNumbersController : BaseController<PhoneNumber>
+    public class PhoneNumberController : BaseController<PhoneNumber>
     {
         string BaseAPIPath = "api/PhoneNumbers/";
 
-        private PhoneNumbersController() : base() { }
+        private PhoneNumberController() : base() { }
 
-        public PhoneNumbersController( RockService service ) : base( service ) { }
+        public PhoneNumberController( RockService service ) : base( service ) { }
 
         public override void Add( PhoneNumber entity )
         {

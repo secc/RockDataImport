@@ -43,12 +43,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return GetGroupTypeRoleByGuid( childRoleGuid ).Id;
         }
 
-        public int? SaveFamily(int campusId, string familyName, string foreignId = null, int? familyId = null)
+        public int? SaveFamily(int? campusId, string familyName, string foreignId = null, int? familyId = null)
         {
             Guid familyGroupTypeGuid = new Guid( SystemGuid.GroupType.GROUPTYPE_FAMILY );
             int familyGroupTypeId = GetGroupTypeByGuid( familyGroupTypeGuid ).Id;
 
-            return SaveGroup( familyGroupTypeId, familyName, foreignId: foreignId, groupId: familyId );
+            return SaveGroup( familyGroupTypeId, familyName, foreignId: foreignId, groupId: familyId, campusId: campusId );
 
         }
 

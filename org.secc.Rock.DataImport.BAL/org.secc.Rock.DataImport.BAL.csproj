@@ -75,7 +75,7 @@
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\PersonAliasControler.cs" />
     <Compile Include="Controllers\PersonController.cs" />
-    <Compile Include="Controllers\PhoneNumbersController.cs" />
+    <Compile Include="Controllers\PhoneNumberController.cs" />
     <Compile Include="Helper\DefinedValueMatch.cs" />
     <Compile Include="Integration\ExportMapContainer.cs" />
     <Compile Include="Integration\iExportMapComponent.cs" />
@@ -94,6 +94,7 @@
     <Compile Include="RockMaps\GroupMap.cs" />
     <Compile Include="RockMaps\LocationMap.cs" />
     <Compile Include="RockMaps\PersonMap.cs" />
+    <Compile Include="RockMaps\PhoneNumberMap.cs" />
     <Compile Include="RockService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

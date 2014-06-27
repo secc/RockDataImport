@@ -8,7 +8,10 @@ namespace org.secc.Rock.DataImport.BAL.Integration
 {
     public class ExportMapEventArgs : EventArgs
     {
+
+
         public string Identifier { get; set; }
+        public int? RockIdentifier { get; set; }
         public bool IsSuccess { get; set; }
     }
 }

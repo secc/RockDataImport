@@ -9,6 +9,7 @@ using org.secc.Rock.DataImport.BAL;
 using org.secc.Rock.DataImport.BAL.Attribute;
 using org.secc.Rock.DataImport.BAL.Helper;
 using org.secc.Rock.DataImport.BAL.Integration;
+using RockMaps = org.secc.Rock.DataImport.BAL.RockMaps;
 
 using org.secc.Rock.DataImport.Extensions.Arena.Model;
 
@@ -105,15 +106,96 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 OnExportAttemptCompleted( identifier, false );
             }
 
-            BAL.RockMaps.PersonMap rockPersonMap = new BAL.RockMaps.PersonMap( service );
+            RockMaps.PersonMap rockPersonMap = new BAL.RockMaps.PersonMap( service );
             Dictionary<string, object> rockPerson = rockPersonMap.GetByForeignId( identifier );
+            int? rockPersonId = null;
 
-            if ( rockPerson != null && !rockPerson.Equals( default( Dictionary<string, object> ) ) )
+            if ( rockPerson == null )
             {
-                OnExportAttemptCompleted( identifier, true );
+                int? rockFamilyId = null;
+                rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().family_id, service );
+
+                int recordTypeDV = arenaPerson.business ? rockPersonMap.GetRecordTypeBusiness() : rockPersonMap.GetRecordTypePerson();
+
+                int recordStatus;
+
+                switch ( arenaPerson.record_status )
+                {
+                    case 0:
+                        recordStatus = rockPersonMap.GetRecordStatusIdActive();
+                        break;
+                    case 1:
+                        recordStatus = rockPersonMap.GetRecordStatusIdInactive();
+                        break;
+                    case 2:
+                        recordStatus = rockPersonMap.GetRecordStatusIdPending();
+                        break;
+                    default:
+                        recordStatus = rockPersonMap.GetRecordStatusIdPending();
+                        break;
+                }
+
+                int? recordStatusReasonId = null;
+
+                if ( arenaPerson.inactive_reason_luid != null )
+                {
+                    recordStatusReasonId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.inactive_reason_luid.ToString() );
+                }
+
+                bool isDeceased = recordStatusReasonId == rockPersonMap.GetRecordStatusReasonIdDeceased();
+                int? connectionStatusValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.member_status.ToString() );
+                int? titleValueId = null;
+
+                if ( arenaPerson.title_luid != null )
+                {
+                    titleValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.title_luid.ToString() );
+                }
+
+                string firstName = arenaPerson.first_name;
+                string middleName = arenaPerson.middle_name;
+                string nickName = arenaPerson.nick_name;
+                string lastName = arenaPerson.last_name;
+
+                int? suffixValueId = null;
+                if(arenaPerson.suffix_luid != null)
+                {
+                    suffixValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.suffix_luid.ToString() );
+                }
+
+                int? birthDay = null;
+                int? birthMonth = null;
+                int? birthYear = null;
+                if ( arenaPerson.birth_date > new DateTime( 1900, 1, 1 ) )
+                {
+                    birthDay = arenaPerson.birth_date.Day;
+                    birthMonth = arenaPerson.birth_date.Month;
+                    birthYear = arenaPerson.birth_date.Year;
+                }
+
+                int? gender = null;
+                switch ( arenaPerson.gender )
+                {
+                    case 0:
+                        gender = 1;
+                        break;
+                    case 1:
+                        gender = 2;
+                        break;
+                    case 2:
+                        gender = 0;
+                        break;
+                    default:
+                        gender = 0;
+                        break;
+                }
+
+
+
             }
-           
-    
+            else
+            {
+                rockPersonId = (int?)rockPerson["Id"];
+            }
             
         }
 
@@ -178,10 +260,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess )
+        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null )
         {
             ExportMapEventArgs args = new ExportMapEventArgs();
             args.Identifier = identifier;
+            args.RockIdentifier = rockId;
             args.IsSuccess = isSuccess;
 
             EventHandler<ExportMapEventArgs> handler = ExportAttemptCompleted;
@@ -222,6 +305,64 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             using (Model.ArenaContext Context = Arena.Model.ArenaContext.BuildContext(ConnectionInfo))
             {
                 return Context.Person.Count();
+            }
+        }
+
+        private int? GetRockFamily( int arenaFamilyId, RockService service )
+        {
+            RockMaps.GroupMap groupMap = new RockMaps.GroupMap( service );
+            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( arenaFamilyId.ToString() );
+
+            if ( rockFamily != null )
+            {
+                return (int?)rockFamily["Id"];
+            }
+            else
+            {
+                Family arenaFamily = GetArenaFamily(arenaFamilyId);
+
+                if(arenaFamily == null)
+                {
+                    return null;
+                }
+
+                int? arenaCampusId = GetArenaFamilyCampusId( arenaFamilyId );
+                int? rockCampusId = (int?) (new RockMaps.CampusMap(service).GetByForeignId( arenaCampusId.ToString() )["Id"]);
+                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, arenaFamily.family_name, arenaFamilyId.ToString() );
+
+                return rockFamilyId;
+            }
+        }
+
+        private Family GetArenaFamily( int familyId )
+        {
+            using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )
+            {
+                return context.Family.FirstOrDefault( f => f.family_id == familyId );
+            }
+        }
+
+        private int? GetArenaFamilyCampusId( int arenaFamilyId )
+        {
+            //determine HoH
+            using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )
+            {
+                int adultRoleId = context.Lookup.FirstOrDefault( l => l.guid == new Guid( Lookup.FAMILY_MEMBER_ROLE_ADULT_GUID ) ).lookup_id;
+                var familyMembers = context.FamilyMember
+                                        .Include("Person")
+                                        .Where( fm => fm.family_id == arenaFamilyId );
+
+                FamilyMember hoh = familyMembers
+                            .Where( fm => fm.role_luid == adultRoleId )
+                            .OrderBy( fm => fm.Person.gender )
+                            .FirstOrDefault();
+
+                if ( hoh == null )
+                {
+                    hoh = familyMembers.OrderBy( fm => fm.Person.birth_date ).FirstOrDefault();
+                }
+
+                return hoh.Person.campus_id;
             }
         }
 
