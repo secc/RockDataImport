@@ -172,8 +172,13 @@ namespace org.secc.Rock.DataImport.BAL
         {
             var request = new RestRequest( apiPath, Method.POST );
             request.RequestFormat = DataFormat.Json;
-            string json = JsonConvert.SerializeObject( entity );
-            request.AddParameter( "text/json", json, ParameterType.RequestBody );
+
+            if ( entity != null )
+            {
+                string json = JsonConvert.SerializeObject( entity );
+                request.AddParameter( "text/json", json, ParameterType.RequestBody );
+            }
+                
             var response = Client.Execute( request );
 
             if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized  )
@@ -197,8 +202,12 @@ namespace org.secc.Rock.DataImport.BAL
         {
             var request = new RestRequest( apiPath, Method.PUT );
             request.RequestFormat = DataFormat.Json;
-            string json = JsonConvert.SerializeObject( entity );
-            request.AddParameter( "text/json", json, ParameterType.RequestBody );
+            if ( entity != null )
+            {
+                string json = JsonConvert.SerializeObject( entity );
+                request.AddParameter( "text/json", json, ParameterType.RequestBody );
+            }
+            
             var response = Client.Execute( request );
 
             if ( response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attemptCount == 0 )

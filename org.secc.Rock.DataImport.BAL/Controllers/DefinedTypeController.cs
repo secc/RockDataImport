@@ -50,7 +50,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override DefinedType GetByForeignId( string foreignId )
         {
-            string expression = string.Format( "ForeignId eq {0}", foreignId );
+            string expression = string.Format( "ForeignId eq '{0}'", foreignId );
             return ( Service.GetData<List<DefinedType>>( baseAPIPath ) ).FirstOrDefault();
         }
 

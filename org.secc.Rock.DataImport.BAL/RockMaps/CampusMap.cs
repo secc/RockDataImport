@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Caching;
 
 using org.secc.Rock.DataImport.BAL.Controllers;
 using Rock.Model;
@@ -19,6 +20,10 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         private CampusMap()
         { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CampusMap"/> class.
+        /// </summary>
+        /// <param name="service">The <see cref="RockService"/>.</param>
         public CampusMap(RockService service)
         {
             Service = service;
@@ -84,6 +89,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             c = controller.GetByGuid( c.Guid );
 
+            GetCampuses( true );
             return c.Id;
         }
 
@@ -95,10 +101,16 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         /// and the value represents the property value.</returns>
         public Dictionary<string, object> GetByForeignId( string foreignId )
         {
-            CampusController controller = new CampusController( Service );
-            Campus campus = controller.GetByForeignId( foreignId );
+            Dictionary<string, object> selectedCampus = null;
 
-            return ToDictionary( campus );
+            selectedCampus = GetCampuses().FirstOrDefault( c => c.Value["ForeignId"] != null && c.Value["ForeignId"].ToString() == foreignId ).Value;                                                  
+
+            if ( selectedCampus == null  )
+            {
+                selectedCampus = GetCampuses( true ).FirstOrDefault( c => c.Value["ForeignId"] != null && c.Value["ForeignId"].ToString() == foreignId ).Value;
+            }
+
+            return selectedCampus;
         }
 
         /// <summary>
@@ -109,32 +121,56 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         /// and the value represents the property value.</returns>
         public Dictionary<string, object> GetById( int id )
         {
-            CampusController controller = new CampusController( Service );
-            Campus campus = controller.GetById( id );
+            Dictionary<string, object> campus = GetCampuses().Where( c => c.Key == id ).Select( c => c.Value ).FirstOrDefault();
 
-            return ToDictionary( campus );
+            if( campus == null )
+            {
+                campus = GetCampuses( true ).Where( c => c.Key == id ).Select( c => c.Value ).FirstOrDefault();
+            }
+
+            return campus;
         }
 
 
         /// <summary>
-        /// Gets a dictionary that contains all the Campuses in Rock RMS.
+        /// Gets a dictionary that contains all the Campuses from RockRMS.  The dictionary will be cached in memory for up to 5 minutes.
         /// </summary>
-        /// <returns>A <see cref="System.Collections.Generic.Dictionary(int,object)"/> that contains all the campuses in Rock. The key value is the Rock instance Id of the Campus
-        /// and the value is a <see cref="System.Collections.Generic.Dictionary(String,Object)"/> containing the entity The key value represents a property name and the 
-        /// value represents the value of the entity.</returns>
-        public Dictionary<int, Dictionary<string, object>> GetCampuses()
+        /// <param name="resetCache">A <see cref="System.Boolean"/> that indicates if the Campus Cache should be reset. Defaults to false.</param>
+        /// <returns>
+        /// A <see cref="System.Collections.Generic.Dictionary(int,object)" /> that contains all the campuses in Rock. The key value is the Rock instance Id of the Campus
+        /// and the value is a <see cref="System.Collections.Generic.Dictionary(String,Object)" /> containing the entity The key value represents a property name and the
+        /// value represents the value of the entity.
+        /// </returns>
+        public Dictionary<int, Dictionary<string, object>> GetCampuses(bool resetCache = false)
         {
-            CampusController controller = new CampusController( Service );
-            List<Campus> campusList = controller.GetAll();
+            const string campusCacheKey = "CampusCache";
+            Dictionary<int, Dictionary<string, object>> campuses = null;
 
-            Dictionary<int, Dictionary<string, object>> campusDictionary = new Dictionary<int, Dictionary<string, object>>();
+            ObjectCache cache = MemoryCache.Default;
+            CacheItemPolicy policy = new CacheItemPolicy();
+            policy.AbsoluteExpiration = DateTimeOffset.Now.AddMinutes( 5 );
 
-            foreach ( var campus in campusList )
+            if ( !resetCache )
             {
-                campusDictionary.Add( campus.Id, ToDictionary( campus ) );
+                campuses = ( cache[campusCacheKey] as Dictionary<int, Dictionary<string, object>> );
             }
 
-            return campusDictionary;
+            if ( resetCache || campuses == null )
+            {
+                campuses = new Dictionary<int, Dictionary<string, object>>();
+
+                CampusController controller = new CampusController( Service );
+                List<Campus> campusList = controller.GetAll();
+
+                foreach ( var campus in campusList )
+                {
+                    campuses.Add( campus.Id, ToDictionary( campus ) );
+                }
+
+                cache.Set( campusCacheKey, campuses, policy );
+            }
+
+            return campuses;
         }
 
 

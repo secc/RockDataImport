@@ -51,7 +51,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override DefinedValue GetByForeignId( string foreignId )
         {
-            string expression = string.Format( "ForeignId eq {0}", foreignId );
+            string expression = string.Format( "ForeignId eq '{0}'", foreignId );
             return (Service.GetData<List<DefinedValue>>( baseApiPath, expression  )).FirstOrDefault();
         }
 
@@ -59,6 +59,12 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
         {
             string apiPath = string.Format( baseApiPath + "{0}", entity.Id );
             Service.PutData<DefinedValue>( apiPath, entity );
+        }
+
+        public  List<DefinedValue> GetByDefinedTypeId( int definedTypeId )
+        {
+            string expression = string.Format( string.Format( "DefinedTypeId eq {0}", definedTypeId ) );
+            return GetByFilter( expression );
         }
 
         public List<DefinedValue> GetByDefinedTypeGuid( Guid definedTypeGuid )
@@ -77,5 +83,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             }
 
         }
+
+
     }
 }

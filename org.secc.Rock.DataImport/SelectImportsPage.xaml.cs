@@ -63,14 +63,14 @@ namespace org.secc.Rock.DataImport
             if ( Integration.Component.ExportMaps.Where( m => m.Selected && m.Name == "Campus" ).Count() > 0 )
             {
                 var Component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus" ).First().Component;
-                
+
                 var identifiers = Component.GetSubsetIDs( 0, 1000 );
                 Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
 
                 foreach ( var campusIdentiifer in identifiers )
                 {
                     Component.ExportRecord( campusIdentiifer, App.RockService );
-                   
+
                 }
 
                 SetAlertMessage( string.Format( "{0} succeed, {1} failed", successCount, failureCount ) );

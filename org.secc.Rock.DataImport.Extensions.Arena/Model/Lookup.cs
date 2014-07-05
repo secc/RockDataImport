@@ -100,5 +100,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         public virtual ICollection<PersonPhone> PersonPhoneType { get; set; }
 
         public virtual ICollection<PersonPhone> PersonPhoneSMSProvider { get; set; }
+
+        public static string FAMILY_MEMBER_ROLE_ADULT_GUID = "E410E1A6-8715-4BFB-BF03-1CD18051F815";
+        public static string FAMILY_MEMBER_ROLE_CHILD_GUID = "9EF9E984-923C-4206-A2CF-17ADAF2E6659";
+
     }
 }

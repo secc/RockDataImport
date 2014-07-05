@@ -1,0 +1,121 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using org.secc.Rock.DataImport.BAL.Controllers;
+using Rock.Model;
+
+
+namespace org.secc.Rock.DataImport.BAL.RockMaps
+{
+    public class GroupLocationMap
+    {
+        RockService Service { get; set; }
+
+        private GroupLocationMap() { }
+
+        public GroupLocationMap( RockService service )
+        {
+            Service = service;
+        }
+
+        public int? SaveGroupLocation( int groupId, int locationId, int? groupLocationTypeValueId = null, int? groupMemberPersonId = null, 
+                bool isMailingLocation = false, bool isMappedLocation = false, string foreignId = null, int? groupLocationId = null )
+        {
+            GroupLocationController groupLocationController = new GroupLocationController( Service );
+            GroupLocation groupLocation = null;
+
+            if ( groupLocationId != null )
+            {
+                groupLocation = groupLocationController.GetById( (int)groupLocationId );
+
+                if ( groupLocation == null )
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                groupLocation = new GroupLocation();
+            }
+
+            groupLocation.GroupId = groupId;
+            groupLocation.LocationId = locationId;
+            groupLocation.GroupLocationTypeValueId = groupLocationTypeValueId;
+            groupLocation.IsMailingLocation = isMailingLocation;
+            groupLocation.IsMappedLocation = isMappedLocation;
+            groupLocation.GroupMemberPersonId = groupMemberPersonId;
+            groupLocation.ForeignId = foreignId;
+
+            int? personAliasId = Service.GetCurrentPersonAliasId();
+            if ( groupLocationId == null )
+            {
+                groupLocation.CreatedByPersonAliasId = personAliasId;
+                groupLocationController.Add( groupLocation );
+            }
+            else
+            {
+                groupLocation.ModifiedByPersonAliasId = personAliasId;
+                groupLocationController.Update( groupLocation );
+            }
+
+            groupLocation = groupLocationController.GetByGuid( groupLocation.Guid );
+
+            return groupLocation.Id;
+        }
+
+        public Dictionary<int, Dictionary<string, object>> GetGroupLocationByGroupIdLocationId( int groupID, int locationId )
+        {
+            GroupLocationController controller = new GroupLocationController( Service );
+
+            string expression = string.Format("GroupId eq {0} and LocationId eq {1}", groupID, locationId);
+
+            var groupLocations = controller.GetByFilter( expression );
+
+            Dictionary<int, Dictionary<string, object>> groupLocationsDictionary = new Dictionary<int, Dictionary<string, object>>();
+
+            foreach ( var gl in groupLocations )
+            {
+                groupLocationsDictionary.Add( gl.Id, ToDictionary( gl ) );
+            }
+
+            return groupLocationsDictionary;
+        }
+
+        private Dictionary<string, object> ToDictionary( GroupLocation gl )
+        {
+            Dictionary<string, object> groupLocationDictionary = null;
+
+            if ( gl != null )
+            {
+                groupLocationDictionary = gl.ToDictionary();
+
+                if ( !groupLocationDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
+                {
+                    groupLocationDictionary.Add( "CreatedByPersonAliasId", gl.CreatedByPersonAliasId );
+                }
+
+                if ( !groupLocationDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
+                {
+                    groupLocationDictionary.Add( "ModifiedByPersonAliasId", gl.ModifiedByPersonAliasId );
+                }
+
+                if ( !groupLocationDictionary.ContainsKey( "CreatedDateTime" ) )
+                {
+                    groupLocationDictionary.Add( "CreatedDateTime", gl.CreatedDateTime );
+                }
+
+                if ( !groupLocationDictionary.ContainsKey( "ModifiedDateTime" ) )
+                {
+                    groupLocationDictionary.Add( "ModifiedDateTime", gl.ModifiedDateTime );
+                }
+            }
+
+            return groupLocationDictionary;
+        }
+
+
+    }
+}

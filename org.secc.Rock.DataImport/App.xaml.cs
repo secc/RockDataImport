@@ -26,7 +26,7 @@ namespace org.secc.Rock.DataImport
 
         void App_DispatcherUnhandledException( object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e )
         {
-            ErrorMessageWindow errorMessageWindow = new ErrorMessageWindow( e.Exception.Message );
+            ErrorMessageWindow errorMessageWindow = new ErrorMessageWindow( e.Exception );
             errorMessageWindow.ShowDialog();
             e.Handled = true;
         }

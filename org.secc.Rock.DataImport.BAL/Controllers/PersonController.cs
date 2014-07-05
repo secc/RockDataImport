@@ -52,7 +52,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override Person GetByForeignId( string foreignId )
         {
-            string expression = string.Format( "ForeignId eq {0}", foreignId );
+            string expression = string.Format( "ForeignId eq '{0}'", foreignId );
             return (GetByFilter( expression )).FirstOrDefault();
         }
 
