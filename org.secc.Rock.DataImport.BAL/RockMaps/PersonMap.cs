@@ -64,7 +64,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         {
             DefinedValueMap dvm = new DefinedValueMap( Service );
             Guid reasonDeceasedGuid = new Guid( "05D35BC4-5816-4210-965F-1BF44F35A16A" );
-            return dvm.GetDefinedValueByGuid( reasonDeceasedGuid ).Id;
+            return dvm.GetDefinedValueByGuid( reasonDeceasedGuid ).Id;  
         }
 
         public int GetRecordTypeBusiness()
@@ -85,7 +85,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         public int? Save(bool isSystem, int? recordTypeValueId = null, int? recordStatusValueId = 0, int? recordStatusReasonValueId = null, int? connectionStatusValueId = null, bool isDeceased = false, 
                 int? titleValueId = null, string firstName = null, string nickName = null, string middleName = null, string lastName = null, int? suffixValueId = null, int? photoId = null, int? birthDay = null,
                 int? birthMonth = null, int? birthYear = null, int gender = 0, int? maritalStatusValueId = null, DateTime? anniversaryDate = null, DateTime? graduationDate = null, int? givingGroupId = null, 
-                string email= null, bool isEmailActive = false, string emailNote = null, string systemNote = null, int emailPreference = 2, string inactiveReasonNote = null, string foreignId = null, 
+                string email= null, bool isEmailActive = false, string emailNote = null, string systemNote = null, int? emailPreference = 2, string inactiveReasonNote = null, string foreignId = null, 
                 int? reviewReasonValueId = null, string reviewReasonNote = null, int? personId = null)
         {
             Person p;
@@ -149,8 +149,34 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             p = controller.GetByGuid( p.Guid );
 
             return p.Id;
+        }
+
+        public int? SaveNewPersonAlias( int personId)
+        {
+            PersonAliasController aliasController = new PersonAliasController( Service );
+            string expression = string.Format( "PersonId eq {0} and AliasPersonid eq {1}", personId, personId );
+            PersonAlias alias = aliasController.GetByFilter( expression ).FirstOrDefault();
+
+            PersonController personController = new PersonController( Service );
+            Person person = personController.GetById( personId );
 
 
+            if ( alias == null )
+            {
+
+                alias = new PersonAlias();
+                alias.PersonId = personId;
+                alias.AliasPersonId = personId;
+                alias.AliasPersonGuid = person.Guid;
+
+                aliasController.Add( alias );
+
+                return aliasController.GetByGuid( alias.Guid ).Id;
+            }
+            else
+            {
+                return alias.Id;
+            }
         }
             
 

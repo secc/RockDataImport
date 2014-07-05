@@ -91,6 +91,7 @@
     <Compile Include="RockMaps\CampusMap.cs" />
     <Compile Include="RockMaps\DefinedTypeMap.cs" />
     <Compile Include="RockMaps\DefinedValueMap.cs" />
+    <Compile Include="RockMaps\GroupLocationMap.cs" />
     <Compile Include="RockMaps\GroupMap.cs" />
     <Compile Include="RockMaps\LocationMap.cs" />
     <Compile Include="RockMaps\PersonMap.cs" />

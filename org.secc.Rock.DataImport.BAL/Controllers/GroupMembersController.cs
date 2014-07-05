@@ -66,5 +66,12 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             string expression = string.Format( "GroupId eq {0}", groupId );
             return GetByFilter( expression );
         }
+
+        public List<GroupMember> GetByGroupIdPersonId( int groupId, int personId )
+        {
+            string expression = string.Format( "GroupId eq {0} and PersonId eq {1}", groupId, personId );
+
+            return GetByFilter( expression );
+        }
     }
 }

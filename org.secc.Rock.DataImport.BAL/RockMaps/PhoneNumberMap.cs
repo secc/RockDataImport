@@ -58,6 +58,15 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return SavePhone( phone );
         }
 
+        public Dictionary<string, object> GetPhoneByForeignId( string foreignId )
+        {
+            PhoneNumberController controller = new PhoneNumberController( Service );
+
+            var phoneNumber = controller.GetByForeignId( foreignId );
+
+            return ToDictionary( phoneNumber );
+        }
+
         private PhoneNumber GetPhoneById( int id )
         {
             PhoneNumberController controller = new PhoneNumberController( Service );
@@ -81,6 +90,38 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             }
 
             return controller.GetByGuid( p.Guid ).Id;
+        }
+
+        private Dictionary<string, object> ToDictionary( PhoneNumber p )
+        {
+            Dictionary<string, object> phoneDictionary = null;
+
+            if ( p != null )
+            {
+                phoneDictionary = p.ToDictionary();
+
+                if ( !phoneDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
+                {
+                    phoneDictionary.Add( "CreatedByPersonAliasId", p.CreatedByPersonAliasId );
+                }
+
+                if ( !phoneDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
+                {
+                    phoneDictionary.Add( "ModifiedByPersonAliasId", p.ModifiedByPersonAliasId );
+                }
+
+                if ( !phoneDictionary.ContainsKey( "CreatedDateTime" ) )
+                {
+                    phoneDictionary.Add( "CreatedDateTime", p.CreatedDateTime );
+                }
+
+                if ( !phoneDictionary.ContainsKey( "ModifiedDateTime" ) )
+                {
+                    phoneDictionary.Add( "ModifiedDateTime", p.ModifiedDateTime );
+                }
+            }
+
+            return phoneDictionary;
         }
 
     }

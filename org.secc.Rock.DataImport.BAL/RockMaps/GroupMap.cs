@@ -43,16 +43,40 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return GetGroupTypeRoleByGuid( childRoleGuid ).Id;
         }
 
-        public int? SaveFamily(int? campusId, string familyName, string foreignId = null, int? familyId = null)
+        public Dictionary<string, object> GetGroupById( int groupId )
+        {
+            GroupController controller = new GroupController( Service );
+            var group = controller.GetById( groupId );
+
+            return ToDictionary( group );
+        }
+
+        public Dictionary<int, Dictionary<string, object>> GetGroupMemberByGroupIdPersonId( int groupId, int personId )
+        {
+            GroupMembersController groupMemberController = new GroupMembersController( Service );
+            var groupMembers = groupMemberController.GetByGroupIdPersonId( groupId, personId );
+
+            Dictionary<int, Dictionary<string, object>> groupMembersDictionary = new Dictionary<int, Dictionary<string, object>>();
+
+            foreach ( var gm in groupMembers )
+            {
+                groupMembersDictionary.Add( gm.Id, ToGroupMemberDictionary( gm ) );
+            }
+
+            return groupMembersDictionary;
+
+        }
+
+        public int? SaveFamily(int? campusId, string familyName, string description = null,  string foreignId = null, int? familyId = null)
         {
             Guid familyGroupTypeGuid = new Guid( SystemGuid.GroupType.GROUPTYPE_FAMILY );
             int familyGroupTypeId = GetGroupTypeByGuid( familyGroupTypeGuid ).Id;
 
-            return SaveGroup( familyGroupTypeId, familyName, foreignId: foreignId, groupId: familyId, campusId: campusId );
+            return SaveGroup( familyGroupTypeId, familyName, foreignId: foreignId, groupId: familyId, campusId: campusId, description: description );
 
         }
 
-        private int? SaveImpliedRelationshipsGroup( int ownerPersonId, int? groupId = null )
+        public int? SaveImpliedRelationshipsGroup( int ownerPersonId, int? groupId = null )
         {
             Guid impliedRelationshipTypeGuid = new Guid( SystemGuid.GroupType.GROUPTYPE_IMPLIED_RELATIONSHIPS );
             int impliedRelationshipTypeId = GetGroupTypeByGuid( impliedRelationshipTypeGuid ).Id;
@@ -256,6 +280,38 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             }
 
             return groupDictionary;
+        }
+
+        private Dictionary<string, object> ToGroupMemberDictionary( GroupMember gm )
+        {
+            Dictionary<string, object> groupMemberDictionary = null;
+
+            if ( gm != null )
+            {
+                groupMemberDictionary = gm.ToDictionary();
+
+                if ( !groupMemberDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
+                {
+                    groupMemberDictionary.Add( "CreatedByPersonAliasId", gm.CreatedByPersonAliasId );
+                }
+
+                if ( !groupMemberDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
+                {
+                    groupMemberDictionary.Add( "ModifiedByPersonAliasId", gm.ModifiedByPersonAliasId );
+                }
+
+                if ( !groupMemberDictionary.ContainsKey( "CreatedDateTime" ) )
+                {
+                    groupMemberDictionary.Add( "CreatedDateTime", gm.CreatedDateTime );
+                }
+
+                if ( !groupMemberDictionary.ContainsKey( "ModifiedDateTime" ) )
+                {
+                    groupMemberDictionary.Add( "ModifiedDateTime", gm.ModifiedDateTime );
+                }
+            }
+
+            return groupMemberDictionary;
         }
     }
 }

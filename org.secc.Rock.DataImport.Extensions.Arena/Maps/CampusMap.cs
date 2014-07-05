@@ -106,11 +106,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                     locationId = SaveCampusLocation( arenaCampus.name, arenaCampus.Address, service );
                 }
                 int? leaderPersonId = null;
-                //if ( arenaCampus.leader_person_id != null )
-                //{
-                //    var leaderTask = SaveCampusLeaderPerson( arenaCampus.leader_person_id.ToString(), service );
-                //    leaderPerson = leaderTask.Result;
-                //}
 
                 rockCampusId = rockCampusMap.SaveCampus( isSystem: false, name: arenaCampus.name, foreignId: arenaCampus.campus_id.ToString(), locationId: locationId, leaderPersonAliasId: leaderPersonId );
                 if ( rockCampusId == null )
