@@ -57,6 +57,7 @@
     <Compile Include="ConnectionSettings.xaml.cs">
       <DependentUpon>ConnectionSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Maps\CampusLeaderMap.cs" />
     <Compile Include="Maps\CampusMap.cs" />
     <Compile Include="Maps\PersonMap.cs" />
     <Compile Include="Model\Address.cs" />

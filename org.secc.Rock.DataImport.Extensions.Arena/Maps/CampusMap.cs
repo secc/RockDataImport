@@ -16,8 +16,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [ExportMetadata("Name", "Campus")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
     [ExportMetadata("Description", "Campus locations from ArenaChMS.")]
-    [Dependency("Person", typeof(PersonMap), 10)]
-    [Dependency("person2", typeof(PersonMap), 0)]
     public class CampusMap : iExportMapComponent
     {
         private int? mRecordCount;
