@@ -16,8 +16,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [ExportMetadata("Name", "Campus")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
     [ExportMetadata("Description", "Campus locations from ArenaChMS.")]
-    [Dependency("Person", typeof(PersonMap), 10)]
-    [Dependency("person2", typeof(PersonMap), 0)]
     public class CampusMap : iExportMapComponent
     {
         private int? mRecordCount;
@@ -134,9 +132,18 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                         
         }
 
-        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null )
+        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null, Type mapType = null )
         {
             ExportMapEventArgs args = new ExportMapEventArgs();
+            if ( mapType == null )
+            {
+                args.MapType = this.GetType();
+            }
+            else
+            {
+                args.MapType = mapType;
+            }
+
             args.Identifier = identifier;
             args.RockIdentifier = rockId;
             args.IsSuccess = isSuccess;

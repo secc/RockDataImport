@@ -94,10 +94,16 @@
                                                 HeaderStyle="{StaticResource gridHeaderStyle}"
                                                 CellStyle="{StaticResource gridCellStyle}"
                                                 Header="Description"
-                                                Width="*"
+                                                Width="2*"
                                                 CanUserResize="False"
                                                 CanUserSort="False"
-                                                IsReadOnly="True"/>
+                                                IsReadOnly="True">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding Component.RecordCount, StringFormat={}{0:N0}}"
                                             Width="60"
                                             CellStyle="{StaticResource gridCellStyleNumber}"
