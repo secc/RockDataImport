@@ -41,7 +41,7 @@ namespace org.secc.Rock.DataImport
         {
             if ( Integration != null )
             {
-                grdEntities.DataContext = Integration.Component.ExportMaps;
+                grdEntities.DataContext = Integration.Component.ExportMaps.OrderBy( em => em.Name );
             }
         }
 
