@@ -202,9 +202,19 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             return personMap.GetByForeignId( arenaLeaderPersonId.ToString() );
         }
 
-        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null )
+        public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null, Type mapType = null )
         {
             ExportMapEventArgs args = new ExportMapEventArgs();
+
+            if ( mapType == null )
+            {
+                args.MapType = this.GetType();
+            }
+            else
+            {
+                args.MapType = mapType; 
+            }
+
             args.Identifier = identifier;
             args.RockIdentifier = rockId;
             args.IsSuccess = isSuccess;
