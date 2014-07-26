@@ -22,7 +22,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         }
 
 
-        public int? SaveAddress( string street1, string city, string state, string country, string zip, string street2, double? latitude = null, double? longitude = null, string foreignKey = null, 
+        public int? SaveAddress( string street1, string city, string state, string country, string postalCode, string street2, double? latitude = null, double? longitude = null, string foreignKey = null, 
             string name = null, bool isActive = false, int? parentLocationId = null, int? locationId = null, int? locationTypeValueId = null )
         {
             Location location = null;
@@ -37,7 +37,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             }
             else
             {
-                location = GetLocationByAddress( street1, street2, city, state, zip );
+                location = GetLocationByAddress( street1, street2, city, state, postalCode );
 
                 if ( location != null )
                 {
@@ -60,7 +60,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             location.Street2 = street2;
             location.City = city;
             location.State = state;
-            location.Zip = zip;
+            location.PostalCode = postalCode;
             location.ForeignId = foreignKey;
 
             return SaveLocation( location );
@@ -84,7 +84,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         }
 
 
-        private Location GetLocationByAddress(string street1, string street2, string city, string state, string zip)
+        private Location GetLocationByAddress(string street1, string street2, string city, string state, string postalCode)
         {
             StringBuilder filterBuilder = new StringBuilder();
 
@@ -102,7 +102,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             filterBuilder.AppendFormat( " and City eq '{0}'", city );
             filterBuilder.AppendFormat( " and State eq '{0}'", state );
-            filterBuilder.AppendFormat( " and Zip eq '{0}'", zip );
+            filterBuilder.AppendFormat( " and PostalCode eq '{0}'", postalCode );
 
             LocationController controller = new LocationController( Service );
             return controller.GetByFilter( filterBuilder.ToString() ).FirstOrDefault();
