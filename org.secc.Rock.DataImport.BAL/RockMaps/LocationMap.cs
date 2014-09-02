@@ -60,6 +60,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             location.Street2 = street2;
             location.City = city;
             location.State = state;
+            location.Country = country;
             location.PostalCode = postalCode;
             location.ForeignId = foreignKey;
 
