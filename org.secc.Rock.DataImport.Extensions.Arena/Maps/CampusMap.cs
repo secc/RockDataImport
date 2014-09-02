@@ -19,7 +19,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     public class CampusMap : iExportMapComponent
     {
         private int? mRecordCount;
-        private int? mDefinedTypeCount;
 
         private Dictionary<string,string> ConnectionInfo{get;set;}
 
@@ -33,19 +32,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
 
                 return mRecordCount;
-            }
-        }
-
-        public int? DefinedTypeCount
-        {
-            get
-            {
-                if(mDefinedTypeCount == null)
-                {
-                    mDefinedTypeCount = GetDefinedTypeCount();
-                }
-
-                return mDefinedTypeCount;
             }
         }
 

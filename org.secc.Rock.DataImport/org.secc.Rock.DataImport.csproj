@@ -58,6 +58,9 @@
     <Compile Include="ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefinedTypeMappingPage.xaml.cs">
+      <DependentUpon>DefinedTypeMappingPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RockLogin.xaml.cs">
       <DependentUpon>RockLogin.xaml</DependentUpon>
     </Compile>
@@ -66,6 +69,10 @@
     </Compile>
     <Compile Include="Setting.cs" />
     <Page Include="ConfigurationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefinedTypeMappingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

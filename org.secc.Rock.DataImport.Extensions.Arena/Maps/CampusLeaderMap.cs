@@ -24,7 +24,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     public class CampusLeaderMap : iExportMapComponent
     {
         private int? mRecordCount;
-        private int? mDefinedTypeCount;
 
         private Dictionary<string, string> ConnectionInfo { get; set; }
         public int? RecordCount
@@ -40,10 +39,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public int? DefinedTypeCount
-        {
-            get { return mDefinedTypeCount; }
-        }
 
         private CampusLeaderMap() { }
 
@@ -167,6 +162,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
+        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
+        {
+            return new Dictionary<string, Dictionary<string, object>>();
+        }
         private int? GetRecordCount()
         {
             using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )
