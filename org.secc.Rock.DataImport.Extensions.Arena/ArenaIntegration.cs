@@ -34,6 +34,20 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
             }
         }
 
+        /// <summary>
+        /// Returns the Identifier constant string so that it can be used in the base application
+        /// </summary>
+        /// <value>
+        /// A <see cref="System.String"/> representing the integration's identifier key.
+        /// </value>
+        public string Identifier
+        {
+            get
+            {
+                return IDENTIFIER;
+            }
+        }
+
         public Dictionary<string, string> ConnectionInfo { get; set; }
 
         public  string PluginFolder { get; set; }
@@ -89,7 +103,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
         private List<ExportMap> LoadExportMaps()
         {
             ExportMapContainer container = new ExportMapContainer(ConnectionInfo, PluginFolder );
-            return container.GetExportMaps( IDENTIFIER );
+            return container.GetExportMaps( Identifier );
         }
         #endregion
 
