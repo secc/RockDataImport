@@ -152,6 +152,18 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
+        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
+        {
+            return System.Attribute.GetCustomAttributes( this.GetType() )
+                .Where( a => a.GetType() == attributeType )
+                .Select( a => new
+                {
+                    Name = a.GetType().GetProperties().Where( p => p.Name == "Name" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString(),
+                    Attribute = a.GetType().GetProperties().ToDictionary( p => p.Name, p1 => p1.GetValue( a ) )
+                } ).ToDictionary( a => a.Name, a => a.Attribute );
+
+        }
+
         public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
         private Campus GetArenaCampus( int campusId )
@@ -162,10 +174,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
-        {
-            return new Dictionary<string, Dictionary<string, object>>();
-        }
         private int? GetRecordCount()
         {
             using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )

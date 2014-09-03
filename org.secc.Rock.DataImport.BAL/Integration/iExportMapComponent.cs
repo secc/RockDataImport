@@ -12,7 +12,7 @@ namespace org.secc.Rock.DataImport.BAL.Integration
         List<string> GetSubsetIDs( int startingRecord, int size );
         //List<string> GetDependencies();
         void ExportRecord( string identifier, RockService service );
-
+        Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType );
         event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
     }
 }

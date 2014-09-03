@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using org.secc.Rock.DataImport.BAL.Helper;
+
 namespace org.secc.Rock.DataImport.BAL.Integration
 {
 
@@ -13,6 +15,7 @@ namespace org.secc.Rock.DataImport.BAL.Integration
         string PluginFolder { get; set; }
         Dictionary<string, string> ConnectionInfo { get; set; }
 
+        DefinedTypeSummary GetDefinedTypeSummary( string identifier );
         bool TestConnection(Dictionary<string,string> connectionSettings, out string errorMessage);
         IntegrationConnectionControl GetConnectionControl();
     }

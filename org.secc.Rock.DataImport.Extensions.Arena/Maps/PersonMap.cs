@@ -489,12 +489,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private int GetDefinedTypeCount()
-        {
-            return System.Attribute.GetCustomAttributes( this.GetType() )
-                    .Where( a => a.GetType() == typeof( DefinedTypeAttribute ) ).Count();
-        }
-
         private int? GetRecordCount()
         {
             using (Model.ArenaContext Context = Arena.Model.ArenaContext.BuildContext(ConnectionInfo))
