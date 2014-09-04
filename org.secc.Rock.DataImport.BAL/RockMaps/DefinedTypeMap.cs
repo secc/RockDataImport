@@ -21,6 +21,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         }
 
 
+
         public DefinedTypeSummary GetDefinedTypeSummary( Guid definedTypeGuid )
         {
             DefinedTypeController definedTypeController = new DefinedTypeController( Service );
@@ -31,12 +32,30 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             {
                 return null;
             }
-            DefinedValueController definedValueController = new DefinedValueController(Service);
+            return LoadDefinedTypeSummary( definedType );
 
-            definedType.DefinedValues = definedValueController.GetByDefinedTypeId( definedType.Id );
+        }
 
-            return new DefinedTypeSummary( definedType );
+        public DefinedTypeSummary GetDefinedTypeSummaryByForeignId( string foreignId )
+        {
+            DefinedTypeController controller = new DefinedTypeController(Service);
+            DefinedType definedType = controller.GetByForeignId( foreignId );
 
+            if ( definedType == null )
+            {
+                return null;
+            }
+
+            return LoadDefinedTypeSummary( definedType );
+        }
+
+        public DefinedTypeSummary LoadDefinedTypeSummary( DefinedType dt )
+        {
+            DefinedValueController definedValueController = new DefinedValueController( Service );
+
+            dt.DefinedValues = definedValueController.GetByDefinedTypeId( dt.Id );
+
+            return new DefinedTypeSummary( dt );
         }
     }
 }
