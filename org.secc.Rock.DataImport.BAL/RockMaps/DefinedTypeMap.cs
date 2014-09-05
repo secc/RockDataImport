@@ -20,7 +20,13 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
+        public DefinedTypeSummary GetDefinedTypeSummary( int id )
+        {
+            DefinedTypeController controller = new DefinedTypeController( Service );
+            DefinedType definedType = controller.GetById( id );
 
+            return LoadDefinedTypeSummary( definedType );
+        }
 
         public DefinedTypeSummary GetDefinedTypeSummary( Guid definedTypeGuid )
         {
@@ -56,6 +62,51 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             dt.DefinedValues = definedValueController.GetByDefinedTypeId( dt.Id );
 
             return new DefinedTypeSummary( dt );
+        }
+
+        public int? Save(string category, string name, string description = null, bool isSystem = false, int? fieldTypeId = 1, int order = 0, string foreignId = null, string helpText = null, int definedTypeId = 0 )
+        {
+            DefinedTypeController controller = new DefinedTypeController( Service );
+            DefinedType definedType = null;
+
+            if(definedTypeId > 0)
+            {
+                definedType = controller.GetById( definedTypeId );
+
+                if(definedType == null || definedType == default(DefinedType))
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                definedType = new DefinedType(); 
+            }
+
+            definedType.IsSystem = isSystem;
+            definedType.FieldTypeId = fieldTypeId;
+            definedType.Order = order;
+            definedType.Category = category;
+            definedType.Name = name;
+            definedType.Description = description;
+            definedType.ForeignId = foreignId;
+            definedType.HelpText = helpText;
+
+            if ( definedTypeId > 0 )
+            {
+                definedType.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                controller.Update( definedType );
+            }
+            else
+            {
+                definedType.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                controller.Add( definedType );
+            }
+
+
+            definedType = controller.GetByGuid( definedType.Guid );
+
+            return definedType.Id;
         }
     }
 }

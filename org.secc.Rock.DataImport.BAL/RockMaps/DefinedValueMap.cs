@@ -21,14 +21,14 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
-        public int? Save( int definedTypeId, bool isSystem, string name, int order, string description = null, string foreignId = null, int? id = null )
+        public int? Save( int definedTypeId, string value, string description = null, bool isSystem = false, int order = 0, string foreignId = null, int definedValueId = 0 )
         {
-            DefinedValue dv;
-            DefinedValueController Controller = new DefinedValueController( Service );
+            DefinedValueController controller = new DefinedValueController( Service );
+            DefinedValue dv = null;
 
-            if ( id == null )
+            if ( definedValueId > 0 )
             {
-                dv = Controller.GetById( (int)id );
+                dv = controller.GetById( definedValueId );
 
                 if ( dv == null )
                 {
@@ -40,7 +40,27 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
                 dv = new DefinedValue();
             }
 
-            throw new NotImplementedException();
+            dv.IsSystem = isSystem;
+            dv.DefinedTypeId = definedTypeId;
+            dv.Order = order;
+            dv.Value = value;
+            dv.Description = description;
+            dv.ForeignId = foreignId;
+
+            if ( definedValueId == 0 )
+            {
+                dv.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                controller.Add( dv );
+            }
+            else
+            {
+                dv.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                controller.Update( dv );
+            }
+
+            return controller.GetByGuid( dv.Guid ).Id;
+
+
         }
 
         internal DefinedValue GetDefinedValueByGuid( Guid guid )

@@ -11,8 +11,11 @@ namespace org.secc.Rock.DataImport.BAL.Helper
     public class DefinedTypeSummary
     {
         private int mOrder = 0;
+        private int? mFieldTypeId = 1;
         private bool mIsSystem = false;
-        
+        private string mHelpText = null;
+
+
         public string Id { get; set; }
         public string Category { get; set; }
         public string Name { get; set; }
@@ -42,7 +45,30 @@ namespace org.secc.Rock.DataImport.BAL.Helper
             {
                 mIsSystem = value;
             }
+        }
 
+        public int? FieldTypeId
+        {
+            get
+            {
+                return mFieldTypeId;
+            }
+            set
+            {
+                mFieldTypeId = value;
+            }
+        }
+
+        public string HelpText
+        {
+            get
+            {
+                return mHelpText;
+            }
+            set
+            {
+                mHelpText = value;
+            }
         }
 
         public List<DefinedValueSummary> ValueSummaries { get; set; }
@@ -60,6 +86,9 @@ namespace org.secc.Rock.DataImport.BAL.Helper
                 UniqueIdentifier = dt.Guid;
                 ForeignId = dt.ForeignId;
                 IsSystem = dt.IsSystem;
+                FieldTypeId = dt.FieldTypeId;
+                HelpText = dt.HelpText;
+
 
                 if(dt.DefinedValues != null && dt.DefinedValues.Count > 0)
                 {
