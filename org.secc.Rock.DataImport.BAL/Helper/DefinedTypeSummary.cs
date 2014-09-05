@@ -10,13 +10,40 @@ namespace org.secc.Rock.DataImport.BAL.Helper
 {
     public class DefinedTypeSummary
     {
+        private int mOrder = 0;
+        private bool mIsSystem = false;
+        
         public string Id { get; set; }
         public string Category { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ForeignId { get; set; }
         public Guid UniqueIdentifier { get; set; }
-        public bool IsSystem { get; set; }
+
+        public int Order
+        {
+            get
+            {
+                return mOrder;
+            }
+            set
+            {
+                mOrder = value;
+            }
+        }
+
+        public bool IsSystem
+        {
+            get
+            {
+                return mIsSystem;
+            }
+            set
+            {
+                mIsSystem = value;
+            }
+
+        }
 
         public List<DefinedValueSummary> ValueSummaries { get; set; }
 
