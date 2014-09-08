@@ -60,21 +60,27 @@ namespace org.secc.Rock.DataImport
 
         private void btnNext_Click( object sender, RoutedEventArgs e )
         {
-            if ( Integration.Component.ExportMaps.Where( m => m.Selected && m.Name == "Campus" ).Count() > 0 )
+            //if ( Integration.Component.ExportMaps.Where( m => m.Selected && m.Name == "Campus" ).Count() > 0 )
+            //{
+            //    var Component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus" ).First().Component;
+
+            //    var identifiers = Component.GetSubsetIDs( 0, 1000 );
+            //    Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
+
+            //    foreach ( var campusIdentiifer in identifiers )
+            //    {
+            //        Component.ExportRecord( campusIdentiifer, App.RockService );
+
+            //    }
+
+            //    SetAlertMessage( string.Format( "{0} succeed, {1} failed", successCount, failureCount ) );
+            //}
+
+            if ( Integration.Component.ExportMaps.Where( m => m.Selected ).Count() > 0 )
             {
-                var Component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus" ).First().Component;
-
-                var identifiers = Component.GetSubsetIDs( 0, 1000 );
-                Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
-
-                foreach ( var campusIdentiifer in identifiers )
-                {
-                    Component.ExportRecord( campusIdentiifer, App.RockService );
-
-                }
-
-                SetAlertMessage( string.Format( "{0} succeed, {1} failed", successCount, failureCount ) );
+                NavigationService.Navigate( new DefinedTypeMappingPage( Integration ) );
             }
+
         }
 
         void Component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )
@@ -94,6 +100,17 @@ namespace org.secc.Rock.DataImport
         {
             lblAlert.Content = message;
             lblAlert.Visibility = String.IsNullOrWhiteSpace( message ) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private void SetNextButtonStatus()
+        {
+            btnNext.IsEnabled = Integration.Component.ExportMaps.Where( em => em.Selected ).Count() > 0;
+        }
+
+
+        private void chkSelect_CheckChanged( object sender, RoutedEventArgs e )
+        {
+            SetNextButtonStatus();
         }
 
     }

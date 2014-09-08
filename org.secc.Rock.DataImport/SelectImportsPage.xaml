@@ -78,7 +78,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox Name="chkSelect"
-                                              IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="chkSelect_CheckChanged" Unchecked="chkSelect_CheckChanged"  />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -121,7 +121,7 @@
             <Button x:Name="btnBack"
                     Grid.Row="2"
                     HorizontalAlignment="Left"
-                    Style="{StaticResource buttonStyle}"
+                    Style="{StaticResource buttonStyleAction}"
                     Margin="8,8,8,8"
                     Click="btnBack_Click">
                 <StackPanel Orientation="Horizontal">
@@ -135,12 +135,14 @@
                 Grid.Row="2"
                 HorizontalAlignment="Right"
                 Style="{StaticResource buttonStylePrimary}"
+                IsEnabled="False"
                 Margin="8,8,8,8"
                     Click="btnNext_Click">
                 <StackPanel Orientation="Horizontal">
                     <Label Style="{StaticResource labelStyleButtonTextPrimary}"
-                       Content="Next" />
+                       Content="Next " />
                     <Label Style="{StaticResource labelStyleIconPrimary}"
+                       Padding="3,0,0,0"
                        Content="&#xf0da;" />
                 </StackPanel>
             </Button>
