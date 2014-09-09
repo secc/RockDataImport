@@ -49,12 +49,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( definedValueId == 0 )
             {
-                dv.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                dv.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( dv );
             }
             else
             {
-                dv.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                dv.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( dv );
             }
 

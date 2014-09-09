@@ -75,15 +75,14 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             c.ForeignId = foreignId;
             c.IsActive = true;
 
-            int? personAliasId = Service.GetCurrentPersonAliasId();
             if ( c.Id > 0 )
             {
-                c.ModifiedByPersonAliasId = personAliasId;
+                c.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update(c);
             }
             else
             {
-                c.CreatedByPersonAliasId = personAliasId;
+                c.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( c );
             }
 

@@ -149,12 +149,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( groupId == null )
             {
-                group.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                group.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( group );
             }
             else
             {
-                group.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                group.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( group );
             }
 
@@ -192,12 +192,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( groupMemberId == null )
             {
-                groupMember.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                groupMember.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( groupMember );
             }
             else
             {
-                groupMember.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                groupMember.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( groupMember );
             }
 

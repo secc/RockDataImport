@@ -137,12 +137,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( p.Id == 0 )
             {
-                p.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                p.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( p );
             }
             else
             {
-                p.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                p.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( p );
             }
 

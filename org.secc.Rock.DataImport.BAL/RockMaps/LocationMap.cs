@@ -122,12 +122,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             LocationController controller = new LocationController( Service );
             if ( l.Id == 0 )
             {
-                l.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                l.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( l );
             }
             else
             {
-                l.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                l.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( l );
             }
 

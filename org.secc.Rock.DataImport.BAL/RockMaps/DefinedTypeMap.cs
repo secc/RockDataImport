@@ -94,12 +94,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( definedTypeId > 0 )
             {
-                definedType.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                definedType.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( definedType );
             }
             else
             {
-                definedType.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                definedType.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( definedType );
             }
 

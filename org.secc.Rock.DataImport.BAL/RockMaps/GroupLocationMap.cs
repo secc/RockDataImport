@@ -52,12 +52,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             int? personAliasId = Service.GetCurrentPersonAliasId();
             if ( groupLocationId == null )
             {
-                groupLocation.CreatedByPersonAliasId = personAliasId;
+                groupLocation.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 groupLocationController.Add( groupLocation );
             }
             else
             {
-                groupLocation.ModifiedByPersonAliasId = personAliasId;
+                groupLocation.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 groupLocationController.Update( groupLocation );
             }
 
