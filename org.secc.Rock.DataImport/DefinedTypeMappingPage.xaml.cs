@@ -27,6 +27,7 @@ namespace org.secc.Rock.DataImport
     {
         ExportIntegrations Integration { get; set; }
         List<MappedDefinedType> MappedDefinedTypes = null;
+        bool isDirty = false;
 
 
         private DefinedTypeMappingPage()
@@ -44,7 +45,12 @@ namespace org.secc.Rock.DataImport
         #region Page Events
         private void Page_Loaded( object sender, RoutedEventArgs e )
         {
+            SetStatusMessage( "Loading and mapping defined types... This could take a couple moments." );
             LoadDefinedTypes();
+            SetStatusMessage( String.Empty );
+            BindDefinedTypeGrid();
+            SetNextButtonStatus();
+
         }
 
         private void btnBack_Click( object sender, RoutedEventArgs e )
@@ -60,9 +66,27 @@ namespace org.secc.Rock.DataImport
 
         }
 
+        private void grdDataMaps_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+
+        }
+
         #endregion
 
         #region Private 
+
+        private void BindDefinedTypeGrid()
+        {
+            if ( MappedDefinedTypes.Count == 0 )
+            {
+                SetStatusMessage( "No Defined Types were found to map." );
+                return;
+            }
+
+            grdDataMaps.ItemsSource = MappedDefinedTypes.OrderBy( mdt => mdt.Name );
+
+
+        }
 
         private void CreateRockDefinedType(MappedDefinedType mappedDT)
         {
@@ -153,69 +177,6 @@ namespace org.secc.Rock.DataImport
             return Integration.Component.GetDefinedTypeSummary( sourceId );
         }
 
-        private void SaveRockDefinedType(DefinedTypeSummary dts)
-        {
-            try
-            {
-                DefinedTypeMap dtMap = new DefinedTypeMap( App.RockService );
-                int? returnedDTId = dtMap.Save(
-                        category: dts.Category,
-                        name: dts.Name,
-                        description: dts.Description,
-                        isSystem: dts.IsSystem,
-                        order: dts.Order,
-                        foreignId: dts.ForeignId,
-                        definedTypeId: int.Parse( dts.Id ),
-                        helpText: dts.HelpText,
-                        fieldTypeId: dts.FieldTypeId
-                        );
-
-                if ( returnedDTId == null )
-                {
-                    throw new Exception( "Unable to save Rock Defined Type." );
-                }
-
-                dts = dtMap.GetDefinedTypeSummary( (int) returnedDTId );
-
-            }
-            catch ( Exception ex )
-            {
-                throw new DefinedTypeSaveException( "An error occurred while saving Rock Defined Type.", ex,
-                    MappedDefinedTypes.Where( mdt => mdt.RockDefinedTypeSummary.Id == dts.Id ).Select( mdt => mdt.SourceId ).FirstOrDefault(), 
-                    MappedDefinedTypes.Where( mdt => mdt.RockDefinedTypeSummary.Id == dts.Id ).Select( mdt => mdt.RockGuid ).FirstOrDefault() );
-            }
-        }
-
-
-        private void SaveRockDefinedValue( DefinedValueSummary dvs )
-        {
-            try
-            {
-                DefinedValueMap dvMap = new DefinedValueMap( App.RockService );
-                int? returnedDVId = dvMap.Save(
-                    definedTypeId: int.Parse( dvs.DefinedTypeId ),
-                    value: dvs.Value,
-                    description: dvs.Description,
-                    isSystem: dvs.IsSystem,
-                    order: dvs.Order,
-                    foreignId: dvs.ForeignId,
-                    definedValueId: int.Parse( dvs.Id )
-                    );
-
-                if ( returnedDVId == null )
-                {
-                    throw new Exception( "Unable to save Rock Defined Value." );
-                }
-            }
-            catch ( Exception ex )
-            {
-                var mappedDV = MappedDefinedTypes.Where( x => x.RockDefinedTypeSummary.Id == dvs.DefinedTypeId ).FirstOrDefault();
-
-                throw new DefinedValueSaveException( "An error occurred while saving a Rock defined value.", ex, mappedDV.SourceId, mappedDV.RockGuid, int.Parse( dvs.DefinedTypeId ) );
-            }
-        }
-
-
         /// <summary>
         /// Loads the defined types that are referenced in the defined type attributes for the selected maps into the MappedDefinedTypes list.
         /// </summary>
@@ -282,12 +243,24 @@ namespace org.secc.Rock.DataImport
                         }
 
                     }
-                    else
+                }
+                else
+                {
+                    if(String.IsNullOrEmpty(mappedDT.RockDefinedTypeSummary.ForeignId))
                     {
                         mappedDT.RockDefinedTypeSummary.ForeignId = mappedDT.SourceDefinedTypeSummary.Id;
                         SaveRockDefinedType( mappedDT.RockDefinedTypeSummary );
-
                     }
+
+                }
+
+
+                //map the rock defined values to the 
+                foreach ( DefinedValueSummary rvs in mappedDT.RockDefinedTypeSummary.ValueSummaries.Where( vs => !String.IsNullOrWhiteSpace( vs.ForeignId ) ) )
+                {
+                    DefinedValueSummary sourceDefinedValue = mappedDT.SourceDefinedTypeSummary.ValueSummaries.Where( svs => svs.Id == rvs.ForeignId ).FirstOrDefault();
+
+                    sourceDefinedValue.ForeignId = rvs.Id;
                 }
 
             }
@@ -328,19 +301,100 @@ namespace org.secc.Rock.DataImport
             }
         }
 
+        private void SaveRockDefinedType( DefinedTypeSummary dts )
+        {
+            try
+            {
+                DefinedTypeMap dtMap = new DefinedTypeMap( App.RockService );
+                int? returnedDTId = dtMap.Save(
+                        category: dts.Category,
+                        name: dts.Name,
+                        description: dts.Description,
+                        isSystem: dts.IsSystem,
+                        order: dts.Order,
+                        foreignId: dts.ForeignId,
+                        definedTypeId: int.Parse( dts.Id ),
+                        helpText: dts.HelpText,
+                        fieldTypeId: dts.FieldTypeId
+                        );
+
+                if ( returnedDTId == null )
+                {
+                    throw new Exception( "Unable to save Rock Defined Type." );
+                }
+
+                dts = dtMap.GetDefinedTypeSummary( (int)returnedDTId );
+
+            }
+            catch ( Exception ex )
+            {
+                throw new DefinedTypeSaveException( "An error occurred while saving Rock Defined Type.", ex,
+                    MappedDefinedTypes.Where( mdt => mdt.RockDefinedTypeSummary.Id == dts.Id ).Select( mdt => mdt.SourceId ).FirstOrDefault(),
+                    MappedDefinedTypes.Where( mdt => mdt.RockDefinedTypeSummary.Id == dts.Id ).Select( mdt => mdt.RockGuid ).FirstOrDefault() );
+            }
+        }
+
+        private void SaveRockDefinedValue( DefinedValueSummary dvs )
+        {
+            try
+            {
+                DefinedValueMap dvMap = new DefinedValueMap( App.RockService );
+                int? returnedDVId = dvMap.Save(
+                    definedTypeId: int.Parse( dvs.DefinedTypeId ),
+                    value: dvs.Value,
+                    description: dvs.Description,
+                    isSystem: dvs.IsSystem,
+                    order: dvs.Order,
+                    foreignId: dvs.ForeignId,
+                    definedValueId: int.Parse( dvs.Id )
+                    );
+
+                if ( returnedDVId == null )
+                {
+                    throw new Exception( "Unable to save Rock Defined Value." );
+                }
+            }
+            catch ( Exception ex )
+            {
+                var mappedDV = MappedDefinedTypes.Where( x => x.RockDefinedTypeSummary.Id == dvs.DefinedTypeId ).FirstOrDefault();
+
+                throw new DefinedValueSaveException( "An error occurred while saving a Rock defined value.", ex, mappedDV.SourceId, mappedDV.RockGuid, int.Parse( dvs.DefinedTypeId ) );
+            }
+        }
+
+        private void SetNextButtonStatus()
+        {
+            btnNext.IsEnabled = MappedDefinedTypes.Where( mdt => !mdt.IsMapped ).Count() == 0;
+        }
+
+        private void SetStatusMessage( string messageText )
+        {
+            if ( !String.IsNullOrWhiteSpace( messageText ) )
+            {
+                lblStatus.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                lblStatus.Visibility = System.Windows.Visibility.Visible;
+            }
+
+            tbStatusText.Text = messageText;
+        }
 
 
         #endregion
-    }
-    internal class MappedDefinedType
-    {
-        internal string Name { get; set; }
-        internal string SourceId { get; set; }
-        internal string RockGuid { get; set; }
-        internal DefinedTypeSummary SourceDefinedTypeSummary { get; set; }
-        internal DefinedTypeSummary RockDefinedTypeSummary { get; set; }
 
-        internal bool IsMapped
+
+    }
+    public  class MappedDefinedType
+    {
+        public string Name { get; set; }
+        public string SourceId { get; set; }
+        public string RockGuid { get; set; }
+        public DefinedTypeSummary SourceDefinedTypeSummary { get; set; }
+        public DefinedTypeSummary RockDefinedTypeSummary { get; set; }
+
+        public bool IsMapped
         {
             get
             {
@@ -348,8 +402,26 @@ namespace org.secc.Rock.DataImport
             }
         }
 
+        public string IsMappedString
+        {
+            get
+            {
+                string value;
+                if ( IsMapped )
+                {
+                    value = "Yes";
+                }
+                else
+                {
+                    value = "No";
+                }
 
-        private bool ValueIsMapped()
+                return value;
+            }
+        }
+
+
+        public bool ValueIsMapped()
         {
             bool mapped = false;
 

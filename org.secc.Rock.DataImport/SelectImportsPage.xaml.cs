@@ -67,9 +67,9 @@ namespace org.secc.Rock.DataImport
             //    var identifiers = Component.GetSubsetIDs( 0, 1000 );
             //    Component.ExportAttemptCompleted += Component_ExportAttemptCompleted;
 
-            //    foreach ( var campusIdentiifer in identifiers )
+            //    foreach ( var campusIdentifier in identifiers )
             //    {
-            //        Component.ExportRecord( campusIdentiifer, App.RockService );
+            //        Component.ExportRecord( campusIdentifier, App.RockService );
 
             //    }
 
