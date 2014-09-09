@@ -10,7 +10,7 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class PersonMap
+    public class PersonMap : MapBase
     {
         RockService Service { get; set; }
 
@@ -177,39 +177,6 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             {
                 return alias.Id;
             }
-        }
-            
-
-        private Dictionary<string,object> ToDictionary(Person p)
-        {
-                Dictionary<string, object> personDictionary = null;
-
-                if ( p != null )
-                {
-                    personDictionary = p.ToDictionary();
-
-                    if ( !personDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                    {
-                        personDictionary.Add( "CreatedByPersonAliasId", p.CreatedByPersonAliasId );
-                    }
-
-                    if ( !personDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                    {
-                        personDictionary.Add( "ModifiedByPersonAliasId", p.ModifiedByPersonAliasId );
-                    }
-
-                    if ( !personDictionary.ContainsKey( "CreatedDateTime" ) )
-                    {
-                        personDictionary.Add( "CreatedDateTime", p.CreatedDateTime );
-                    }
-
-                    if ( !personDictionary.ContainsKey( "ModifiedDateTime" ) )
-                    {
-                        personDictionary.Add( "ModifiedDateTime", p.ModifiedDateTime );
-                    }
-                }
-
-            return personDictionary;
         }
     }
 }

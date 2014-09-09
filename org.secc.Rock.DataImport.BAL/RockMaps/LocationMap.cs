@@ -10,7 +10,7 @@ using SystemGuid = Rock.SystemGuid;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class LocationMap
+    public class LocationMap : MapBase
     {
         public RockService Service { get; set; }
 
@@ -132,38 +132,6 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             }
 
             return controller.GetByGuid( l.Guid ).Id;
-        }
-
-        public Dictionary<string, object> ToDictionary( Location l )
-        {
-            Dictionary<string, object> locationDictionary = null;
-
-            if ( l != null )
-            {
-                locationDictionary = l.ToDictionary();
-
-                if ( !locationDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    locationDictionary.Add( "CreatedByPersonAliasId", l.CreatedByPersonAliasId );
-                }
-
-                if ( !locationDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    locationDictionary.Add( "ModifiedByPersonAliasId", l.ModifiedByPersonAliasId );
-                }
-
-                if ( !locationDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    locationDictionary.Add( "CreatedDateTime", l.CreatedDateTime );
-                }
-
-                if ( !locationDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    locationDictionary.Add( "ModifiedDateTime", l.ModifiedDateTime );
-                }
-            }
-
-            return locationDictionary;
         }
     }
 }

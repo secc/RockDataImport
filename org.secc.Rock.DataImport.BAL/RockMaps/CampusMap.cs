@@ -10,7 +10,7 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class CampusMap
+    public class CampusMap : MapBase
     {
         RockService Service { get; set; }
 
@@ -172,50 +172,5 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             return campuses;
         }
-
-
-
-        #region Private Methods
-        /// <summary>
-        /// Returns the Campus entity as a dictionary. This extends the model's ToDictionary method
-        /// by including the Id and Guid properties.
-        /// </summary>
-        /// <param name="c">The Campus.</param>
-        /// <returns>A dictionary containing the campus.</returns>
-        private Dictionary<string, object> ToDictionary( Campus c )
-        {
-            Dictionary<string,object> entityDictionary = null;
-            if(c != null)
-            {
-                entityDictionary = c.ToDictionary();
-
-                if ( !entityDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    entityDictionary.Add( "CreatedByPersonAliasId", c.CreatedByPersonAliasId );
-                }
-
-                if ( !entityDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    entityDictionary.Add( "ModifiedByPersonAliasId", c.ModifiedByPersonAliasId );
-                }
-                
-                if(!entityDictionary.ContainsKey("CreatedDateTime"))
-                {
-                    entityDictionary.Add( "CreatedDateTime", c.CreatedDateTime );
-                }
-
-                if ( !entityDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    entityDictionary.Add( "ModifiedDateTime", c.ModifiedDateTime );
-                }
-
-            }
-
-            return entityDictionary;
-        }
-        #endregion
-
-
-
     }
 }

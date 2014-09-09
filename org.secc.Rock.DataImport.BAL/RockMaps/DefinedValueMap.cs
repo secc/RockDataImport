@@ -10,7 +10,7 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class DefinedValueMap
+    public class DefinedValueMap : MapBase
     {
         public RockService Service { get; set; }
 
