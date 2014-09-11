@@ -28,7 +28,7 @@ namespace org.secc.Rock.DataImport
         ExportIntegrations Integration { get; set; }
         List<MappedDefinedType> MappedDefinedTypes = null;
         bool isDirty = false;
-
+        string currentFKValue;
 
         private DefinedTypeMappingPage()
         {
@@ -49,6 +49,7 @@ namespace org.secc.Rock.DataImport
             LoadDefinedTypes();
             SetStatusMessage( String.Empty );
             BindDefinedTypeGrid();
+            SetDefinedTypeDetailVisibility( false );
             SetNextButtonStatus();
 
         }
@@ -66,9 +67,85 @@ namespace org.secc.Rock.DataImport
 
         }
 
-        private void grdDataMaps_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        private void dgDataMaps_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            if ( isDirty )
+            {
+                var removedDT = e.RemovedItems[0] as MappedDefinedType;
+                string message = string.Format( "Do you want to save the changes to the {0} defined type.", removedDT.Name );
+
+                var msgResponse = MessageBox.Show( message, "Save Changes", MessageBoxButton.YesNo );
+
+                if ( msgResponse == MessageBoxResult.Yes )
+                {
+                    SaveDefinedValueMapping( removedDT );
+                }
+            }
+            
+            MappedDefinedType dt = (MappedDefinedType)dgDataMaps.SelectedItem;
+
+            if ( dt != null )
+            {
+                LoadDefinedTypeDetail( dt );
+            }
+        }
+
+        private void cboRockDefinedValue_SelectionChanged( object sender, SelectionChangedEventArgs e )
         {
 
+            DefinedValueSummary selectedValue = dgDataType.SelectedCells[0].Item as DefinedValueSummary;
+
+            if ( String.IsNullOrEmpty( currentFKValue ) && !String.IsNullOrEmpty( selectedValue.ForeignId ) )
+            {
+                isDirty = true;
+            }
+            else if ( !String.IsNullOrEmpty( currentFKValue ) && selectedValue.ForeignId != currentFKValue )
+            {
+                isDirty = true;
+            }
+            else if ( !String.IsNullOrEmpty( currentFKValue ) && currentFKValue == selectedValue.ForeignId )
+            {
+                isDirty = false;
+            }
+
+            MappedDefinedType mdt = dgDataMaps.SelectedItem as MappedDefinedType;
+
+            SetSaveButtonStatus( mdt.SourceDefinedTypeSummary.ValueSummaries.Where( vs => String.IsNullOrEmpty( vs.ForeignId ) ).Count() == 0 );
+        }
+
+        private void dgDataType_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+        }
+
+        private void dgDataType_SelectedCellsChanged( object sender, SelectedCellsChangedEventArgs e )
+        {
+
+            if ( e.AddedCells.Count == 0 )
+            {
+                return;
+            }
+
+            var currentCell = e.AddedCells[0];
+
+            if ( currentCell.Column == dgDataType.Columns[1] )
+            {
+                dgDataType.BeginEdit();
+            }
+
+
+            currentFKValue = ( dgDataType.SelectedCells[0].Item as DefinedValueSummary ).ForeignId;
+
+        }
+
+        private void btnSave_Click( object sender, RoutedEventArgs e )
+        {
+            SaveDefinedValueMapping((MappedDefinedType)dgDataMaps.SelectedItem);
+        }
+
+        private void btnReset_Click( object sender, RoutedEventArgs e )
+        {
+            ResetDefinedValueMapping((MappedDefinedType)dgDataMaps.SelectedItem);
+            LoadDefinedTypeDetail( (MappedDefinedType)dgDataMaps.SelectedItem );
         }
 
         #endregion
@@ -83,7 +160,7 @@ namespace org.secc.Rock.DataImport
                 return;
             }
 
-            grdDataMaps.ItemsSource = MappedDefinedTypes.OrderBy( mdt => mdt.Name );
+            dgDataMaps.ItemsSource = MappedDefinedTypes.OrderBy( mdt => mdt.Name );
 
 
         }
@@ -254,17 +331,28 @@ namespace org.secc.Rock.DataImport
 
                 }
 
-
-                //map the rock defined values to the 
-                foreach ( DefinedValueSummary rvs in mappedDT.RockDefinedTypeSummary.ValueSummaries.Where( vs => !String.IsNullOrWhiteSpace( vs.ForeignId ) ) )
-                {
-                    DefinedValueSummary sourceDefinedValue = mappedDT.SourceDefinedTypeSummary.ValueSummaries.Where( svs => svs.Id == rvs.ForeignId ).FirstOrDefault();
-
-                    sourceDefinedValue.ForeignId = rvs.Id;
-                }
+                SetSourceDefinedValueForeignIds( mappedDT );
 
             }
         }
+
+        private void LoadDefinedTypeDetail(MappedDefinedType dt)
+        {
+            if ( dt.RockDefinedTypeSummary == null )
+            {
+                return;
+            }
+            ResetDefinedTypeDetail();
+
+            lblDefindTypeName.Content = dt.RockDefinedTypeSummary.Name;
+            tbDefinedTypeDescription.Text = dt.RockDefinedTypeSummary.Description;
+
+            var rockValueViewSource = ( (CollectionViewSource)( FindResource( "rockValueSummaries" ) ) );
+            rockValueViewSource.Source = dt.RockDefinedTypeSummary.ValueSummaries.OrderBy( vs => vs.Order ).ToList();
+            dgDataType.ItemsSource = dt.SourceDefinedTypeSummary.ValueSummaries.OrderBy(vs => vs.Order).ToList();
+            SetDefinedTypeDetailVisibility( true );
+        }
+
 
         /// <summary>
         /// Loads the distinct defined types for the export map and the maps that it is dependent on 
@@ -299,6 +387,35 @@ namespace org.secc.Rock.DataImport
             {
                 LoadDefinedTypes( map );
             }
+        }
+
+        private void RefreshDefinedTypeMapGrid()
+        {
+            dgDataMaps.Items.Refresh();
+        }
+
+        private void RefreshDefinedValueGrid()
+        {
+            dgDataType.Items.Refresh();
+        }
+
+        private void ResetDefinedTypeDetail()
+        {
+            isDirty = false;
+            lblDefindTypeName.Content = null;
+            tbDefinedTypeDescription.Text = null;
+            dgDataType.ItemsSource = null;
+            var rockValueViewSource = ( (CollectionViewSource)( FindResource( "rockValueSummaries" ) ) );
+            rockValueViewSource.Source = null;
+            currentFKValue = null;
+            SetSaveButtonStatus( false );
+        }
+
+        private void ResetDefinedValueMapping( MappedDefinedType mdt )
+        {
+            SetSourceDefinedValueForeignIds( mdt );
+            RefreshDefinedValueGrid();
+            isDirty = false;
         }
 
         private void SaveRockDefinedType( DefinedTypeSummary dts )
@@ -346,12 +463,16 @@ namespace org.secc.Rock.DataImport
                     isSystem: dvs.IsSystem,
                     order: dvs.Order,
                     foreignId: dvs.ForeignId,
-                    definedValueId: int.Parse( dvs.Id )
+                    definedValueId: !String.IsNullOrEmpty(dvs.Id) ? int.Parse(dvs.Id) : 0
                     );
 
                 if ( returnedDVId == null )
                 {
                     throw new Exception( "Unable to save Rock Defined Value." );
+                }
+                else
+                {
+                    dvs = dvMap.GetDefinedValueSummaryById( (int) returnedDVId );
                 }
             }
             catch ( Exception ex )
@@ -362,9 +483,78 @@ namespace org.secc.Rock.DataImport
             }
         }
 
+        private void SaveDefinedValueMapping( MappedDefinedType mdt )
+        {
+            foreach ( DefinedValueSummary dvs in mdt.SourceDefinedTypeSummary.ValueSummaries )
+            {
+                DefinedValueSummary rockDefinedValueSummary = null;
+                if ( dvs.ForeignId == "-1" )
+                {
+                    rockDefinedValueSummary = new DefinedValueSummary();
+                    rockDefinedValueSummary.DefinedTypeId = mdt.RockDefinedTypeSummary.Id;
+                    rockDefinedValueSummary.Value = dvs.Value;
+                    rockDefinedValueSummary.Description = dvs.Description;
+                    rockDefinedValueSummary.ForeignId = dvs.Id;
+                    rockDefinedValueSummary.Order = dvs.Order;
+                    rockDefinedValueSummary.IsSystem = dvs.IsSystem;
+                    mdt.RockDefinedTypeSummary.ValueSummaries.Add( rockDefinedValueSummary );
+                }
+                else
+                {
+                    rockDefinedValueSummary = mdt.RockDefinedTypeSummary.ValueSummaries.Where( rdvs => rdvs.Id == dvs.ForeignId ).FirstOrDefault();
+
+                    if ( rockDefinedValueSummary.ForeignId == dvs.Id )
+                    {
+                        continue;
+                    }
+
+                    rockDefinedValueSummary.ForeignId = dvs.Id;
+                }
+
+                SaveRockDefinedValue( rockDefinedValueSummary );
+
+
+            }
+
+            SetSourceDefinedValueForeignIds( mdt );
+            RefreshDefinedTypeMapGrid();
+            RefreshDefinedValueGrid();
+        }
+
+
+        private void SetDefinedTypeDetailVisibility( bool showDetail )
+        {
+            if ( showDetail )
+            {
+                spDefinedTypeDetail.Visibility = System.Windows.Visibility.Visible;
+                spDefinedTypeDetailInstructions.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                spDefinedTypeDetail.Visibility = System.Windows.Visibility.Collapsed;
+                spDefinedTypeDetailInstructions.Visibility = System.Windows.Visibility.Visible;
+            }
+        }
+
         private void SetNextButtonStatus()
         {
             btnNext.IsEnabled = MappedDefinedTypes.Where( mdt => !mdt.IsMapped ).Count() == 0;
+        }
+
+        private void SetSaveButtonStatus( bool isEnabled )
+        {
+            btnSave.IsEnabled = isEnabled;
+        }
+
+        private void SetSourceDefinedValueForeignIds( MappedDefinedType mdt )
+        {
+            foreach ( DefinedValueSummary dvs in mdt.SourceDefinedTypeSummary.ValueSummaries )
+            {
+                dvs.ForeignId = mdt.RockDefinedTypeSummary.ValueSummaries
+                                .Where( rdvs => rdvs.ForeignId == dvs.Id )
+                                .Select( rdvs => rdvs.Id )
+                                .FirstOrDefault();
+            }
         }
 
         private void SetStatusMessage( string messageText )
@@ -382,7 +572,10 @@ namespace org.secc.Rock.DataImport
         }
 
 
+
         #endregion
+
+
 
 
     }

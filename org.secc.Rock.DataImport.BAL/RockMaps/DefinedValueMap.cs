@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL.Controllers;
+using org.secc.Rock.DataImport.BAL.Helper;
 using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
@@ -19,6 +20,23 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         public DefinedValueMap( RockService service )
         {
             Service = service;
+        }
+
+        public DefinedValueSummary GetDefinedValueSummaryById( int id )
+        {
+            DefinedValueController controller = new DefinedValueController( Service );
+
+            DefinedValue dv = controller.GetById( id );
+
+            if ( dv == null )
+            {
+                return null;
+            }
+            else
+            {
+                return new DefinedValueSummary( dv );
+            }
+            
         }
 
         public int? Save( int definedTypeId, string value, string description = null, bool isSystem = false, int order = 0, string foreignId = null, int definedValueId = 0 )

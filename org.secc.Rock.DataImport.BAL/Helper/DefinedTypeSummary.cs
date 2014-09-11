@@ -80,7 +80,7 @@ namespace org.secc.Rock.DataImport.BAL.Helper
             if ( dt != null )
             {
                 Id = dt.Id.ToString();
-                Category = dt.Category;
+                //Category = dt.Category;
                 Name = dt.Name;
                 Description = dt.Description;
                 UniqueIdentifier = dt.Guid;

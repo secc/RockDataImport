@@ -86,7 +86,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             definedType.IsSystem = isSystem;
             definedType.FieldTypeId = fieldTypeId;
             definedType.Order = order;
-            definedType.Category = category;
+            //definedType.Category = category;
             definedType.Name = name;
             definedType.Description = description;
             definedType.ForeignId = foreignId;
