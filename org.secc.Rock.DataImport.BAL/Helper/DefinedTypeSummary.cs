@@ -33,7 +33,7 @@ namespace org.secc.Rock.DataImport.BAL.Helper
                                         {
                                             Id = dv.Id.ToString(),
                                             DefinedTypeId = dv.DefinedTypeId.ToString(),
-                                            Value = dv.Name,
+                                            Value = dv.Value,
                                             Order = dv.Order,
 
                                         } ).ToList();

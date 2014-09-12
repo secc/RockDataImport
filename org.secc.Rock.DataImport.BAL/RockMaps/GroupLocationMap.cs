@@ -21,7 +21,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
-        public int? SaveGroupLocation( int groupId, int locationId, int? groupLocationTypeValueId = null, int? groupMemberPersonId = null, 
+        public int? SaveGroupLocation( int groupId, int locationId, int? groupLocationTypeValueId = null, int? groupMemberPersonAliasId = null, 
                 bool isMailingLocation = false, bool isMappedLocation = false, string foreignId = null, int? groupLocationId = null )
         {
             GroupLocationController groupLocationController = new GroupLocationController( Service );
@@ -46,7 +46,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             groupLocation.GroupLocationTypeValueId = groupLocationTypeValueId;
             groupLocation.IsMailingLocation = isMailingLocation;
             groupLocation.IsMappedLocation = isMappedLocation;
-            groupLocation.GroupMemberPersonId = groupMemberPersonId;
+            groupLocation.GroupMemberPersonAliasId = groupMemberPersonAliasId;
             groupLocation.ForeignId = foreignId;
 
             int? personAliasId = Service.GetCurrentPersonAliasId();
