@@ -48,9 +48,6 @@
                     <ComboBox Name="cboDataSource"
                           Style="{StaticResource comboBoxStyle}"
                           SelectionChanged="cboDataSource_SelectionChanged" />
-                    <Label Style="{StaticResource labelStyle}"
-                       Content="Connection Settings"
-                       Visibility="Hidden" />
                     <ItemsControl Name="icConnectionSettings"
                               Visibility="Hidden" />
                     <Button x:Name="btnTestConnection" 
