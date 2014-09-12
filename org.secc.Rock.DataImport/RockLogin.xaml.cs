@@ -31,7 +31,7 @@ namespace org.secc.Rock.DataImport
         #region Event Handlers
         private void Page_Loaded( object sender, RoutedEventArgs e )
         {
-            HideLoginWarning();
+            SetWarningMessage( String.Empty );
             LoadCachedLoginCredentials();
 
         }
@@ -54,35 +54,12 @@ namespace org.secc.Rock.DataImport
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void btnReset_Click( object sender, RoutedEventArgs e )
         {
-            HideLoginWarning( );
+            SetWarningMessage( String.Empty );
             ClearForm();
             LoadCachedLoginCredentials();
         }
 
-        /// <summary>
-        /// Handles the KeyDown event of the txtRockPassword control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void txtRockPassword_KeyDown( object sender, KeyEventArgs e )
-        {
-            HideLoginWarning();
 
-            if ( e.Key == Key.Enter )
-            {
-                Login();
-            }
-        }
-
-        /// <summary>
-        /// Handles the KeyDown event of the txtRockUser control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void txtRockUser_KeyDown( object sender, KeyEventArgs e )
-        {
-            HideLoginWarning();
-        }
 
         #endregion
 
@@ -90,8 +67,8 @@ namespace org.secc.Rock.DataImport
         private void ClearForm()
         {
             txtRockURL.Text = String.Empty;
-            txtRockUser.Text = String.Empty;
-            txtRockPassword.Password = String.Empty;
+            txtUsername.Text = String.Empty;
+            txtPassword.Password = String.Empty;
             SetWarningMessage( String.Empty );
         }
 
@@ -99,7 +76,7 @@ namespace org.secc.Rock.DataImport
         /// <summary>
         /// Hides the login warning.
         /// </summary>
-        private void HideLoginWarning()
+        private void HideLoginWarning( object sender, KeyEventArgs e )
         {
             lblLoginWarning.Visibility = Visibility.Hidden;
         }
@@ -115,7 +92,7 @@ namespace org.secc.Rock.DataImport
             var rockUser = loginSettings.Where( s => s.Name == "RockUser" ).Select( s => s.Value ).FirstOrDefault();
 
             txtRockURL.Text = !String.IsNullOrWhiteSpace( rockUrl ) ? rockUrl : String.Empty;
-            txtRockUser.Text = !String.IsNullOrWhiteSpace( rockUser ) ? rockUser : String.Empty;
+            txtUsername.Text = !String.IsNullOrWhiteSpace( rockUser ) ? rockUser : String.Empty;
 
         }
 
@@ -123,8 +100,8 @@ namespace org.secc.Rock.DataImport
         {
             SetWarningMessage(String.Empty);
             string url = txtRockURL.Text;
-            string userName = txtRockUser.Text;
-            string password = txtRockPassword.Password;
+            string userName = txtUsername.Text;
+            string password = txtPassword.Password;
 
 
             BackgroundWorker worker = new BackgroundWorker();
@@ -198,9 +175,9 @@ namespace org.secc.Rock.DataImport
                 settingUpdated = true;
             }
 
-            if ( !String.IsNullOrWhiteSpace( Setting.GetSettingValue( SETTING_CATEGORY, "RockUser" ) ) || Setting.GetSettingValue( SETTING_CATEGORY, "RockUser" ) != txtRockUser.Text )
+            if ( !String.IsNullOrWhiteSpace( Setting.GetSettingValue( SETTING_CATEGORY, "RockUser" ) ) || Setting.GetSettingValue( SETTING_CATEGORY, "RockUser" ) != txtUsername.Text )
             {
-                Setting.UpdateSettingValue( SETTING_CATEGORY, "RockUser", txtRockUser.Text );
+                Setting.UpdateSettingValue( SETTING_CATEGORY, "RockUser", txtUsername.Text );
                 settingUpdated = true;
             }
 
