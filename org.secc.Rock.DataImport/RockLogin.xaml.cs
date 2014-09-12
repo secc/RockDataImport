@@ -76,9 +76,19 @@ namespace org.secc.Rock.DataImport
         /// <summary>
         /// Hides the login warning.
         /// </summary>
-        private void HideLoginWarning( object sender, KeyEventArgs e )
+        private void LoginControl_KeyDown( object sender, KeyEventArgs e )
         {
-            lblLoginWarning.Visibility = Visibility.Hidden;
+            SetWarningMessage(String.Empty);
+
+
+            //If User pressed Enter and username and password have been populated, log the user in.
+            if ( e.Key == Key.Enter )
+            {
+                if ( !String.IsNullOrWhiteSpace( txtUsername.Text ) && !String.IsNullOrWhiteSpace( txtPassword.Password ) )
+                {
+                    Login();
+                }
+            }
         }
 
         /// <summary>
