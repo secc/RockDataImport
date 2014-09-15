@@ -292,7 +292,7 @@ namespace org.secc.Rock.DataImport
                         mappedDT.RockDefinedTypeSummary.Category = mappedDT.SourceDefinedTypeSummary.Category;
                         mappedDT.RockDefinedTypeSummary.Name = mappedDT.SourceDefinedTypeSummary.Name;
                         mappedDT.RockDefinedTypeSummary.Description = mappedDT.SourceDefinedTypeSummary.Description;
-                        mappedDT.RockDefinedTypeSummary.ForeignId = mappedDT.SourceDefinedTypeSummary.ForeignId;
+                        mappedDT.RockDefinedTypeSummary.ForeignId = mappedDT.SourceDefinedTypeSummary.Id;
                         mappedDT.RockDefinedTypeSummary.HelpText = mappedDT.SourceDefinedTypeSummary.HelpText;
 
                         SaveRockDefinedType( mappedDT.RockDefinedTypeSummary );
@@ -306,9 +306,9 @@ namespace org.secc.Rock.DataImport
                             dvs.Order = valueSummary.Order;
                             dvs.Value = valueSummary.Value;
                             dvs.Description = valueSummary.Description;
-                            dvs.ForeignId = valueSummary.ForeignId;
+                            dvs.ForeignId = valueSummary.Id;
 
-                            SaveRockDefinedValue( dvs );
+                            dvs = SaveRockDefinedValue( dvs );
 
                             if ( mappedDT.RockDefinedTypeSummary.ValueSummaries == null )
                             {
@@ -326,7 +326,7 @@ namespace org.secc.Rock.DataImport
                     if(String.IsNullOrEmpty(mappedDT.RockDefinedTypeSummary.ForeignId))
                     {
                         mappedDT.RockDefinedTypeSummary.ForeignId = mappedDT.SourceDefinedTypeSummary.Id;
-                        SaveRockDefinedType( mappedDT.RockDefinedTypeSummary );
+                        mappedDT.RockDefinedTypeSummary =  SaveRockDefinedType( mappedDT.RockDefinedTypeSummary );
                     }
 
                 }
@@ -418,7 +418,7 @@ namespace org.secc.Rock.DataImport
             isDirty = false;
         }
 
-        private void SaveRockDefinedType( DefinedTypeSummary dts )
+        private DefinedTypeSummary SaveRockDefinedType( DefinedTypeSummary dts )
         {
             try
             {
@@ -449,9 +449,11 @@ namespace org.secc.Rock.DataImport
                     MappedDefinedTypes.Where( mdt => mdt.RockDefinedTypeSummary.Id == dts.Id ).Select( mdt => mdt.SourceId ).FirstOrDefault(),
                     MappedDefinedTypes.Where( mdt => mdt.RockDefinedTypeSummary.Id == dts.Id ).Select( mdt => mdt.RockGuid ).FirstOrDefault() );
             }
+
+            return GetRockDefinedType( dts.UniqueIdentifier.ToString() );
         }
 
-        private void SaveRockDefinedValue( DefinedValueSummary dvs )
+        private DefinedValueSummary SaveRockDefinedValue( DefinedValueSummary dvs )
         {
             try
             {
@@ -474,6 +476,8 @@ namespace org.secc.Rock.DataImport
                 {
                     dvs = dvMap.GetDefinedValueSummaryById( (int) returnedDVId );
                 }
+
+                return dvs;
             }
             catch ( Exception ex )
             {
