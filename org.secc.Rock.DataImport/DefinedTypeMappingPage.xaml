@@ -188,12 +188,6 @@
                                         <EventSetter Event="SelectionChanged" Handler="cboRockDefinedValue_SelectionChanged" />
                                     </Style>
                                 </DataGridComboBoxColumn.EditingElementStyle>
-                                <DataGridComboBoxColumn.ItemsSource>
-                                    <CompositeCollection >
-                                        <RockHelper:DefinedValueSummary Id="-1" Value="(Add New)" />
-                                        <CollectionContainer Collection="{Binding Source={StaticResource rockValueSummaries}}" />
-                                    </CompositeCollection>
-                                </DataGridComboBoxColumn.ItemsSource>
                             </DataGridComboBoxColumn>
                         </DataGrid.Columns>
                     </DataGrid>

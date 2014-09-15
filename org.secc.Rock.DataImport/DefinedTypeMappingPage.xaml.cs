@@ -27,6 +27,7 @@ namespace org.secc.Rock.DataImport
     {
         ExportIntegrations Integration { get; set; }
         List<MappedDefinedType> MappedDefinedTypes = null;
+        List<DefinedValueSummary> SelectableRockDefinedValues = null;
         bool isDirty = false;
         string currentFKValue;
 
@@ -38,6 +39,7 @@ namespace org.secc.Rock.DataImport
         public DefinedTypeMappingPage( ExportIntegrations integration )
         {
             Integration = integration;
+            SelectableRockDefinedValues = new List<DefinedValueSummary>();
             InitializeComponent();
         }
 
@@ -347,8 +349,10 @@ namespace org.secc.Rock.DataImport
             lblDefindTypeName.Content = dt.RockDefinedTypeSummary.Name;
             tbDefinedTypeDescription.Text = dt.RockDefinedTypeSummary.Description;
 
-            var rockValueViewSource = ( (CollectionViewSource)( FindResource( "rockValueSummaries" ) ) );
-            rockValueViewSource.Source = dt.RockDefinedTypeSummary.ValueSummaries.OrderBy( vs => vs.Order ).ToList();
+            SelectableRockDefinedValues.Add( new DefinedValueSummary() { Id = "-1", Value = "(Add New)" } );
+            SelectableRockDefinedValues.AddRange( dt.RockDefinedTypeSummary.ValueSummaries.OrderBy( vs => vs.Order ).ToList() );
+            cboRockDefinedValue.ItemsSource = SelectableRockDefinedValues;
+
             dgDataType.ItemsSource = dt.SourceDefinedTypeSummary.ValueSummaries.OrderBy(vs => vs.Order).ToList();
             SetDefinedTypeDetailVisibility( true );
         }
@@ -405,8 +409,7 @@ namespace org.secc.Rock.DataImport
             lblDefindTypeName.Content = null;
             tbDefinedTypeDescription.Text = null;
             dgDataType.ItemsSource = null;
-            var rockValueViewSource = ( (CollectionViewSource)( FindResource( "rockValueSummaries" ) ) );
-            rockValueViewSource.Source = null;
+            SelectableRockDefinedValues.Clear();
             currentFKValue = null;
             SetSaveButtonStatus( false );
         }
