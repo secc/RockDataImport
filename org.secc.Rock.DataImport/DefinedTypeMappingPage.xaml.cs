@@ -141,7 +141,14 @@ namespace org.secc.Rock.DataImport
 
         private void btnSave_Click( object sender, RoutedEventArgs e )
         {
-            SaveDefinedValueMapping((MappedDefinedType)dgDataMaps.SelectedItem);
+            MappedDefinedType mdt = (MappedDefinedType)dgDataMaps.SelectedItem;
+            SaveDefinedValueMapping( mdt );
+            SetSourceDefinedValueForeignIds( mdt );
+            BindRockDefinedValueComboBox( mdt );
+            RefreshDefinedTypeMapGrid();
+            RefreshDefinedValueGrid();
+            isDirty = false;
+            SetSaveButtonStatus( false );
         }
 
         private void btnReset_Click( object sender, RoutedEventArgs e )
@@ -165,6 +172,15 @@ namespace org.secc.Rock.DataImport
             dgDataMaps.ItemsSource = MappedDefinedTypes.OrderBy( mdt => mdt.Name );
 
 
+        }
+
+        private void BindRockDefinedValueComboBox( MappedDefinedType mdt )
+        {
+            SelectableRockDefinedValues.Clear();
+
+            SelectableRockDefinedValues.Add( new DefinedValueSummary() { Id = "-1", Value = "(Add New)" } );
+            SelectableRockDefinedValues.AddRange( mdt.RockDefinedTypeSummary.ValueSummaries.OrderBy( vs => vs.Order ).ToList() );
+            cboRockDefinedValue.ItemsSource = SelectableRockDefinedValues;
         }
 
         private void CreateRockDefinedType(MappedDefinedType mappedDT)
@@ -348,11 +364,7 @@ namespace org.secc.Rock.DataImport
 
             lblDefindTypeName.Content = dt.RockDefinedTypeSummary.Name;
             tbDefinedTypeDescription.Text = dt.RockDefinedTypeSummary.Description;
-
-            SelectableRockDefinedValues.Add( new DefinedValueSummary() { Id = "-1", Value = "(Add New)" } );
-            SelectableRockDefinedValues.AddRange( dt.RockDefinedTypeSummary.ValueSummaries.OrderBy( vs => vs.Order ).ToList() );
-            cboRockDefinedValue.ItemsSource = SelectableRockDefinedValues;
-
+            BindRockDefinedValueComboBox( dt );
             dgDataType.ItemsSource = dt.SourceDefinedTypeSummary.ValueSummaries.OrderBy(vs => vs.Order).ToList();
             SetDefinedTypeDetailVisibility( true );
         }
@@ -409,7 +421,6 @@ namespace org.secc.Rock.DataImport
             lblDefindTypeName.Content = null;
             tbDefinedTypeDescription.Text = null;
             dgDataType.ItemsSource = null;
-            SelectableRockDefinedValues.Clear();
             currentFKValue = null;
             SetSaveButtonStatus( false );
         }
@@ -494,9 +505,11 @@ namespace org.secc.Rock.DataImport
         {
             foreach ( DefinedValueSummary dvs in mdt.SourceDefinedTypeSummary.ValueSummaries )
             {
+                bool isNew = false;
                 DefinedValueSummary rockDefinedValueSummary = null;
                 if ( dvs.ForeignId == "-1" )
                 {
+                    isNew = true;
                     rockDefinedValueSummary = new DefinedValueSummary();
                     rockDefinedValueSummary.DefinedTypeId = mdt.RockDefinedTypeSummary.Id;
                     rockDefinedValueSummary.Value = dvs.Value;
@@ -504,7 +517,7 @@ namespace org.secc.Rock.DataImport
                     rockDefinedValueSummary.ForeignId = dvs.Id;
                     rockDefinedValueSummary.Order = dvs.Order;
                     rockDefinedValueSummary.IsSystem = dvs.IsSystem;
-                    mdt.RockDefinedTypeSummary.ValueSummaries.Add( rockDefinedValueSummary );
+                    //mdt.RockDefinedTypeSummary.ValueSummaries.Add( rockDefinedValueSummary );
                 }
                 else
                 {
@@ -518,14 +531,13 @@ namespace org.secc.Rock.DataImport
                     rockDefinedValueSummary.ForeignId = dvs.Id;
                 }
 
-                SaveRockDefinedValue( rockDefinedValueSummary );
+                rockDefinedValueSummary = SaveRockDefinedValue( rockDefinedValueSummary );
 
-
+                if ( isNew )
+                {
+                    mdt.RockDefinedTypeSummary.ValueSummaries.Add( rockDefinedValueSummary );
+                }
             }
-
-            SetSourceDefinedValueForeignIds( mdt );
-            RefreshDefinedTypeMapGrid();
-            RefreshDefinedValueGrid();
         }
 
 
