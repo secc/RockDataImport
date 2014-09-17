@@ -51,13 +51,25 @@ namespace org.secc.Rock.DataImport
             LoadDefinedTypes();
             SetStatusMessage( String.Empty );
             BindDefinedTypeGrid();
+
+            if ( MappedDefinedTypes.Where( t => !t.IsMapped ).Count() == 0 )
+            {
+                lblInstructions.Content = "All Defined Types have been successfully mapped. To review defined type mappings please select a defined type to the right.";
+            }
+
             SetDefinedTypeDetailVisibility( false );
+
             SetNextButtonStatus();
 
         }
 
         private void btnBack_Click( object sender, RoutedEventArgs e )
         {
+            if ( isDirty )
+            {
+                PromptToSave( dgDataMaps.SelectedItem as MappedDefinedType );
+            }
+
             if ( NavigationService.CanGoBack )
             {
                 NavigationService.GoBack();
@@ -66,7 +78,10 @@ namespace org.secc.Rock.DataImport
 
         private void btnNext_Click( object sender, RoutedEventArgs e )
         {
-
+            if ( isDirty )
+            {
+                PromptToSave( dgDataMaps.SelectedItem as MappedDefinedType );
+            }
         }
 
         private void dgDataMaps_SelectionChanged( object sender, SelectionChangedEventArgs e )
@@ -74,19 +89,8 @@ namespace org.secc.Rock.DataImport
             if ( isDirty )
             {
                 var removedDT = e.RemovedItems[0] as MappedDefinedType;
-                string message = string.Format( "Do you want to save the changes to the {0} defined type.", removedDT.Name );
+                PromptToSave( removedDT );
 
-                var msgResponse = MessageBox.Show( message, "Save Changes", MessageBoxButton.YesNo );
-
-                if ( msgResponse == MessageBoxResult.Yes )
-                {
-                    SaveDefinedValueMapping( removedDT );
-                    SetSourceDefinedValueForeignIds( removedDT );
-                    BindRockDefinedValueComboBox( removedDT );
-                    RefreshDefinedTypeMapGrid();
-                    RefreshDefinedValueGrid();
-                    isDirty = false;
-                }
             }
             
             MappedDefinedType dt = (MappedDefinedType)dgDataMaps.SelectedItem;
@@ -122,6 +126,7 @@ namespace org.secc.Rock.DataImport
             }
 
             MappedDefinedType mdt = dgDataMaps.SelectedItem as MappedDefinedType;
+            lblDefinedTypeSaveMessage.Visibility = System.Windows.Visibility.Collapsed;
 
             SetSaveButtonStatus( mdt.SourceDefinedTypeSummary.ValueSummaries.Where( vs => !String.IsNullOrEmpty( vs.ForeignId ) ).Count() > 0 );
         }
@@ -160,12 +165,16 @@ namespace org.secc.Rock.DataImport
             RefreshDefinedValueGrid();
             isDirty = false;
             SetSaveButtonStatus( false );
+            lblDefinedTypeSaveMessage.Visibility = System.Windows.Visibility.Visible;
+            SetNextButtonStatus();
+            
         }
 
         private void btnReset_Click( object sender, RoutedEventArgs e )
         {
             ResetDefinedValueMapping((MappedDefinedType)dgDataMaps.SelectedItem);
             LoadDefinedTypeDetail( (MappedDefinedType)dgDataMaps.SelectedItem );
+            lblDefinedTypeSaveMessage.Visibility = System.Windows.Visibility.Collapsed;
         }
 
         #endregion
@@ -415,6 +424,24 @@ namespace org.secc.Rock.DataImport
             }
         }
 
+        private void PromptToSave( MappedDefinedType mdt )
+        {
+            string message = string.Format( "Do you want to save the changes to the {0} defined type.", mdt.Name );
+
+            var msgResponse = MessageBox.Show( message, "Save Changes", MessageBoxButton.YesNo );
+
+            if ( msgResponse == MessageBoxResult.Yes )
+            {
+                SaveDefinedValueMapping( mdt );
+                SetSourceDefinedValueForeignIds( mdt );
+                BindRockDefinedValueComboBox( mdt );
+                RefreshDefinedTypeMapGrid();
+                RefreshDefinedValueGrid();
+
+            }
+            isDirty = false;
+        }
+
         private void RefreshDefinedTypeMapGrid()
         {
             dgDataMaps.Items.Refresh();
@@ -433,6 +460,7 @@ namespace org.secc.Rock.DataImport
             dgDataType.ItemsSource = null;
             currentFKValue = null;
             SetSaveButtonStatus( false );
+            lblDefinedTypeSaveMessage.Visibility = Visibility.Collapsed;
         }
 
         private void ResetDefinedValueMapping( MappedDefinedType mdt )

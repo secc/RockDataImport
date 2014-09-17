@@ -191,20 +191,31 @@
                             </DataGridComboBoxColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-                        <Button x:Name="btnSave" Click="btnSave_Click" Style="{StaticResource buttonStyleAction}" Margin="0,0,3,0" >
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="&#xf0c7;" Style="{StaticResource labelStyleIconPrimary}" />
-                                <Label Content="Save" Style="{StaticResource labelStyleButtonTextPrimary}" />
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="btnReset" Click="btnReset_Click" Style="{StaticResource buttonStyleAction}" Margin="3,0,0,0">
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="&#xf0e2;" Style="{StaticResource labelStyleIconPrimary}" />
-                                <Label Content="Reset" Style="{StaticResource labelStyleButtonTextPrimary}" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Grid.Column="1">
+                            <Button x:Name="btnSave" Click="btnSave_Click" Style="{StaticResource buttonStyleAction}" Margin="0,0,3,0" >
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="&#xf0c7;" Style="{StaticResource labelStyleIconPrimary}" />
+                                    <Label Content="Save" Style="{StaticResource labelStyleButtonTextPrimary}" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="btnReset" Click="btnReset_Click" Style="{StaticResource buttonStyleAction}" Margin="3,0,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="&#xf0e2;" Style="{StaticResource labelStyleIconPrimary}" />
+                                    <Label Content="Reset" Style="{StaticResource labelStyleButtonTextPrimary}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <Label Name="lblDefinedTypeSaveMessage" Grid.Column="0"
+                               Style="{StaticResource labelStyleAlertInfo}"
+                               Visibility="Collapsed"
+                               Content="Mappings Saved Successfully" />
+                    </Grid>
+
                 </StackPanel>
                 <StackPanel Grid.Column="1"
                             x:Name="spDefinedTypeDetailInstructions"
