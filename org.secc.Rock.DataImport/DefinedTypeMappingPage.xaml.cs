@@ -81,6 +81,11 @@ namespace org.secc.Rock.DataImport
                 if ( msgResponse == MessageBoxResult.Yes )
                 {
                     SaveDefinedValueMapping( removedDT );
+                    SetSourceDefinedValueForeignIds( removedDT );
+                    BindRockDefinedValueComboBox( removedDT );
+                    RefreshDefinedTypeMapGrid();
+                    RefreshDefinedValueGrid();
+                    isDirty = false;
                 }
             }
             
@@ -89,6 +94,12 @@ namespace org.secc.Rock.DataImport
             if ( dt != null )
             {
                 LoadDefinedTypeDetail( dt );
+            }
+
+            ScrollViewer scrollViewer = GetVisualChild<ScrollViewer>( dgDataType );
+            if ( scrollViewer != null )
+            {
+                scrollViewer.ScrollToTop();
             }
         }
 
@@ -112,7 +123,7 @@ namespace org.secc.Rock.DataImport
 
             MappedDefinedType mdt = dgDataMaps.SelectedItem as MappedDefinedType;
 
-            SetSaveButtonStatus( mdt.SourceDefinedTypeSummary.ValueSummaries.Where( vs => String.IsNullOrEmpty( vs.ForeignId ) ).Count() == 0 );
+            SetSaveButtonStatus( mdt.SourceDefinedTypeSummary.ValueSummaries.Where( vs => !String.IsNullOrEmpty( vs.ForeignId ) ).Count() > 0 );
         }
 
         private void dgDataType_SelectionChanged( object sender, SelectionChangedEventArgs e )
@@ -170,8 +181,6 @@ namespace org.secc.Rock.DataImport
             }
 
             dgDataMaps.ItemsSource = MappedDefinedTypes.OrderBy( mdt => mdt.Name );
-
-
         }
 
         private void BindRockDefinedValueComboBox( MappedDefinedType mdt )
@@ -324,7 +333,7 @@ namespace org.secc.Rock.DataImport
                             dvs.Order = valueSummary.Order;
                             dvs.Value = valueSummary.Value;
                             dvs.Description = valueSummary.Description;
-                            dvs.ForeignId = valueSummary.Id;
+                            dvs.ForeignIdValues.Add( valueSummary.Id );
 
                             dvs = SaveRockDefinedValue( dvs );
 
@@ -366,6 +375,7 @@ namespace org.secc.Rock.DataImport
             tbDefinedTypeDescription.Text = dt.RockDefinedTypeSummary.Description;
             BindRockDefinedValueComboBox( dt );
             dgDataType.ItemsSource = dt.SourceDefinedTypeSummary.ValueSummaries.OrderBy(vs => vs.Order).ToList();
+
             SetDefinedTypeDetailVisibility( true );
         }
 
@@ -506,6 +516,15 @@ namespace org.secc.Rock.DataImport
             foreach ( DefinedValueSummary dvs in mdt.SourceDefinedTypeSummary.ValueSummaries )
             {
                 bool isNew = false;
+
+                var orignalRockDefindValueSummary = mdt.RockDefinedTypeSummary.ValueSummaries.Where( rvs => rvs.ForeignIdValues.Contains( dvs.Id ) ).FirstOrDefault();
+
+                if ( orignalRockDefindValueSummary != null && orignalRockDefindValueSummary.Id != dvs.ForeignId )
+                {
+                    orignalRockDefindValueSummary.ForeignIdValues.Remove( dvs.Id );
+                    orignalRockDefindValueSummary = SaveRockDefinedValue( orignalRockDefindValueSummary );
+                }
+
                 DefinedValueSummary rockDefinedValueSummary = null;
                 if ( dvs.ForeignId == "-1" )
                 {
@@ -514,24 +533,33 @@ namespace org.secc.Rock.DataImport
                     rockDefinedValueSummary.DefinedTypeId = mdt.RockDefinedTypeSummary.Id;
                     rockDefinedValueSummary.Value = dvs.Value;
                     rockDefinedValueSummary.Description = dvs.Description;
-                    rockDefinedValueSummary.ForeignId = dvs.Id;
+                    rockDefinedValueSummary.ForeignIdValues.Add( dvs.Id );
                     rockDefinedValueSummary.Order = dvs.Order;
                     rockDefinedValueSummary.IsSystem = dvs.IsSystem;
-                    //mdt.RockDefinedTypeSummary.ValueSummaries.Add( rockDefinedValueSummary );
                 }
                 else
                 {
-                    rockDefinedValueSummary = mdt.RockDefinedTypeSummary.ValueSummaries.Where( rdvs => rdvs.Id == dvs.ForeignId ).FirstOrDefault();
 
-                    if ( rockDefinedValueSummary.ForeignId == dvs.Id )
+                    if (orignalRockDefindValueSummary != null && orignalRockDefindValueSummary.Id == dvs.ForeignId)
                     {
                         continue;
                     }
 
-                    rockDefinedValueSummary.ForeignId = dvs.Id;
+                    rockDefinedValueSummary = mdt.RockDefinedTypeSummary.ValueSummaries.Where( rvs => dvs.ForeignIdValues.Contains( rvs.Id ) ).FirstOrDefault();
+
+                    if ( rockDefinedValueSummary != null )
+                    {
+                        rockDefinedValueSummary.ForeignIdValues.Add( dvs.Id );
+                    }
+
+                    
                 }
 
-                rockDefinedValueSummary = SaveRockDefinedValue( rockDefinedValueSummary );
+                if ( rockDefinedValueSummary != null )
+                {
+                    rockDefinedValueSummary = SaveRockDefinedValue( rockDefinedValueSummary );
+                }
+
 
                 if ( isNew )
                 {
@@ -569,10 +597,10 @@ namespace org.secc.Rock.DataImport
         {
             foreach ( DefinedValueSummary dvs in mdt.SourceDefinedTypeSummary.ValueSummaries )
             {
-                dvs.ForeignId = mdt.RockDefinedTypeSummary.ValueSummaries
-                                .Where( rdvs => rdvs.ForeignId == dvs.Id )
-                                .Select( rdvs => rdvs.Id )
-                                .FirstOrDefault();
+
+                dvs.ForeignIdValues = mdt.RockDefinedTypeSummary.ValueSummaries
+                        .Where( rdvs => rdvs.ForeignIdValues.Contains( dvs.Id ) )
+                        .Select( rdvs => rdvs.Id ).ToList();
             }
         }
 
@@ -595,6 +623,27 @@ namespace org.secc.Rock.DataImport
         #endregion
 
 
+
+        private static T GetVisualChild<T>( DependencyObject parent ) where T : Visual
+        {
+            T child = default( T );
+
+            int numVisuals = VisualTreeHelper.GetChildrenCount( parent );
+            for ( int i = 0; i < numVisuals; i++ )
+            {
+                Visual v = (Visual)VisualTreeHelper.GetChild( parent, i );
+                child = v as T;
+                if ( child == null )
+                {
+                    child = GetVisualChild<T>( v );
+                }
+                if ( child != null )
+                {
+                    break;
+                }
+            }
+            return child;
+        }
 
 
     }
