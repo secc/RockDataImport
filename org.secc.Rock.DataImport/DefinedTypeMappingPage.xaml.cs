@@ -54,7 +54,7 @@ namespace org.secc.Rock.DataImport
 
             if ( MappedDefinedTypes.Where( t => !t.IsMapped ).Count() == 0 )
             {
-                lblInstructions.Content = "All Defined Types have been successfully mapped. To review defined type mappings please select a defined type to the right.";
+                lblInstructions.Content = "All Defined Types have been successfully mapped. To review defined type mappings please select a defined type to the left.";
             }
 
             SetDefinedTypeDetailVisibility( false );
@@ -382,6 +382,7 @@ namespace org.secc.Rock.DataImport
 
             lblDefindTypeName.Content = dt.RockDefinedTypeSummary.Name;
             tbDefinedTypeDescription.Text = dt.RockDefinedTypeSummary.Description;
+            lblDefinedTypeDescription.ToolTip = dt.RockDefinedTypeSummary.Description;
             BindRockDefinedValueComboBox( dt );
             dgDataType.ItemsSource = dt.SourceDefinedTypeSummary.ValueSummaries.OrderBy(vs => vs.Order).ToList();
 
@@ -457,6 +458,7 @@ namespace org.secc.Rock.DataImport
             isDirty = false;
             lblDefindTypeName.Content = null;
             tbDefinedTypeDescription.Text = null;
+            lblDefinedTypeDescription.ToolTip = null;
             dgDataType.ItemsSource = null;
             currentFKValue = null;
             SetSaveButtonStatus( false );
