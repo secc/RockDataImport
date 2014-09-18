@@ -24,7 +24,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     public class CampusLeaderMap : iExportMapComponent
     {
         private int? mRecordCount;
-        private int? mDefinedTypeCount;
 
         private Dictionary<string, string> ConnectionInfo { get; set; }
         public int? RecordCount
@@ -40,10 +39,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public int? DefinedTypeCount
-        {
-            get { return mDefinedTypeCount; }
-        }
 
         private CampusLeaderMap() { }
 
@@ -155,6 +150,18 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             {
                 OnExportAttemptCompleted( identifier, false );
             }
+        }
+
+        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
+        {
+            return System.Attribute.GetCustomAttributes( this.GetType() )
+                .Where( a => a.GetType() == attributeType )
+                .Select( a => new
+                {
+                    Name = a.GetType().GetProperties().Where( p => p.Name == "Name" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString(),
+                    Attribute = a.GetType().GetProperties().ToDictionary( p => p.Name, p1 => p1.GetValue( a ) )
+                } ).ToDictionary( a => a.Name, a => a.Attribute );
+
         }
 
         public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;

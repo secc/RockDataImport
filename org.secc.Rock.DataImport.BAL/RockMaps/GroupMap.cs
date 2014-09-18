@@ -11,7 +11,7 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class GroupMap 
+    public class GroupMap : MapBase
     {
         RockService Service { get; set; }
 
@@ -60,7 +60,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             foreach ( var gm in groupMembers )
             {
-                groupMembersDictionary.Add( gm.Id, ToGroupMemberDictionary( gm ) );
+                groupMembersDictionary.Add( gm.Id, ToDictionary( gm ) );
             }
 
             return groupMembersDictionary;
@@ -149,12 +149,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( groupId == null )
             {
-                group.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                group.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( group );
             }
             else
             {
-                group.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                group.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( group );
             }
 
@@ -192,12 +192,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( groupMemberId == null )
             {
-                groupMember.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                groupMember.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( groupMember );
             }
             else
             {
-                groupMember.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                groupMember.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( groupMember );
             }
 
@@ -250,68 +250,5 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return groupType;
         }
 
-        private Dictionary<string, object> ToDictionary( Group g )
-        {
-            Dictionary<string, object> groupDictionary = null;
-
-            if ( g != null )
-            {
-                groupDictionary = g.ToDictionary();
-
-                if ( !groupDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    groupDictionary.Add( "CreatedByPersonAliasId", g.CreatedByPersonAliasId );
-                }
-
-                if ( !groupDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    groupDictionary.Add( "ModifiedByPersonAliasId", g.ModifiedByPersonAliasId );
-                }
-
-                if ( !groupDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    groupDictionary.Add( "CreatedDateTime", g.CreatedDateTime );
-                }
-
-                if ( !groupDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    groupDictionary.Add( "ModifiedDateTime", g.ModifiedDateTime );
-                }
-            }
-
-            return groupDictionary;
-        }
-
-        private Dictionary<string, object> ToGroupMemberDictionary( GroupMember gm )
-        {
-            Dictionary<string, object> groupMemberDictionary = null;
-
-            if ( gm != null )
-            {
-                groupMemberDictionary = gm.ToDictionary();
-
-                if ( !groupMemberDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    groupMemberDictionary.Add( "CreatedByPersonAliasId", gm.CreatedByPersonAliasId );
-                }
-
-                if ( !groupMemberDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    groupMemberDictionary.Add( "ModifiedByPersonAliasId", gm.ModifiedByPersonAliasId );
-                }
-
-                if ( !groupMemberDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    groupMemberDictionary.Add( "CreatedDateTime", gm.CreatedDateTime );
-                }
-
-                if ( !groupMemberDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    groupMemberDictionary.Add( "ModifiedDateTime", gm.ModifiedDateTime );
-                }
-            }
-
-            return groupMemberDictionary;
-        }
     }
 }

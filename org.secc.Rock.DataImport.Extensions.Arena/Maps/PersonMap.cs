@@ -32,7 +32,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     {
         #region Fields
         private int? mRecordCount;
-        private int? mDefinedTypeCount;
         private Dictionary<string,string> ConnectionInfo{get;set;}
 
         private const int ARENA_ADULT_ROLE_LUID = 29;
@@ -52,18 +51,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public int? DefinedTypeCount
-        {
-            get
-            {
-                if ( mDefinedTypeCount == null )
-                {
-                    mDefinedTypeCount = GetDefinedTypeCount();
-                }
-
-                return mDefinedTypeCount;
-            }
-        }
         #endregion
 
         #region Constructors
@@ -500,12 +487,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 return isFamilyAddress;
             }
-        }
-
-        private int GetDefinedTypeCount()
-        {
-            return System.Attribute.GetCustomAttributes( this.GetType() )
-                    .Where( a => a.GetType() == typeof( DefinedTypeAttribute ) ).Count();
         }
 
         private int? GetRecordCount()

@@ -94,6 +94,7 @@
     <Compile Include="RockMaps\GroupLocationMap.cs" />
     <Compile Include="RockMaps\GroupMap.cs" />
     <Compile Include="RockMaps\LocationMap.cs" />
+    <Compile Include="RockMaps\MapBase.cs" />
     <Compile Include="RockMaps\PersonMap.cs" />
     <Compile Include="RockMaps\PhoneNumberMap.cs" />
     <Compile Include="RockService.cs" />

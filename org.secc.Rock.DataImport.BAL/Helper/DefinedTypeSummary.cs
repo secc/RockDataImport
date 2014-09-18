@@ -10,10 +10,67 @@ namespace org.secc.Rock.DataImport.BAL.Helper
 {
     public class DefinedTypeSummary
     {
+        private int mOrder = 0;
+        private int? mFieldTypeId = 1;
+        private bool mIsSystem = false;
+        private string mHelpText = null;
+
+
         public string Id { get; set; }
+        public string Category { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string ForeignId { get; set; }
         public Guid UniqueIdentifier { get; set; }
+
+        public int Order
+        {
+            get
+            {
+                return mOrder;
+            }
+            set
+            {
+                mOrder = value;
+            }
+        }
+
+        public bool IsSystem
+        {
+            get
+            {
+                return mIsSystem;
+            }
+            set
+            {
+                mIsSystem = value;
+            }
+        }
+
+        public int? FieldTypeId
+        {
+            get
+            {
+                return mFieldTypeId;
+            }
+            set
+            {
+                mFieldTypeId = value;
+            }
+        }
+
+        public string HelpText
+        {
+            get
+            {
+                return mHelpText;
+            }
+            set
+            {
+                mHelpText = value;
+            }
+        }
+
         public List<DefinedValueSummary> ValueSummaries { get; set; }
 
         public DefinedTypeSummary() { }
@@ -23,9 +80,15 @@ namespace org.secc.Rock.DataImport.BAL.Helper
             if ( dt != null )
             {
                 Id = dt.Id.ToString();
+                //Category = dt.Category;
                 Name = dt.Name;
                 Description = dt.Description;
                 UniqueIdentifier = dt.Guid;
+                ForeignId = dt.ForeignId;
+                IsSystem = dt.IsSystem;
+                FieldTypeId = dt.FieldTypeId;
+                HelpText = dt.HelpText;
+
 
                 if(dt.DefinedValues != null && dt.DefinedValues.Count > 0)
                 {
@@ -34,8 +97,10 @@ namespace org.secc.Rock.DataImport.BAL.Helper
                                             Id = dv.Id.ToString(),
                                             DefinedTypeId = dv.DefinedTypeId.ToString(),
                                             Value = dv.Value,
+                                            Description = dv.Description,
+                                            ForeignId = dv.ForeignId,
                                             Order = dv.Order,
-
+                                            IsSystem = dv.IsSystem
                                         } ).ToList();
 
                 }

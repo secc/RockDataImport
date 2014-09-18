@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using org.secc.Rock.DataImport.BAL.Controllers;
+using org.secc.Rock.DataImport.BAL.Helper;
 using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class DefinedValueMap
+    public class DefinedValueMap : MapBase
     {
         public RockService Service { get; set; }
 
@@ -21,14 +22,31 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
-        public int? Save( int definedTypeId, bool isSystem, string name, int order, string description = null, string foreignId = null, int? id = null )
+        public DefinedValueSummary GetDefinedValueSummaryById( int id )
         {
-            DefinedValue dv;
-            DefinedValueController Controller = new DefinedValueController( Service );
+            DefinedValueController controller = new DefinedValueController( Service );
 
-            if ( id == null )
+            DefinedValue dv = controller.GetById( id );
+
+            if ( dv == null )
             {
-                dv = Controller.GetById( (int)id );
+                return null;
+            }
+            else
+            {
+                return new DefinedValueSummary( dv );
+            }
+            
+        }
+
+        public int? Save( int definedTypeId, string value, string description = null, bool isSystem = false, int order = 0, string foreignId = null, int definedValueId = 0 )
+        {
+            DefinedValueController controller = new DefinedValueController( Service );
+            DefinedValue dv = null;
+
+            if ( definedValueId > 0 )
+            {
+                dv = controller.GetById( definedValueId );
 
                 if ( dv == null )
                 {
@@ -40,7 +58,27 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
                 dv = new DefinedValue();
             }
 
-            throw new NotImplementedException();
+            dv.IsSystem = isSystem;
+            dv.DefinedTypeId = definedTypeId;
+            dv.Order = order;
+            dv.Value = value;
+            dv.Description = description;
+            dv.ForeignId = foreignId;
+
+            if ( definedValueId == 0 )
+            {
+                dv.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
+                controller.Add( dv );
+            }
+            else
+            {
+                dv.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
+                controller.Update( dv );
+            }
+
+            return controller.GetByGuid( dv.Guid ).Id;
+
+
         }
 
         internal DefinedValue GetDefinedValueByGuid( Guid guid )

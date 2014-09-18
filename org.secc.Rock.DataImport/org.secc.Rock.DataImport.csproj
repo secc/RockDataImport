@@ -58,6 +58,9 @@
     <Compile Include="ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefinedTypeMappingPage.xaml.cs">
+      <DependentUpon>DefinedTypeMappingPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RockLogin.xaml.cs">
       <DependentUpon>RockLogin.xaml</DependentUpon>
     </Compile>
@@ -66,6 +69,10 @@
     </Compile>
     <Compile Include="Setting.cs" />
     <Page Include="ConfigurationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefinedTypeMappingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -138,10 +145,6 @@
     <ProjectReference Include="..\..\..\Spark\RockRMS\Applications\Wpf\Rock.Wpf\Rock.Wpf.csproj">
       <Project>{90440596-fa0a-45e7-8872-3da47786f6a7}</Project>
       <Name>Rock.Wpf</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Spark\RockRMS\Rock\Rock.csproj">
-      <Project>{8f8c2a79-24f4-4157-8b99-45f75fa85799}</Project>
-      <Name>Rock</Name>
     </ProjectReference>
     <ProjectReference Include="..\org.secc.Rock.DataImport.BAL\org.secc.Rock.DataImport.BAL.csproj">
       <Project>{a37bfc29-8ce6-41c2-9219-3d846c1ca32b}</Project>

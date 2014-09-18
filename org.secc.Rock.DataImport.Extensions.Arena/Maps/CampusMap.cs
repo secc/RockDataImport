@@ -19,7 +19,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     public class CampusMap : iExportMapComponent
     {
         private int? mRecordCount;
-        private int? mDefinedTypeCount;
 
         private Dictionary<string,string> ConnectionInfo{get;set;}
 
@@ -33,19 +32,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
 
                 return mRecordCount;
-            }
-        }
-
-        public int? DefinedTypeCount
-        {
-            get
-            {
-                if(mDefinedTypeCount == null)
-                {
-                    mDefinedTypeCount = GetDefinedTypeCount();
-                }
-
-                return mDefinedTypeCount;
             }
         }
 
@@ -121,16 +107,18 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         }
 
-        public List<string> GetDependencies()
+        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
         {
             return System.Attribute.GetCustomAttributes( this.GetType() )
-                    .Where( a => a.GetType() == typeof( DependencyAttribute ) )
-                    .OrderBy(a => a.GetType().GetProperties().Where(p => p.Name == "Order").Select(p => (int)p.GetValue(a)).FirstOrDefault())
-                    .Select( a => a.GetType().GetProperties().Where( p => p.Name == "FriendlyName" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString() ).ToList();
+                .Where( a => a.GetType() == attributeType )
+                .Select( a => new
+                {
+                    Name = a.GetType().GetProperties().Where( p => p.Name == "Name" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString(),
+                    Attribute = a.GetType().GetProperties().ToDictionary( p => p.Name, p1 => p1.GetValue( a ) )
+                } ).ToDictionary( a => a.Name, a => a.Attribute );
 
-
-                        
         }
+
 
         public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null, Type mapType = null )
         {
@@ -159,6 +147,8 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
 
+
+
         private Model.Campus GetArenaCampus( int campusId )
         {
             using ( Model.ArenaContext context = Model.ArenaContext.BuildContext( ConnectionInfo ) )
@@ -173,12 +163,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             {
                 return Context.Campus.Count();
             }
-        }
-
-        private int? GetDefinedTypeCount()
-        {
-            return System.Attribute.GetCustomAttributes( this.GetType() )
-                .Where( a => a.GetType() == typeof( DefinedTypeAttribute ) ).Count();
         }
 
         private int? SaveCampusLocation( string campusName, Model.Address a, RockService service )

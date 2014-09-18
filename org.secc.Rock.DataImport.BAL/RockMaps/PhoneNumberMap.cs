@@ -10,7 +10,7 @@ using SysteGuid = Rock.SystemGuid;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class PhoneNumberMap
+    public class PhoneNumberMap : MapBase
     {
         RockService Service { get; set; }
 
@@ -80,49 +80,16 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             if ( p.Id == 0 )
             {
-                p.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                p.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( p );
             }
             else
             {
-                p.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                p.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( p );
             }
 
             return controller.GetByGuid( p.Guid ).Id;
         }
-
-        private Dictionary<string, object> ToDictionary( PhoneNumber p )
-        {
-            Dictionary<string, object> phoneDictionary = null;
-
-            if ( p != null )
-            {
-                phoneDictionary = p.ToDictionary();
-
-                if ( !phoneDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    phoneDictionary.Add( "CreatedByPersonAliasId", p.CreatedByPersonAliasId );
-                }
-
-                if ( !phoneDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    phoneDictionary.Add( "ModifiedByPersonAliasId", p.ModifiedByPersonAliasId );
-                }
-
-                if ( !phoneDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    phoneDictionary.Add( "CreatedDateTime", p.CreatedDateTime );
-                }
-
-                if ( !phoneDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    phoneDictionary.Add( "ModifiedDateTime", p.ModifiedDateTime );
-                }
-            }
-
-            return phoneDictionary;
-        }
-
     }
 }

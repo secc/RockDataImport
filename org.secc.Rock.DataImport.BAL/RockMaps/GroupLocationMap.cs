@@ -10,7 +10,7 @@ using Rock.Model;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class GroupLocationMap
+    public class GroupLocationMap : MapBase
     {
         RockService Service { get; set; }
 
@@ -52,12 +52,12 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             int? personAliasId = Service.GetCurrentPersonAliasId();
             if ( groupLocationId == null )
             {
-                groupLocation.CreatedByPersonAliasId = personAliasId;
+                groupLocation.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 groupLocationController.Add( groupLocation );
             }
             else
             {
-                groupLocation.ModifiedByPersonAliasId = personAliasId;
+                groupLocation.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 groupLocationController.Update( groupLocation );
             }
 
@@ -83,39 +83,5 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
 
             return groupLocationsDictionary;
         }
-
-        private Dictionary<string, object> ToDictionary( GroupLocation gl )
-        {
-            Dictionary<string, object> groupLocationDictionary = null;
-
-            if ( gl != null )
-            {
-                groupLocationDictionary = gl.ToDictionary();
-
-                if ( !groupLocationDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    groupLocationDictionary.Add( "CreatedByPersonAliasId", gl.CreatedByPersonAliasId );
-                }
-
-                if ( !groupLocationDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    groupLocationDictionary.Add( "ModifiedByPersonAliasId", gl.ModifiedByPersonAliasId );
-                }
-
-                if ( !groupLocationDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    groupLocationDictionary.Add( "CreatedDateTime", gl.CreatedDateTime );
-                }
-
-                if ( !groupLocationDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    groupLocationDictionary.Add( "ModifiedDateTime", gl.ModifiedDateTime );
-                }
-            }
-
-            return groupLocationDictionary;
-        }
-
-
     }
 }

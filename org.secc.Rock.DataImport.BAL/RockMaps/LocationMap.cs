@@ -10,7 +10,7 @@ using SystemGuid = Rock.SystemGuid;
 
 namespace org.secc.Rock.DataImport.BAL.RockMaps
 {
-    public class LocationMap
+    public class LocationMap : MapBase
     {
         public RockService Service { get; set; }
 
@@ -60,6 +60,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             location.Street2 = street2;
             location.City = city;
             location.State = state;
+            location.Country = country;
             location.PostalCode = postalCode;
             location.ForeignId = foreignKey;
 
@@ -121,48 +122,16 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             LocationController controller = new LocationController( Service );
             if ( l.Id == 0 )
             {
-                l.CreatedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                l.CreatedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Add( l );
             }
             else
             {
-                l.ModifiedByPersonAliasId = Service.GetCurrentPersonAliasId();
+                l.ModifiedByPersonAliasId = Service.LoggedInPerson.PrimaryAliasId;
                 controller.Update( l );
             }
 
             return controller.GetByGuid( l.Guid ).Id;
-        }
-
-        public Dictionary<string, object> ToDictionary( Location l )
-        {
-            Dictionary<string, object> locationDictionary = null;
-
-            if ( l != null )
-            {
-                locationDictionary = l.ToDictionary();
-
-                if ( !locationDictionary.ContainsKey( "CreatedByPersonAliasId" ) )
-                {
-                    locationDictionary.Add( "CreatedByPersonAliasId", l.CreatedByPersonAliasId );
-                }
-
-                if ( !locationDictionary.ContainsKey( "ModifiedByPersonAliasId" ) )
-                {
-                    locationDictionary.Add( "ModifiedByPersonAliasId", l.ModifiedByPersonAliasId );
-                }
-
-                if ( !locationDictionary.ContainsKey( "CreatedDateTime" ) )
-                {
-                    locationDictionary.Add( "CreatedDateTime", l.CreatedDateTime );
-                }
-
-                if ( !locationDictionary.ContainsKey( "ModifiedDateTime" ) )
-                {
-                    locationDictionary.Add( "ModifiedDateTime", l.ModifiedDateTime );
-                }
-            }
-
-            return locationDictionary;
         }
     }
 }

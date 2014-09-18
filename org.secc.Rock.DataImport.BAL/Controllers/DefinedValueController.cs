@@ -30,7 +30,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override DefinedValue GetById( int id )
         {
-            string apiPath = string.Format( baseApiPath + "0", id );
+            string apiPath = string.Format( baseApiPath + "{0}", id );
            return Service.GetData<DefinedValue>( apiPath );
         }
 

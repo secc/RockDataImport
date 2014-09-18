@@ -216,7 +216,7 @@ namespace org.secc.Rock.DataImport.BAL
                 Login();
                 PutData<T>( apiPath, entity );
             }
-            else if ( response.StatusCode == System.Net.HttpStatusCode.OK )
+            else if ( response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent )
             {
                 attemptCount = 0;
             }
