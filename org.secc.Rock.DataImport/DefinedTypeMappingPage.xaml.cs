@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,18 +49,44 @@ namespace org.secc.Rock.DataImport
         private void Page_Loaded( object sender, RoutedEventArgs e )
         {
             SetStatusMessage( "Loading and mapping defined types... This could take a couple moments." );
-            LoadDefinedTypes();
-            SetStatusMessage( String.Empty );
-            BindDefinedTypeGrid();
-
-            if ( MappedDefinedTypes.Where( t => !t.IsMapped ).Count() == 0 )
+            BackgroundWorker worker = new BackgroundWorker();
+            
+            worker.DoWork += delegate( object s, DoWorkEventArgs ee )
             {
-                lblInstructions.Content = "All Defined Types have been successfully mapped. To review defined type mappings please select a defined type to the left.";
-            }
+                LoadDefinedTypes();
+            };
 
-            SetDefinedTypeDetailVisibility( false );
+            worker.RunWorkerCompleted += delegate( object s, RunWorkerCompletedEventArgs ee )
+            {
+                if ( ee.Error != null )
+                {
+                    throw ee.Error;
+                }
 
-            SetNextButtonStatus();
+                SetStatusMessage( String.Empty );
+                grdMainContent.Visibility = System.Windows.Visibility.Visible;
+                BindDefinedTypeGrid();
+
+                if ( MappedDefinedTypes.Where( t => !t.IsMapped ).Count() == 0 )
+                {
+                    lblInstructions.Content = "All Defined Types have been successfully mapped. To review defined type mappings please select a defined type to the left.";
+                }
+                else
+                {
+                    lblInstructions.Content = "Select a defined type from the grid to the left to map it's defined values to their associated defined values in Rock";
+                }
+
+                SetDefinedTypeDetailVisibility( false );
+
+                SetNextButtonStatus();
+                this.Cursor = null;
+            };
+            SetStatusMessage( "Loading Defined Values for selected data maps. This could take a couple minutes." );
+            this.Cursor = Cursors.Wait;
+
+            grdMainContent.Visibility = System.Windows.Visibility.Hidden;
+            worker.RunWorkerAsync();
+
 
         }
 
@@ -158,17 +185,40 @@ namespace org.secc.Rock.DataImport
         private void btnSave_Click( object sender, RoutedEventArgs e )
         {
             MappedDefinedType mdt = (MappedDefinedType)dgDataMaps.SelectedItem;
-            SaveDefinedValueMapping( mdt );
-            SetSourceDefinedValueForeignIds( mdt );
-            BindRockDefinedValueComboBox( mdt );
-            RefreshDefinedTypeMapGrid();
-            RefreshDefinedValueGrid();
-            isDirty = false;
+
+            BackgroundWorker worker = new BackgroundWorker();
+
+            worker.DoWork += delegate( object s, DoWorkEventArgs workE )
+            {
+
+                SaveDefinedValueMapping( mdt );
+                SetSourceDefinedValueForeignIds( mdt );
+            };
+
+            worker.RunWorkerCompleted += delegate( object s, RunWorkerCompletedEventArgs workE )
+            {
+                btnSave.IsEnabled = true;
+                if ( workE.Error != null )
+                {
+                    throw workE.Error;
+                }
+
+                this.Cursor = null;
+                BindRockDefinedValueComboBox( mdt );
+                RefreshDefinedTypeMapGrid();
+                RefreshDefinedValueGrid();
+                isDirty = false;
+                SetSaveButtonStatus( false );
+                lblDefinedTypeSaveMessage.Visibility = System.Windows.Visibility.Visible;
+                SetNextButtonStatus();
+
+            };
+
             SetSaveButtonStatus( false );
-            lblDefinedTypeSaveMessage.Visibility = System.Windows.Visibility.Visible;
-            SetNextButtonStatus();
-            
+            this.Cursor = Cursors.Wait;
+            worker.RunWorkerAsync();
         }
+
 
         private void btnReset_Click( object sender, RoutedEventArgs e )
         {
@@ -636,7 +686,7 @@ namespace org.secc.Rock.DataImport
 
         private void SetStatusMessage( string messageText )
         {
-            if ( !String.IsNullOrWhiteSpace( messageText ) )
+            if ( String.IsNullOrWhiteSpace( messageText ) )
             {
                 lblStatus.Visibility = System.Windows.Visibility.Collapsed;
             }
@@ -645,7 +695,7 @@ namespace org.secc.Rock.DataImport
                 lblStatus.Visibility = System.Windows.Visibility.Visible;
             }
 
-            tbStatusText.Text = messageText;
+            lblStatus.Content = messageText;
         }
 
 

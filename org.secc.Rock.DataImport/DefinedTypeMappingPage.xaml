@@ -47,7 +47,6 @@
                    Visibility="Collapsed"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center">
-                <TextBlock x:Name="tbStatusText" />
             </Label>
             
             <Grid Grid.Row="1"
