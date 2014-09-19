@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using org.secc.Rock.DataImport.BAL.Integration;
 
 namespace org.secc.Rock.DataImport
@@ -59,10 +58,57 @@ namespace org.secc.Rock.DataImport
 
         private void btnTestConnection_Click( object sender, RoutedEventArgs e )
         {
-            if ( TestConnection() )
+            BackgroundWorker worker = new BackgroundWorker();
+            bool connectionSuccess = false;
+            string warningMessage = null;
+            string connectionName = cboDataSource.SelectedValue.ToString();
+            Dictionary<string, string> connectionInfo = ConnectionControl.Value;
+
+            Dictionary<string, string> errors = new Dictionary<string, string>();
+
+            if ( !ConnectionControl.IsValid( ref errors ) )
             {
-                SetSuccessMessage( "Connection Successful!" );
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine( "Connection Information is not valid. Please correct the following:" );
+                foreach ( var error in errors )
+                {
+                    sb.AppendLine( String.Format( "- {0}", error.Value ) );
+                }
+
+                SetWarningMessage( sb.ToString() );
+                return;
             }
+
+            worker.DoWork += delegate( object s, DoWorkEventArgs ee )
+            {
+                connectionSuccess = TestConnection(connectionName, connectionInfo, out warningMessage);
+            };
+
+            worker.RunWorkerCompleted += delegate( object s, RunWorkerCompletedEventArgs ee )
+            {
+                if ( ee.Error != null )
+                {
+                    throw ee.Error;
+                }
+
+                this.Cursor = null;
+                btnTestConnection.IsEnabled = true;
+
+                if ( connectionSuccess )
+                {
+                    SetSuccessMessage( "Connection Successful!" );
+                }
+                else
+                {
+                    SetWarningMessage( warningMessage );
+                }
+            };
+
+            this.Cursor = Cursors.Wait;
+            btnTestConnection.IsEnabled = false;
+            ClearAlerts();
+            worker.RunWorkerAsync();
+
         }
 
         private void BindDataSourceList()
@@ -205,21 +251,38 @@ namespace org.secc.Rock.DataImport
 
         }
 
-        private bool TestConnection()
+        private bool TestConnection(string connectionName, Dictionary<string,string> connectionInfo, out string warningMessage)
         {
             bool isSuccess = false;
-            ClearAlerts();
-            var integration = Integrations.Where( i => i.Name == cboDataSource.SelectedValue.ToString() ).FirstOrDefault();
+            warningMessage = null;
+
+            var integration = Integrations.Where( i => i.Name == connectionName ).FirstOrDefault();
 
             if ( integration == null )
             {
-                SetWarningMessage( "Data Source Not Found." );
+                warningMessage = "Data Source Not Found.";
                 return isSuccess;
             }
 
+
+            isSuccess = integration.Component.TestConnection( connectionInfo, out warningMessage );
+
+
+            return isSuccess;
+          
+        }
+
+        private void btnNext_Click( object sender, RoutedEventArgs e )
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            bool connectionSuccess = false;
+            string warningMessage = null;
+            string connectionName = cboDataSource.SelectedValue.ToString();
+            Dictionary<string, string> connectionInfo = ConnectionControl.Value;
+
             Dictionary<string, string> errors = new Dictionary<string, string>();
 
-            if(!ConnectionControl.IsValid(ref errors))
+            if ( !ConnectionControl.IsValid( ref errors ) )
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine( "Connection Information is not valid. Please correct the following:" );
@@ -229,31 +292,54 @@ namespace org.secc.Rock.DataImport
                 }
 
                 SetWarningMessage( sb.ToString() );
-                return false;
+                return;
             }
-            string errorMessage = String.Empty;
-            isSuccess = integration.Component.TestConnection( ConnectionControl.Value, out errorMessage );
 
-            if ( !isSuccess )
+            worker.DoWork += delegate( object s, DoWorkEventArgs ee )
             {
-                SetWarningMessage( errorMessage );
-            }
+                connectionSuccess = TestConnection( connectionName, connectionInfo, out warningMessage );
+            };
 
-            return isSuccess;
-          
-        }
-
-        private void btnNext_Click( object sender, RoutedEventArgs e )
-        {
-            if ( TestConnection() )
+            worker.RunWorkerCompleted += delegate( object s, RunWorkerCompletedEventArgs ee )
             {
-                SaveConnectionSettings();
-                //}
-                ExportIntegrations integration = Integrations.Where( x => x.Name == cboDataSource.SelectedValue.ToString() ).FirstOrDefault();
-                integration.Component.ConnectionInfo = ConnectionControl.Value;
+                if ( ee.Error != null )
+                {
+                    throw ee.Error;
+                }
 
-                this.NavigationService.Navigate( new SelectImportsPage( integration ) );
-            }
+                this.Cursor = null;
+                btnNext.IsEnabled = true;
+
+                if ( connectionSuccess )
+                {
+                    ExportIntegrations integration = Integrations.Where( x => x.Name == connectionName ).FirstOrDefault();
+                    integration.Component.ConnectionInfo = ConnectionControl.Value;
+                    this.NavigationService.Navigate( new SelectImportsPage( integration ) );
+                }
+                else
+                {
+                    SetWarningMessage( warningMessage );
+                }
+            };
+
+            this.Cursor = Cursors.Wait;
+            btnNext.IsEnabled = false;
+            ClearAlerts();
+            worker.RunWorkerAsync();
+
+            //string warningMessage = null;
+            //string connectionName = cboDataSource.SelectedValue.ToString();
+            //Dictionary<string, string> connectionInfo = ConnectionControl.Value;
+            //ClearAlerts();
+            //if ( TestConnection(connectionName, connectionInfo, out warningMessage) )
+            //{
+            //    SaveConnectionSettings();
+            //    //}
+            //    ExportIntegrations integration = Integrations.Where( x => x.Name == cboDataSource.SelectedValue.ToString() ).FirstOrDefault();
+            //    integration.Component.ConnectionInfo = ConnectionControl.Value;
+
+            //    this.NavigationService.Navigate( new SelectImportsPage( integration ) );
+            //}
         }
 
 
