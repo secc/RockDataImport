@@ -19,18 +19,18 @@ namespace org.secc.Rock.DataImport.BAL.Integration
            // new ExportMapContainer( System.IO.Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "Plugins" ) );
         }
 
-        public ExportMapContainer( Dictionary<string, string> connectionInfo )
+        public ExportMapContainer( Dictionary<string, string> connectionInfo, RockService service )
         {
             string pluginPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-            LoadComponents( connectionInfo, pluginPath );
+            LoadComponents( connectionInfo, pluginPath, service );
         }
 
-        public ExportMapContainer( Dictionary<string, string> connectionInfo, string pluginPath )
+        public ExportMapContainer( Dictionary<string, string> connectionInfo, string pluginPath, RockService service )
         {
-            LoadComponents( connectionInfo, pluginPath );
+            LoadComponents( connectionInfo, pluginPath, service );
         }
 
-        private void LoadComponents( Dictionary<string,string> connectionInfo, string pluginFolder )
+        private void LoadComponents( Dictionary<string,string> connectionInfo, string pluginFolder, RockService service )
         {
             Components = new List<Lazy<iExportMapComponent, iExportMapData>>();
             var catalog = new AggregateCatalog();
@@ -43,6 +43,7 @@ namespace org.secc.Rock.DataImport.BAL.Integration
             }
             container = new CompositionContainer( catalog );
             container.ComposeExportedValue( "ConnectionInfo", connectionInfo );
+            container.ComposeExportedValue( "RockService", service );
             container.ComposeParts( this );
 
 

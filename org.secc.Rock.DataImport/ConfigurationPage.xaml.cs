@@ -314,6 +314,7 @@ namespace org.secc.Rock.DataImport
                 {
                     ExportIntegrations integration = Integrations.Where( x => x.Name == connectionName ).FirstOrDefault();
                     integration.Component.ConnectionInfo = ConnectionControl.Value;
+                    integration.Component.Service = App.RockService;
                     this.NavigationService.Navigate( new SelectImportsPage( integration ) );
                 }
                 else
