@@ -76,7 +76,6 @@
     <Compile Include="Controllers\PersonAliasControler.cs" />
     <Compile Include="Controllers\PersonController.cs" />
     <Compile Include="Controllers\PhoneNumberController.cs" />
-    <Compile Include="Helper\DefinedValueMatch.cs" />
     <Compile Include="Integration\ExportMapContainer.cs" />
     <Compile Include="Integration\iExportMapComponent.cs" />
     <Compile Include="Integration\iExportMapData.cs" />
