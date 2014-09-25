@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace org.secc.Rock.DataImport.BAL.Helper
 {
-    public class DefinedValueMatch
+    class DefinedValueMatch
     {
         static string DEFINED_VALUE_FILE_NAME = "DefinedValues.xml";
 

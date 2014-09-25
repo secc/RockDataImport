@@ -54,10 +54,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         #endregion
 
         #region Constructors
-        private PersonMap(): base() {}
+        private PersonMap(): base( typeof( PersonMap ) ) {}
 
         [ImportingConstructor]
-        public PersonMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")] RockService service ) : base( connectionInfo, service ) { }
+        public PersonMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")] RockService service ) : base( typeof( PersonMap ), connectionInfo, service ) { }
         #endregion
 
         #region Public Methods
@@ -129,25 +129,26 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( arenaPerson.inactive_reason_luid != null )
                 {
-                    recordStatusReasonId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.inactive_reason_luid.ToString() );
+                    recordStatusReasonId = GetDefinedValueIdByForeignId( arenaPerson.inactive_reason_luid );
+
                 }
 
                 bool isDeceased = recordStatusReasonId == rockPersonMap.GetRecordStatusReasonIdDeceased();
 
-                int? connectionStatusValueID = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.member_status.ToString() );
+                int? connectionStatusValueID = GetDefinedValueIdByForeignId( arenaPerson.member_status ); 
 
                 int? titleValueId = null;
 
                 if ( arenaPerson.title_luid != null )
                 {
-                    titleValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.title_luid.ToString() );
+                    titleValueId = GetDefinedValueIdByForeignId( arenaPerson.title_luid );
                 }
 
                 int? suffixValueId = null;
 
                 if ( arenaPerson.suffix_luid != null )
                 {
-                    suffixValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.suffix_luid.ToString() );
+                    suffixValueId = GetDefinedValueIdByForeignId( arenaPerson.suffix_luid );  
                 }
 
                 int? birthYear = null;
@@ -183,7 +184,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( arenaPerson.marital_status != null )
                 {
-                    maritalStatusValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.marital_status.ToString() );
+                    maritalStatusValueId = GetDefinedValueIdByForeignId( arenaPerson.marital_status );
                 }
 
                 DateTime? anniversaryDate = null;
@@ -281,7 +282,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                     if ( AddressIsFamilyAddress( arenaPerson.FamilyMember.FirstOrDefault().family_id, personAddress.address_id ) )
                     {
                         //either a single member family or Arena address found on multiple people in the family.
-                        AddFamilyLocation( (int) rockFamilyId, personAddress.Address );
+                        AddFamilyLocation( (int) rockFamilyId, personAddress );
                     }
                     else
                     {
@@ -291,7 +292,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                             individualRockFamilyId = AddIndividualFamily( (int) rockPersonId, arenaPerson,  (int) rockFamilyId );
                         }
-                        AddFamilyLocation( (int) individualRockFamilyId, personAddress.Address );
+                        AddFamilyLocation( (int) individualRockFamilyId, personAddress );
                     }
                 }
 
@@ -370,9 +371,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             return individualFamilyId;
         }
 
-        private void AddFamilyLocation( int rockFamilyId, Address arenaAddress)
+        private void AddFamilyLocation( int rockFamilyId, PersonAddress personAddress)
         {
             RockMaps.LocationMap locationMap = new RockMaps.LocationMap( Service );
+            Address arenaAddress = personAddress.Address;
             int? rockLocationId = null;
             Dictionary<string, object> rockLocation = locationMap.GetByForeignId( arenaAddress.address_id.ToString() );
 
@@ -396,7 +398,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
                 else
                 {
-                    glMap.SaveGroupLocation( rockFamilyId, (int)rockLocationId, DefinedValueMatch.GetDefinedValueMatch( arenaAddress.address_id.ToString() ), null, true, true );
+                    glMap.SaveGroupLocation( rockFamilyId, (int)rockLocationId, GetDefinedValueIdByForeignId(personAddress.address_type_luid), null, true, true );
                 }
             }
 
@@ -509,7 +511,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             int? rockPhoneId = null;
             if ( rockPhone == null )
             {
-                rockPhoneId = rockPhoneMap.SavePhone( number: phone.phone_number_stripped, personId: rockPersonId, numbertypeValueId: (int)DefinedValueMatch.GetDefinedValueMatch( phone.phone_luid.ToString() ), 
+                rockPhoneId = rockPhoneMap.SavePhone( number: phone.phone_number_stripped, personId: rockPersonId, numbertypeValueId: (int) GetDefinedValueIdByForeignId(phone.phone_luid), 
                     extension: phone.phone_ext, isSystem: false, isMessagingEnabled: phone.sms_enabled, isUnlisted: phone.unlisted, foreignId: string.Format( "{0}_{1}", phone.person_id, phone.phone_luid ) );
             }
             else

@@ -37,10 +37,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         }
 
 
-        private CampusLeaderMap() : base() { }
+        private CampusLeaderMap() : base( typeof( CampusLeaderMap ) ) { }
 
         [ImportingConstructor]
-        public CampusLeaderMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")] RockService service ) : base( connectionInfo, service ) { }
+        public CampusLeaderMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")] RockService service ) : base( typeof( CampusLeaderMap ), connectionInfo, service ) { }
 
         public override List<string> GetSubsetIDs( int startingRecord, int size )
         {

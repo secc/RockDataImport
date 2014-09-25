@@ -32,10 +32,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private CampusMap() : base() { }
+        private CampusMap() : base( typeof( CampusMap ) ) { }
 
         [ImportingConstructor]
-        public CampusMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")]RockService service ) : base(connectionInfo, service)
+        public CampusMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")]RockService service ) : base( typeof( CampusMap ), connectionInfo, service)
         { }
 
         public override List<string> GetSubsetIDs( int startingRecord = 0, int size = 0 )
