@@ -173,5 +173,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         public virtual ICollection<Campus> CampusLeading { get; set; }
 
         public virtual ICollection<Organization> OrganizationLeading { get; set; }
+
+        public virtual Blob Blob { get; set; }
     }
 }
