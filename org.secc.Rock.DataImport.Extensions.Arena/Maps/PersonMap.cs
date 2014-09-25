@@ -28,18 +28,18 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [DefinedType( "Address Type", "2E68D37C-FB7B-4AA5-9E09-3785D52156CB", "9B4BE12C-C105-4F80-8254-8639B27D7640" )]
 
     
-    public class PersonMap : iExportMapComponent
+    public class PersonMap : ArenaMapBase
     {
         #region Fields
-        private int? mRecordCount;
-        private Dictionary<string,string> ConnectionInfo{get;set;}
+
+
 
         private const int ARENA_ADULT_ROLE_LUID = 29;
         private const int ARENA_CHILD_ROLE_LUID = 31;
         #endregion
 
         #region Properties
-        public int? RecordCount
+        public override int? RecordCount
         {
             get 
             {
@@ -54,17 +54,14 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         #endregion
 
         #region Constructors
-        private PersonMap() {}
+        private PersonMap(): base( typeof( PersonMap ) ) {}
 
         [ImportingConstructor]
-        public PersonMap([Import("ConnectionInfo")] Dictionary<string,string> connectionInfo)
-        {
-            ConnectionInfo = connectionInfo;
-        }
+        public PersonMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")] RockService service ) : base( typeof( PersonMap ), connectionInfo, service ) { }
         #endregion
 
         #region Public Methods
-        public List<string> GetSubsetIDs( int startingRecord, int size )
+        public override List<string> GetSubsetIDs( int startingRecord, int size )
         {
             using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext(ConnectionInfo) )
             {
@@ -81,7 +78,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public void ExportRecord( string identifier, RockService service)
+        public override void ExportRecord( string identifier)
         {
             int personId = 0;
 
@@ -99,14 +96,14 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 return;
             }
 
-            RockMaps.PersonMap rockPersonMap = new BAL.RockMaps.PersonMap( service );
+            RockMaps.PersonMap rockPersonMap = new BAL.RockMaps.PersonMap( Service );
             Dictionary<string, object> rockPerson = rockPersonMap.GetByForeignId( identifier );
 
             int? rockPersonId = null;
 
             if ( rockPerson == null )
             {
-                int? rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().family_id, service );
+                int? rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().family_id);
 
                 int recordTypeValueId = arenaPerson.business ? rockPersonMap.GetRecordTypeBusiness() : rockPersonMap.GetRecordTypePerson();
 
@@ -132,25 +129,26 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( arenaPerson.inactive_reason_luid != null )
                 {
-                    recordStatusReasonId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.inactive_reason_luid.ToString() );
+                    recordStatusReasonId = GetDefinedValueIdByForeignId( arenaPerson.inactive_reason_luid );
+
                 }
 
                 bool isDeceased = recordStatusReasonId == rockPersonMap.GetRecordStatusReasonIdDeceased();
 
-                int? connectionStatusValueID = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.member_status.ToString() );
+                int? connectionStatusValueID = GetDefinedValueIdByForeignId( arenaPerson.member_status ); 
 
                 int? titleValueId = null;
 
                 if ( arenaPerson.title_luid != null )
                 {
-                    titleValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.title_luid.ToString() );
+                    titleValueId = GetDefinedValueIdByForeignId( arenaPerson.title_luid );
                 }
 
                 int? suffixValueId = null;
 
                 if ( arenaPerson.suffix_luid != null )
                 {
-                    suffixValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.suffix_luid.ToString() );
+                    suffixValueId = GetDefinedValueIdByForeignId( arenaPerson.suffix_luid );  
                 }
 
                 int? birthYear = null;
@@ -186,7 +184,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( arenaPerson.marital_status != null )
                 {
-                    maritalStatusValueId = DefinedValueMatch.GetDefinedValueMatch( arenaPerson.marital_status.ToString() );
+                    maritalStatusValueId = GetDefinedValueIdByForeignId( arenaPerson.marital_status );
                 }
 
                 DateTime? anniversaryDate = null;
@@ -257,7 +255,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 int? personAliasId = rockPersonMap.SaveNewPersonAlias( (int)rockPersonId );
 
-                RockMaps.GroupMap rockGroupMap = new RockMaps.GroupMap( service );
+                RockMaps.GroupMap rockGroupMap = new RockMaps.GroupMap( Service );
                 int familyMemberRoleId;
 
                 if ( arenaPerson.FamilyMember.FirstOrDefault().role_luid == ARENA_ADULT_ROLE_LUID )
@@ -284,7 +282,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                     if ( AddressIsFamilyAddress( arenaPerson.FamilyMember.FirstOrDefault().family_id, personAddress.address_id ) )
                     {
                         //either a single member family or Arena address found on multiple people in the family.
-                        AddFamilyLocation( (int) rockFamilyId, personAddress.Address, service );
+                        AddFamilyLocation( (int) rockFamilyId, personAddress );
                     }
                     else
                     {
@@ -292,15 +290,15 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                         if ( individualRockFamilyId == null )
                         {
 
-                            individualRockFamilyId = AddIndividualFamily( (int) rockPersonId, arenaPerson,  (int) rockFamilyId, service );
+                            individualRockFamilyId = AddIndividualFamily( (int) rockPersonId, arenaPerson,  (int) rockFamilyId );
                         }
-                        AddFamilyLocation( (int) individualRockFamilyId, personAddress.Address, service );
+                        AddFamilyLocation( (int) individualRockFamilyId, personAddress );
                     }
                 }
 
                 foreach ( var phone in arenaPerson.PersonPhone )
                 {
-                    int? personPhone = SavePersonPhone( (int) rockPersonId, phone, service );
+                    int? personPhone = SavePersonPhone( (int) rockPersonId, phone );
                 }
 
             }
@@ -311,123 +309,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         }
 
-        private void AddFamilyLocation( int rockFamilyId, Address arenaAddress, RockService service )
+        public override Dictionary<string, Dictionary<string,object>> GetAttributes( Type attributeType )
         {
-            RockMaps.LocationMap locationMap = new RockMaps.LocationMap( service );
-            int? rockLocationId = null;
-            Dictionary<string, object> rockLocation = locationMap.GetByForeignId( arenaAddress.address_id.ToString() );
-
-            if ( rockLocation != null )
-            {
-                rockLocationId = (int)rockLocation["Id"];
-            }
-            else
-            {
-                rockLocationId = locationMap.SaveAddress( arenaAddress.street_address_1, arenaAddress.city, arenaAddress.state, arenaAddress.country, 
-                        arenaAddress.postal_code, arenaAddress.street_address_2, arenaAddress.Latitude, arenaAddress.Longitude, arenaAddress.address_id.ToString(), isActive: true );
-            }
-
-            if ( rockLocationId != null )
-            {
-                RockMaps.GroupLocationMap glMap = new RockMaps.GroupLocationMap( service );
-
-                if ( glMap.GetGroupLocationByGroupIdLocationId( rockFamilyId, (int)rockLocationId ).Count > 0 )
-                {
-                    return;
-                }
-                else
-                {
-                    glMap.SaveGroupLocation( rockFamilyId, (int) rockLocationId, DefinedValueMatch.GetDefinedValueMatch( arenaAddress.address_id.ToString() ), null, true, true );
-                }
-            }
-
-        }
-
-        private int? AddIndividualFamily( int? rockPersonId, Person arenaPerson, int modelRockFamilyId, RockService service )
-        {
-            RockMaps.GroupMap groupMap = new RockMaps.GroupMap( service );
-
-            Dictionary<string, object> modelFamily = groupMap.GetGroupById( modelRockFamilyId );
-            var modelFamilyMembers = groupMap.GetGroupMemberByGroupIdPersonId( (int)modelFamily["Id"], (int)rockPersonId );
-
-            int roleId = 0;
-
-            if ( modelFamilyMembers != null && modelFamilyMembers.Count > 0 )
-            {
-                roleId = (int) modelFamilyMembers.First().Value["GroupRoleId"];
-            }
-
-
-            string groupDescription = string.Format( "Individual \"family\" for {0} {1}", arenaPerson.nick_name, arenaPerson.last_name );
-            int? individualFamilyId = groupMap.SaveFamily( (int?)modelFamily["CampusId"], modelFamily["Name"].ToString(), description: groupDescription );
-
-            if ( individualFamilyId != null )
-            {
-                groupMap.SaveGroupMember( (int) individualFamilyId, (int)rockPersonId, roleId );
-            }
-
-            return individualFamilyId;
-        }
-
-        public Dictionary<string, Dictionary<string,object>> GetAttributes( Type attributeType )
-        {
-            return System.Attribute.GetCustomAttributes( this.GetType() )
-                .Where( a => a.GetType() == attributeType )
-                .Select( a => new
-                {
-                    Name = a.GetType().GetProperties().Where( p => p.Name == "Name" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString(),
-                    Attribute = a.GetType().GetProperties().ToDictionary( p => p.Name, p1 => p1.GetValue( a ) )
-                } ).ToDictionary(a => a.Name, a => a.Attribute);
+            return GetAttributes( this.GetType(), attributeType );
                 
-        }
-
-        public DefinedTypeSummary GetRockDefinedType( string definedTypeName, RockService service )
-        {
-            var dtAttribute = GetAttributes( typeof( DefinedTypeAttribute ) )
-                                .Where( dta => dta.Key == definedTypeName ).FirstOrDefault();
-
-            if ( dtAttribute.Equals( default( Dictionary<string, Dictionary<string, object>> ) ) )
-            {
-                return null;
-            }
-
-            Guid rockDefinedTypeGuid = new Guid( dtAttribute.Value.Where( p => p.Key == "RockDefinedTypeGuid" ).FirstOrDefault().Value.ToString() );
-
-            BAL.RockMaps.DefinedTypeMap DTMap = new BAL.RockMaps.DefinedTypeMap( service );
-            return DTMap.GetDefinedTypeSummary( rockDefinedTypeGuid );
-        }
-
-        public DefinedTypeSummary GetSourceDefinedType( string definedTypeName )
-        {
-            var dtAttribute = GetAttributes( typeof( DefinedTypeAttribute ) )
-                                .Where( dta => dta.Key == definedTypeName ).FirstOrDefault();
-
-            if ( dtAttribute.Equals( default( Dictionary<string, Dictionary<string, object>> )  ) )
-            {
-                return null;
-            }
-
-            Guid lookupTypeGuid = new Guid( dtAttribute.Value.Where( p => p.Key == "SourceDefinedTypeIdentifier" ).FirstOrDefault().Value.ToString() );
-
-            using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext( ConnectionInfo ) )
-            {
-                return Context.LookupType.Where( lt => lt.guid == lookupTypeGuid )
-                            .Select( lt => new DefinedTypeSummary()
-                                            {
-                                                Id = lt.lookup_type_id.ToString(),
-                                                Name = lt.lookup_type_name,
-                                                Description = lt.lookup_type_desc,
-                                                UniqueIdentifier = lt.guid,
-                                                ValueSummaries = lt.Lookup.Select( l => new DefinedValueSummary()
-                                                        {
-                                                            Id = l.lookup_id.ToString(),
-                                                            DefinedTypeId = l.lookup_type_id.ToString(),
-                                                            Value = l.lookup_value,
-                                                            Order = l.lookup_order
-                                                        } ).ToList()
-
-                                            } ).First();
-            }
         }
 
         public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null, Type mapType = null )
@@ -456,26 +341,72 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         #endregion
 
-        public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
+        public override event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
         #region Private Methods
 
-        private Person GetArenaPerson( int personId )
+        private int? AddIndividualFamily( int? rockPersonId, Person arenaPerson, int modelRockFamilyId )
         {
-            using ( ArenaContext Context = ArenaContext.BuildContext( ConnectionInfo ) )
+            RockMaps.GroupMap groupMap = new RockMaps.GroupMap( Service );
+
+            Dictionary<string, object> modelFamily = groupMap.GetGroupById( modelRockFamilyId );
+            var modelFamilyMembers = groupMap.GetGroupMemberByGroupIdPersonId( (int)modelFamily["Id"], (int)rockPersonId );
+
+            int roleId = 0;
+
+            if ( modelFamilyMembers != null && modelFamilyMembers.Count > 0 )
             {
-               
-                return Context.Person
-                        .Include( "PersonEmail" )
-                        .Include( "PersonAddress.Address" )
-                        .Include( "FamilyMember.Family" )
-                        .FirstOrDefault( p => p.person_id.Equals( personId ) );
+                roleId = (int)modelFamilyMembers.First().Value["GroupRoleId"];
             }
+
+
+            string groupDescription = string.Format( "Individual \"family\" for {0} {1}", arenaPerson.nick_name, arenaPerson.last_name );
+            int? individualFamilyId = groupMap.SaveFamily( (int?)modelFamily["CampusId"], modelFamily["Name"].ToString(), description: groupDescription );
+
+            if ( individualFamilyId != null )
+            {
+                groupMap.SaveGroupMember( (int)individualFamilyId, (int)rockPersonId, roleId );
+            }
+
+            return individualFamilyId;
         }
 
-        private bool AddressIsFamilyAddress(int familyId, int addressId)
+        private void AddFamilyLocation( int rockFamilyId, PersonAddress personAddress)
         {
-            using ( ArenaContext context = ArenaContext.BuildContext(ConnectionInfo) )
+            RockMaps.LocationMap locationMap = new RockMaps.LocationMap( Service );
+            Address arenaAddress = personAddress.Address;
+            int? rockLocationId = null;
+            Dictionary<string, object> rockLocation = locationMap.GetByForeignId( arenaAddress.address_id.ToString() );
+
+            if ( rockLocation != null )
+            {
+                rockLocationId = (int)rockLocation["Id"];
+            }
+            else
+            {
+                rockLocationId = locationMap.SaveAddress( arenaAddress.street_address_1, arenaAddress.city, arenaAddress.state, arenaAddress.country,
+                        arenaAddress.postal_code, arenaAddress.street_address_2, arenaAddress.Latitude, arenaAddress.Longitude, arenaAddress.address_id.ToString(), isActive: true );
+            }
+
+            if ( rockLocationId != null )
+            {
+                RockMaps.GroupLocationMap glMap = new RockMaps.GroupLocationMap( Service );
+
+                if ( glMap.GetGroupLocationByGroupIdLocationId( rockFamilyId, (int)rockLocationId ).Count > 0 )
+                {
+                    return;
+                }
+                else
+                {
+                    glMap.SaveGroupLocation( rockFamilyId, (int)rockLocationId, GetDefinedValueIdByForeignId(personAddress.address_type_luid), null, true, true );
+                }
+            }
+
+        }
+
+        private bool AddressIsFamilyAddress( int familyId, int addressId )
+        {
+            using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )
             {
                 bool isFamilyAddress = true;
                 var familyMemberIds = context.FamilyMember.Where( fm => fm.family_id == familyId ).Select( fm => fm.person_id ).ToList();
@@ -486,40 +417,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
 
                 return isFamilyAddress;
-            }
-        }
-
-        private int? GetRecordCount()
-        {
-            using (Model.ArenaContext Context = Arena.Model.ArenaContext.BuildContext(ConnectionInfo))
-            {
-                return Context.Person.Count();
-            }
-        }
-
-        private int? GetRockFamily( int arenaFamilyId, RockService service )
-        {
-            RockMaps.GroupMap groupMap = new RockMaps.GroupMap( service );
-            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( arenaFamilyId.ToString() );
-
-            if ( rockFamily != null )
-            {
-                return (int?)rockFamily["Id"];
-            }
-            else
-            {
-                Family arenaFamily = GetArenaFamily(arenaFamilyId);
-
-                if(arenaFamily == null)
-                {
-                    return null;
-                }
-
-                int? arenaCampusId = GetArenaFamilyCampusId( arenaFamilyId );
-                int? rockCampusId = (int?) (new RockMaps.CampusMap(service).GetByForeignId( arenaCampusId.ToString() )["Id"]);
-                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, arenaFamily.family_name, arenaFamilyId.ToString() );
-
-                return rockFamilyId;
             }
         }
 
@@ -538,7 +435,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             {
                 int adultRoleId = context.Lookup.FirstOrDefault( l => l.guid == new Guid( Lookup.FAMILY_MEMBER_ROLE_ADULT_GUID ) ).lookup_id;
                 var familyMembers = context.FamilyMember
-                                        .Include("Person")
+                                        .Include( "Person" )
                                         .Where( fm => fm.family_id == arenaFamilyId );
 
                 FamilyMember hoh = familyMembers
@@ -555,15 +452,66 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private int? SavePersonPhone( int rockPersonId, PersonPhone phone, RockService service )
+        private Person GetArenaPerson( int personId )
         {
-            RockMaps.PhoneNumberMap rockPhoneMap = new RockMaps.PhoneNumberMap( service );
+            using ( ArenaContext Context = ArenaContext.BuildContext( ConnectionInfo ) )
+            {
+               
+                return Context.Person
+                        .Include( "PersonEmail" )
+                        .Include( "PersonAddress.Address" )
+                        .Include( "FamilyMember.Family" )
+                        .FirstOrDefault( p => p.person_id.Equals( personId ) );
+            }
+        }
+
+
+
+        private int? GetRecordCount()
+        {
+            using (Model.ArenaContext Context = Arena.Model.ArenaContext.BuildContext(ConnectionInfo))
+            {
+                return Context.Person.Count();
+            }
+        }
+
+        private int? GetRockFamily( int arenaFamilyId )
+        {
+            RockMaps.GroupMap groupMap = new RockMaps.GroupMap( Service );
+            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( arenaFamilyId.ToString() );
+
+            if ( rockFamily != null )
+            {
+                return (int?)rockFamily["Id"];
+            }
+            else
+            {
+                Family arenaFamily = GetArenaFamily(arenaFamilyId);
+
+                if(arenaFamily == null)
+                {
+                    return null;
+                }
+
+                int? arenaCampusId = GetArenaFamilyCampusId( arenaFamilyId );
+                int? rockCampusId = (int?) (new RockMaps.CampusMap(Service).GetByForeignId( arenaCampusId.ToString() )["Id"]);
+                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, arenaFamily.family_name, arenaFamilyId.ToString() );
+
+                return rockFamilyId;
+            }
+        }
+
+
+
+        private int? SavePersonPhone( int rockPersonId, PersonPhone phone )
+        {
+            RockMaps.PhoneNumberMap rockPhoneMap = new RockMaps.PhoneNumberMap( Service );
 
             var rockPhone = rockPhoneMap.GetPhoneByForeignId( string.Format( "{0}_{1}", phone.person_id, phone.phone_luid ) );
             int? rockPhoneId = null;
             if ( rockPhone == null )
             {
-                rockPhoneId = rockPhoneMap.SavePhone( number: phone.phone_number_stripped, personId: rockPersonId, numbertypeValueId: (int)DefinedValueMatch.GetDefinedValueMatch( phone.phone_luid.ToString() ), 
+                rockPhoneId = rockPhoneMap.SavePhone( number: phone.phone_number_stripped, personId: rockPersonId, numbertypeValueId: (int) GetDefinedValueIdByForeignId(phone.phone_luid), 
                     extension: phone.phone_ext, isSystem: false, isMessagingEnabled: phone.sms_enabled, isUnlisted: phone.unlisted, foreignId: string.Format( "{0}_{1}", phone.person_id, phone.phone_luid ) );
             }
             else

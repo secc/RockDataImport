@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 
+using org.secc.Rock.DataImport.BAL;
 using org.secc.Rock.DataImport.BAL.Integration;
 using org.secc.Rock.DataImport.BAL.Helper;
 using org.secc.Rock.DataImport.Extensions.Arena.Model;
@@ -49,7 +50,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
             }
         }
 
+
+
         public Dictionary<string, string> ConnectionInfo { get; set; }
+        public RockService Service { get; set; }
 
         public  string PluginFolder { get; set; }
         #endregion
@@ -145,7 +149,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena
         #region Private Methods
         private List<ExportMap> LoadExportMaps()
         {
-            ExportMapContainer container = new ExportMapContainer(ConnectionInfo, PluginFolder );
+            ExportMapContainer container = new ExportMapContainer(ConnectionInfo, PluginFolder, Service );
             return container.GetExportMaps( Identifier );
         }
         #endregion

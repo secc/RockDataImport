@@ -16,13 +16,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [ExportMetadata("Name", "Campus")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
     [ExportMetadata("Description", "Campus locations from ArenaChMS.")]
-    public class CampusMap : iExportMapComponent
+    public class CampusMap : ArenaMapBase
     {
-        private int? mRecordCount;
 
-        private Dictionary<string,string> ConnectionInfo{get;set;}
-
-        public int? RecordCount
+        public override int? RecordCount
         {
             get
             {
@@ -35,15 +32,13 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private CampusMap() { }
+        private CampusMap() : base( typeof( CampusMap ) ) { }
 
         [ImportingConstructor]
-        public CampusMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo )
-        {
-            ConnectionInfo = connectionInfo;
-        }
+        public CampusMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")]RockService service ) : base( typeof( CampusMap ), connectionInfo, service)
+        { }
 
-        public List<string> GetSubsetIDs( int startingRecord = 0, int size = 0 )
+        public override List<string> GetSubsetIDs( int startingRecord = 0, int size = 0 )
         {
             using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext( ConnectionInfo ) )
             {
@@ -60,7 +55,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public void ExportRecord( string identifier, RockService service  )
+        public override void ExportRecord( string identifier )
         {
             int campusId = 0;
             if ( !int.TryParse( identifier, out campusId ) )
@@ -77,7 +72,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 return; 
             }
 
-            BAL.RockMaps.CampusMap rockCampusMap = new BAL.RockMaps.CampusMap( service );
+            BAL.RockMaps.CampusMap rockCampusMap = new BAL.RockMaps.CampusMap( Service );
             int? rockCampusId = null;
             Dictionary<string, object> rockCampus = rockCampusMap.GetByForeignId( campusId.ToString() );
 
@@ -87,7 +82,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( arenaCampus.address_id != null )
                 {
-                    locationId = SaveCampusLocation( arenaCampus.name, arenaCampus.Address, service );
+                    locationId = SaveCampusLocation( arenaCampus.name, arenaCampus.Address );
                 }
                 int? leaderPersonId = null;
 
@@ -107,15 +102,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         }
 
-        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
+        public override Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
         {
-            return System.Attribute.GetCustomAttributes( this.GetType() )
-                .Where( a => a.GetType() == attributeType )
-                .Select( a => new
-                {
-                    Name = a.GetType().GetProperties().Where( p => p.Name == "Name" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString(),
-                    Attribute = a.GetType().GetProperties().ToDictionary( p => p.Name, p1 => p1.GetValue( a ) )
-                } ).ToDictionary( a => a.Name, a => a.Attribute );
+            return GetAttributes( this.GetType(), attributeType );
 
         }
 
@@ -144,10 +133,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
-
-
-
+        public override event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
         private Model.Campus GetArenaCampus( int campusId )
         {
@@ -165,9 +151,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private int? SaveCampusLocation( string campusName, Model.Address a, RockService service )
+        private int? SaveCampusLocation( string campusName, Model.Address a )
         {
-            RockMap.LocationMap locationMap = new RockMap.LocationMap( service );
+            RockMap.LocationMap locationMap = new RockMap.LocationMap( Service );
 
             Dictionary<string,object> rockLocation = locationMap.GetByForeignId( a.address_id.ToString() );
 
@@ -184,14 +170,14 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
            
         }
 
-        private Task<int?> SaveCampusLeaderPerson( string personId, RockService service )
+        private Task<int?> SaveCampusLeaderPerson( string personId )
         {
             var tcs = new TaskCompletionSource<int?>();
-            var PersonMap = new PersonMap( ConnectionInfo );
+            var PersonMap = new PersonMap( ConnectionInfo, Service );
 
             PersonMap.ExportAttemptCompleted += ( o, e ) => tcs.SetResult( e.RockIdentifier );
 
-            PersonMap.ExportRecord( personId, service );
+            PersonMap.ExportRecord( personId );
 
             return tcs.Task;
 

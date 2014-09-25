@@ -21,12 +21,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [Dependency("Campus", typeof(CampusMap), 0)]
     [Dependency("Person", typeof(PersonMap), 1)]
     
-    public class CampusLeaderMap : iExportMapComponent
+    public class CampusLeaderMap : ArenaMapBase
     {
-        private int? mRecordCount;
-
-        private Dictionary<string, string> ConnectionInfo { get; set; }
-        public int? RecordCount
+        public override int? RecordCount
         {
             get 
             {
@@ -40,15 +37,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         }
 
 
-        private CampusLeaderMap() { }
+        private CampusLeaderMap() : base( typeof( CampusLeaderMap ) ) { }
 
         [ImportingConstructor]
-        public CampusLeaderMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo )
-        {
-            ConnectionInfo = connectionInfo;
-        }
+        public CampusLeaderMap( [Import( "ConnectionInfo" )] Dictionary<string, string> connectionInfo, [Import("RockService")] RockService service ) : base( typeof( CampusLeaderMap ), connectionInfo, service ) { }
 
-        public List<string> GetSubsetIDs( int startingRecord, int size )
+        public override List<string> GetSubsetIDs( int startingRecord, int size )
         {
             using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )
             {
@@ -65,7 +59,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public void ExportRecord( string identifier, RockService service )
+        public override void ExportRecord( string identifier )
         {
             int arenaCampusId = 0;
 
@@ -90,15 +84,15 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
             }
 
-            Dictionary<string, object> rockCampus = GetRockCampusByArenaId( arenaCampusId, service );
+            Dictionary<string, object> rockCampus = GetRockCampusByArenaId( arenaCampusId );
 
             if ( rockCampus == null )
             {
-                var campusTask = SaveCampus( arenaCampusId, service );
+                var campusTask = SaveCampus( arenaCampusId );
 
                 if ( campusTask.Result != null )
                 {
-                    rockCampus = GetRockCampus( (int)campusTask.Result, service );
+                    rockCampus = GetRockCampus( (int)campusTask.Result );
                 }
                 else
                 {
@@ -107,15 +101,15 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
             }
 
-            Dictionary<string, object> campusLeader = GetRockCampusLeaderByArenaId( (int) arenaCampus.leader_person_id, service );
+            Dictionary<string, object> campusLeader = GetRockCampusLeaderByArenaId( (int) arenaCampus.leader_person_id );
 
             if ( campusLeader == null )
             {
-                var personTask = SaveLeader( (int)arenaCampus.leader_person_id, service );
+                var personTask = SaveLeader( (int)arenaCampus.leader_person_id );
 
                 if ( personTask.Result != null )
                 {
-                    campusLeader = GetRockCampusLeader( (int)personTask.Result, service );
+                    campusLeader = GetRockCampusLeader( (int)personTask.Result );
 
                     if ( campusLeader == null )
                     {
@@ -125,7 +119,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 }
             }
 
-            RockMap.CampusMap campusMap = new RockMap.CampusMap( service );
+            RockMap.CampusMap campusMap = new RockMap.CampusMap( Service );
             bool isSystem = (bool)rockCampus["IsSystem"];
             string name = rockCampus["Name"].ToString();
             string shortCode = rockCampus["ShortCode"].ToString();
@@ -152,19 +146,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        public Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
+        public override Dictionary<string, Dictionary<string, object>> GetAttributes( Type attributeType )
         {
-            return System.Attribute.GetCustomAttributes( this.GetType() )
-                .Where( a => a.GetType() == attributeType )
-                .Select( a => new
-                {
-                    Name = a.GetType().GetProperties().Where( p => p.Name == "Name" ).Select( p => p.GetValue( a ) ).FirstOrDefault().ToString(),
-                    Attribute = a.GetType().GetProperties().ToDictionary( p => p.Name, p1 => p1.GetValue( a ) )
-                } ).ToDictionary( a => a.Name, a => a.Attribute );
-
+            return GetAttributes( this.GetType(), attributeType );
         }
 
-        public event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
+        public override event EventHandler<ExportMapEventArgs> ExportAttemptCompleted;
 
         private Campus GetArenaCampus( int campusId )
         {
@@ -183,29 +170,29 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private Dictionary<string, object> GetRockCampus( int rockCampusId, RockService service )
+        private Dictionary<string, object> GetRockCampus( int rockCampusId )
         {
-            RockMap.CampusMap campusMap = new RockMap.CampusMap( service );
+            RockMap.CampusMap campusMap = new RockMap.CampusMap( Service );
             return campusMap.GetById( rockCampusId );
         }
 
-        private Dictionary<string, object> GetRockCampusByArenaId( int arenaCampusId, RockService service )
+        private Dictionary<string, object> GetRockCampusByArenaId( int arenaCampusId )
         {
-            RockMap.CampusMap campusMap = new RockMap.CampusMap( service );
+            RockMap.CampusMap campusMap = new RockMap.CampusMap( Service );
 
             return campusMap.GetByForeignId( arenaCampusId.ToString() );
 
         }
 
-        private Dictionary<string, object> GetRockCampusLeader( int personId, RockService service )
+        private Dictionary<string, object> GetRockCampusLeader( int personId )
         {
-            RockMap.PersonMap personMap = new RockMap.PersonMap( service );
+            RockMap.PersonMap personMap = new RockMap.PersonMap( Service );
             return personMap.GetById( personId );
         }
 
-        private Dictionary<string, object> GetRockCampusLeaderByArenaId( int arenaLeaderPersonId, RockService service )
+        private Dictionary<string, object> GetRockCampusLeaderByArenaId( int arenaLeaderPersonId )
         {
-            RockMap.PersonMap personMap = new RockMap.PersonMap( service );
+            RockMap.PersonMap personMap = new RockMap.PersonMap( Service );
             return personMap.GetByForeignId( arenaLeaderPersonId.ToString() );
         }
 
@@ -234,26 +221,26 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private Task<int ?> SaveCampus(int arenaCampusId, RockService service)
+        private Task<int ?> SaveCampus(int arenaCampusId )
         {
             var tcs = new TaskCompletionSource<int?>();
-            var CampusMap = new CampusMap( ConnectionInfo );
+            var CampusMap = new CampusMap( ConnectionInfo, Service );
 
             CampusMap.ExportAttemptCompleted += ( o, e ) => tcs.SetResult( e.RockIdentifier );
 
-            CampusMap.ExportRecord( arenaCampusId.ToString(), service );
+            CampusMap.ExportRecord( arenaCampusId.ToString() );
 
             return tcs.Task;
 
         }
 
-        private Task<int?> SaveLeader( int arenaLeaderPersonId, RockService service )
+        private Task<int?> SaveLeader( int arenaLeaderPersonId )
         {
             var tcs = new TaskCompletionSource<int?>();
-            var PersonMap = new PersonMap( ConnectionInfo );
+            var PersonMap = new PersonMap( ConnectionInfo, Service );
 
             PersonMap.ExportAttemptCompleted += ( o, e ) => tcs.SetResult( e.RockIdentifier );
-            PersonMap.ExportRecord( arenaLeaderPersonId.ToString(), service );
+            PersonMap.ExportRecord( arenaLeaderPersonId.ToString() );
 
             return tcs.Task;
         }
