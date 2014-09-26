@@ -36,6 +36,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         private const int ARENA_ADULT_ROLE_LUID = 29;
         private const int ARENA_CHILD_ROLE_LUID = 31;
+
         #endregion
 
         #region Properties
@@ -241,11 +242,19 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 string foreignId = arenaPerson.person_id.ToString();
 
+                int? photoId = null;
+
+                if ( arenaPerson.blob_id != null && PhotoUploadEnabled() )
+                {
+                    photoId = SavePersonPhoto( arenaPerson.Blob );
+                }
+
+
                 rockPersonId = rockPersonMap.Save( false, recordTypeValueId: recordTypeValueId, recordStatusValueId: recordStatusValueId, recordStatusReasonValueId: recordStatusReasonId, isDeceased: isDeceased,
                     connectionStatusValueId: connectionStatusValueID, titleValueId: titleValueId, firstName: arenaPerson.first_name, nickName: arenaPerson.nick_name, middleName: arenaPerson.middle_name,
                     lastName: arenaPerson.last_name, suffixValueId: suffixValueId, birthDay: birthDay, birthMonth: birthMonth, birthYear: birthYear, gender: gender, maritalStatusValueId: maritalStatusValueId,
                     anniversaryDate: anniversaryDate, graduationDate: graduationDate, givingGroupId: givingGroupId, email: primaryEmailAddress, isEmailActive: isEmailActive, emailNote: emailNote, emailPreference: emailPreference,
-                    foreignId: foreignId );
+                    foreignId: foreignId, photoId: photoId );
 
                 if ( rockPersonId == null )
                 {
@@ -301,11 +310,15 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                     int? personPhone = SavePersonPhone( (int) rockPersonId, phone );
                 }
 
+
+
             }
             else
             {
                 rockPersonId = (int?)rockPerson["Id"];
             }
+
+
 
         }
 
@@ -420,6 +433,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
+        private bool PhotoUploadEnabled()
+        {
+            return new RockMaps.BinaryFileTypeMap( Service ).IsPhotoUploadEnabled();
+        }
+
         private Family GetArenaFamily( int familyId )
         {
             using ( ArenaContext context = ArenaContext.BuildContext( ConnectionInfo ) )
@@ -520,6 +538,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
 
             return rockPhoneId;
+        }
+
+        private int? SavePersonPhoto( Blob photoBlob )
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
