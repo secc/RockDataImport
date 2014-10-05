@@ -21,7 +21,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
-        public Dictionary<string, object> GetByForeignId( string foreignId )
+        public Dictionary<string, object> GetByForeignId( string foreignId, bool includeAliases = false )
         {
             PersonController controller = new PersonController( Service );
             Person person = controller.GetByForeignId( foreignId );
@@ -30,11 +30,14 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             return personDictionary;
         }
 
-        public Dictionary<string, object> GetById( int id )
+        public Dictionary<string, object> GetById( int id, bool includeAliases = false )
         {
             PersonController controller = new PersonController( Service );
             Person person = controller.GetById( id );
+
             Dictionary<string, object> personDictionary = ToDictionary( person );
+
+
 
             return personDictionary;
         }
@@ -154,7 +157,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         public int? SaveNewPersonAlias( int personId)
         {
             PersonAliasController aliasController = new PersonAliasController( Service );
-            string expression = string.Format( "PersonId eq {0} and AliasPersonid eq {1}", personId, personId );
+            string expression = string.Format( "PersonId eq {0} and AliasPersonId eq {1}", personId, personId );
             PersonAlias alias = aliasController.GetByFilter( expression ).FirstOrDefault();
 
             PersonController personController = new PersonController( Service );

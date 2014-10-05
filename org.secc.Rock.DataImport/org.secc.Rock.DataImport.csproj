@@ -61,6 +61,9 @@
     <Compile Include="DefinedTypeMappingPage.xaml.cs">
       <DependentUpon>DefinedTypeMappingPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ImportStatusPage.xaml.cs">
+      <DependentUpon>ImportStatusPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RockLogin.xaml.cs">
       <DependentUpon>RockLogin.xaml</DependentUpon>
     </Compile>
@@ -87,6 +90,10 @@
     <Page Include="Images\rock-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ImportStatusPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -11,7 +11,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 {
     public class BinaryFileDataController : BaseController<BinaryFileData>
     {
-        string BaseApiPath = "/api/BaseFileDatas";
+        string BaseApiPath = "/api/BinaryFileDatas";
 
         private BinaryFileDataController() : base() { }
 
@@ -24,37 +24,41 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override void Delete( int id )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( "{0}{1}", BaseApiPath, id );
+            Service.DeleteData( apiPath );
         }
 
         public override BinaryFileData GetById( int id )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( "{0}{1}", BaseApiPath, id );
+            return Service.GetData<BinaryFileData>( apiPath );
         }
 
         public override BinaryFileData GetByGuid( Guid guid )
         {
-            throw new NotImplementedException();
+            return Service.GetDataByGuid<BinaryFileData>( BaseApiPath, guid );
         }
 
         public override List<BinaryFileData> GetAll()
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<BinaryFileData>>( BaseApiPath );
         }
 
         public override List<BinaryFileData> GetByFilter( string expression )
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<BinaryFileData>>( BaseApiPath, expression );
         }
 
         public override BinaryFileData GetByForeignId( string foreignId )
         {
-            throw new NotImplementedException();
+            string expression = string.Format( "ForeignId eq '{0}'", foreignId );
+            return GetByFilter( expression ).FirstOrDefault();
         }
 
         public override void Update( BinaryFileData entity )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( "{0}{1}", BaseApiPath, entity.Id );
+            Service.PutData<BinaryFileData>( apiPath, entity );
         }
     }
 }

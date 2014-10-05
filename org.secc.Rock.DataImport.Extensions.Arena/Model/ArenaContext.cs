@@ -96,7 +96,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         
         //core_attribute_group
         public virtual DbSet<ArenaAttributeGroup> ArenaAttributeGroup { get; set; }
-        
+
+        //util_blob
+        public virtual DbSet<Blob> Blob { get; set; }
+
         //orgn_campus
         public virtual DbSet<Campus> Campus { get; set; }
 
@@ -139,8 +142,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         //core_person_phone
         public virtual DbSet<PersonPhone> PersonPhone { get; set; }
 
-        //util_blob
-        public virtual DbSet<Blob> Blob { get; set; }
 
 
         protected override void OnModelCreating( DbModelBuilder modelBuilder )
@@ -290,15 +291,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
                 .IsUnicode( false );
 
             modelBuilder.Entity<Blob>()
-                 .HasMany( e => e.BlobOrganizations )
-                 .WithOptional( e => e.OrganizationBlob )
-                 .HasForeignKey( e => e.blob_id );
-
-            modelBuilder.Entity<Blob>()
-                .HasMany( e => e.BlobPersons )
-                .WithOptional( e => e.Blob )
-                .HasForeignKey( e => e.blob_id )
-                .WillCascadeOnDelete( false );
+                .HasMany( e => e.ImageOrganizations )
+                .WithOptional( e => e.OrganizationImage )
+                .HasForeignKey( e => e.blob_id );
 
             modelBuilder.Entity<Family>()
                 .Property( e => e.created_by )
@@ -650,11 +645,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
                 .WillCascadeOnDelete( false );
 
             modelBuilder.Entity<Organization>()
-                .HasMany( e => e.Blob )
-                .WithRequired( e => e.Organization )
-                .WillCascadeOnDelete( false );
-
-            modelBuilder.Entity<Organization>()
                 .HasMany( e => e.Family )
                 .WithRequired( e => e.Organization )
                 .WillCascadeOnDelete( false );
@@ -708,6 +698,12 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
             modelBuilder.Entity<Organization>()
                 .HasMany( e => e.Campus )
                 .WithRequired( e => e.Organization )
+                .WillCascadeOnDelete( false );
+
+            modelBuilder.Entity<Organization>()
+                .HasMany( e => e.Blob )
+                .WithRequired( e => e.Organization )
+                .HasForeignKey( e => e.organization_id )
                 .WillCascadeOnDelete( false );
         }
     }

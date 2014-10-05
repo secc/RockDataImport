@@ -26,12 +26,15 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override void Delete( int id )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( "{0}{1}", BaseApiPath, id );
+            Service.DeleteData( apiPath );
+
         }
 
         public override BinaryFile GetById( int id )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( "{0}{1}", BaseApiPath, id );
+            return Service.GetData<BinaryFile>( apiPath );
         }
 
         public override BinaryFile GetByGuid( Guid guid )
@@ -41,22 +44,24 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override List<BinaryFile> GetAll()
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<BinaryFile>>( BaseApiPath );
         }
 
         public override List<BinaryFile> GetByFilter( string expression )
         {
-            throw new NotImplementedException();
+            return Service.GetData<List<BinaryFile>>( BaseApiPath, expression );
         }
 
         public override BinaryFile GetByForeignId( string foreignId )
         {
-            throw new NotImplementedException();
+            string expression = String.Format( "ForeignId eq '{0}'", foreignId );
+            return GetByFilter( expression ).FirstOrDefault();
         }
 
         public override void Update( BinaryFile entity )
         {
-            throw new NotImplementedException();
+            string apiPath = string.Format( "{0}{1}", BaseApiPath, entity.Id );
+            Service.PutData<BinaryFile>( apiPath, entity );
         }
     }
 }

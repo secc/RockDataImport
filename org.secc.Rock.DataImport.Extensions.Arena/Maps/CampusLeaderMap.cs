@@ -121,16 +121,16 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
             RockMap.CampusMap campusMap = new RockMap.CampusMap( Service );
             bool isSystem = (bool)rockCampus["IsSystem"];
-            string name = rockCampus["Name"].ToString();
-            string shortCode = rockCampus["ShortCode"].ToString();
+            string name = (string)rockCampus["Name"];
+            string shortCode = (string)rockCampus["ShortCode"];
             int? locationId = (int?)rockCampus["LocationId"];
             Guid guid = (Guid)rockCampus["Guid"];
-            string foreignId = rockCampus["ForeignId"].ToString();
-            string phoneNumber = rockCampus["PhoneNumber"].ToString();
-            string serviceTimes = rockCampus["ServiceTimes"].ToString();
-            string description = rockCampus["Description"].ToString();
+            string foreignId = (string)rockCampus["ForeignId"];
+            string phoneNumber = (string)rockCampus["PhoneNumber"];
+            string serviceTimes = (string)rockCampus["ServiceTimes"];
+            string description = (string)rockCampus["Description"];
             bool isActive = (bool)rockCampus["IsActive"];
-            string url = rockCampus["Url"].ToString();
+            string url = (string)rockCampus["Url"];
             int leaderPersonAliasId = (int)campusLeader["Id"];
 
             int? campusId = campusMap.SaveCampus( isSystem, name, shortCode, locationId, phoneNumber, leaderPersonAliasId, serviceTimes, foreignId, (int)rockCampus["Id"] );

@@ -104,7 +104,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
             if ( rockPerson == null )
             {
-                int? rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().family_id);
+                int? rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().Family );
 
                 int recordTypeValueId = arenaPerson.business ? rockPersonMap.GetRecordTypeBusiness() : rockPersonMap.GetRecordTypePerson();
 
@@ -278,7 +278,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 
 
-                rockGroupMap.SaveGroupMember( (int) rockFamilyId, (int) rockPersonId, familyMemberRoleId );
+                rockGroupMap.SaveGroupMember( (int) rockFamilyId, (int) rockPersonId, familyMemberRoleId, 1 );
 
                 rockGroupMap.SaveKnownRelationshipsGroup( (int)rockPersonId );
                 rockGroupMap.SaveImpliedRelationshipsGroup( (int)rockPersonId );
@@ -305,7 +305,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                     }
                 }
 
-                foreach ( var phone in arenaPerson.PersonPhone )
+                foreach ( var phone in arenaPerson.PersonPhone.Where(p => !String.IsNullOrWhiteSpace(p.phone_number) ) )
                 {
                     int? personPhone = SavePersonPhone( (int) rockPersonId, phone );
                 }
@@ -319,6 +319,14 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
 
 
+            if ( rockPersonId != null )
+            {
+                OnExportAttemptCompleted( identifier, true, rockPersonId, this.GetType() );
+            }
+            else
+            {
+                OnExportAttemptCompleted( identifier, false, mapType: this.GetType() );
+            }
 
         }
 
@@ -474,11 +482,13 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         {
             using ( ArenaContext Context = ArenaContext.BuildContext( ConnectionInfo ) )
             {
-               
+
                 return Context.Person
                         .Include( "PersonEmail" )
+                        .Include( "PersonPhone" )
                         .Include( "PersonAddress.Address" )
                         .Include( "FamilyMember.Family" )
+                        .Include( "Blob" )
                         .FirstOrDefault( p => p.person_id.Equals( personId ) );
             }
         }
@@ -493,10 +503,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private int? GetRockFamily( int arenaFamilyId )
+        private int? GetRockFamily( Model.Family f )
         {
             RockMaps.GroupMap groupMap = new RockMaps.GroupMap( Service );
-            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( arenaFamilyId.ToString() );
+            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( f.family_id.ToString() );
 
             if ( rockFamily != null )
             {
@@ -504,16 +514,14 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
             else
             {
-                Family arenaFamily = GetArenaFamily(arenaFamilyId);
-
-                if(arenaFamily == null)
+                if(f == null)
                 {
                     return null;
                 }
 
-                int? arenaCampusId = GetArenaFamilyCampusId( arenaFamilyId );
+                int? arenaCampusId = GetArenaFamilyCampusId( f.family_id );
                 int? rockCampusId = (int?) (new RockMaps.CampusMap(Service).GetByForeignId( arenaCampusId.ToString() )["Id"]);
-                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, arenaFamily.family_name, arenaFamilyId.ToString() );
+                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, f.family_name, null, f.family_id.ToString() );
 
                 return rockFamilyId;
             }
@@ -542,7 +550,27 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         private int? SavePersonPhoto( Blob photoBlob )
         {
-            throw new NotImplementedException();
+            RockMaps.BinaryFileMap binaryFileMap = new RockMaps.BinaryFileMap( Service );
+            Dictionary<string, object> binaryFile = binaryFileMap.GetByForeignId( photoBlob.blob_id.ToString() );
+
+            if ( binaryFile != null )
+            {
+                return (int?)binaryFile["Id"];
+            }
+            string fileName = string.Empty;
+
+            if ( String.IsNullOrWhiteSpace( photoBlob.original_file_name ) )
+            {
+                fileName = string.Format( "{0}.{1}", photoBlob.blob_id, photoBlob.mime_type.Replace( "image/", "" ) );
+            }
+            else
+            {
+                fileName = photoBlob.original_file_name;
+            }
+
+            int? fileId = binaryFileMap.SavePersonPhoto( fileName , photoBlob.mime_type, photoBlob.description, photoBlob.blob, false, false, photoBlob.blob_id.ToString() );
+
+            return fileId;
         }
 
         #endregion

@@ -14,7 +14,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
             Address = new HashSet<Address>();
             ArenaAttribute = new HashSet<ArenaAttribute>();
             ArenaAttributeGroup = new HashSet<ArenaAttributeGroup>();
-            Blob = new HashSet<Blob>();
             Family = new HashSet<Family>();
             FamilyMember = new HashSet<FamilyMember>();
             Lookup = new HashSet<Lookup>();
@@ -26,6 +25,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
             PersonHistory = new HashSet<PersonHistory>();
             PersonPhone = new HashSet<PersonPhone>();
             Campus = new HashSet<Campus>();
+            Blob = new HashSet<Blob>();
         }
 
         [Key]
@@ -81,8 +81,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
 
         public virtual ICollection<ArenaAttributeGroup> ArenaAttributeGroup { get; set; }
 
-        public virtual ICollection<Blob> Blob { get; set; }
-
         public virtual ICollection<Campus> Campus { get; set; }
 
         public virtual ICollection<Family> Family { get; set; }
@@ -94,8 +92,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         public virtual ICollection<LookupType> LookupType { get; set; }
 
         public virtual Address OrganizationAddress { get; set; }
-
-        public virtual Blob OrganizationBlob { get; set; }
 
         public virtual Person OrganizationLeader { get; set; }
 
@@ -110,6 +106,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         public virtual ICollection<PersonHistory> PersonHistory { get; set; }
 
         public virtual ICollection<PersonPhone> PersonPhone { get; set; }
+
+        public virtual Blob OrganizationImage { get; set; }
+
+        public virtual ICollection<Blob> Blob { get; set; }
 
         
     }

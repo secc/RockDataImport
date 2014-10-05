@@ -20,39 +20,56 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
-        public int? SavePersonPhoto( string fileName, string mimeType, string description, byte[] content, bool isSystem = false, bool isTemporary = false, string foreignId = null )
+        public Dictionary<string, object> GetByForeignId( string foreignId )
         {
-            BinaryFile file = new BinaryFile();
-            file.IsTemporary = isTemporary;
-            file.IsSystem = isSystem;
-            file.Url = string.Format( "~/GetImage.ashx?guid={0}", file.Guid.ToString().ToLower() );
-            file.BinaryFileTypeId = (int?)(new BinaryFileTypeMap(Service).GetPhotoBinaryFileType( )).Id ?? null;
-            file.FileName = fileName;
-            file.MimeType = mimeType;
-            file.Description = description;
-            file.StorageEntityType = GetDatabaseStorageEntityType();
-            file.ForeignId = foreignId;
+            BinaryFileController fileController = new BinaryFileController( Service );
+            BinaryFile file = fileController.GetByForeignId( foreignId );
 
-            BinaryFileController bfController = new BinaryFileController( Service );
-            bfController.Add( file );
-
-            file = bfController.GetByGuid( file.Guid );
-
-            if(file != null)
+            if ( file != null && file.StorageEntityTypeId == GetDatabaseStorageEntityType().Id )
             {
-                BinaryFileData fileData = new BinaryFileData();
-                fileData.Id = file.Id;
-                fileData.Content = content;
-
                 BinaryFileDataController dataController = new BinaryFileDataController( Service );
-
-
+                file.Data = dataController.GetById( file.Id );
             }
 
+            var fileDictionary = ToDictionary( file );
+
+            if ( fileDictionary != null )
+            {
+                fileDictionary.Add( "Data", ToDictionary( file.Data ) );
+            }
+
+            return fileDictionary;
+        }
+
+        public int? SavePersonPhoto( string fileName, string mimeType, string description, byte[] content, bool isSystem = false, bool isTemporary = false, string foreignId = null )
+        {
+            BinaryFile binaryFile = new BinaryFile();
+            binaryFile.FileName = fileName;
+            binaryFile.BinaryFileTypeId = new BinaryFileTypeMap(Service).GetPhotoBinaryFileType().Id;
+            binaryFile.Url = string.Format( "~/GetImage.ashx?guid={0}", binaryFile.Guid );
+            binaryFile.IsSystem = false;
+            binaryFile.MimeType = mimeType;
+            binaryFile.Description = description;
+            binaryFile.IsTemporary = isTemporary;
+            binaryFile.ForeignId = foreignId;
+
+            BinaryFileController fileController = new BinaryFileController( Service );
+            fileController.Add( binaryFile );
+
+            binaryFile = fileController.GetByGuid(binaryFile.Guid);
+
+            binaryFile.Data = new BinaryFileData();
+            binaryFile.Data.Content = content;
+            binaryFile.Data.Id = binaryFile.Id;
+
+            BinaryFileDataController fileDataController = new BinaryFileDataController( Service );
+            fileDataController.Add( binaryFile.Data );
+
+            return binaryFile.Id;
 
 
 
-            return file.Id;
+            
         }
 
         private EntityType GetDatabaseStorageEntityType()

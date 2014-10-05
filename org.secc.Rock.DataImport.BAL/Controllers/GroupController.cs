@@ -54,7 +54,7 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public Group GetByForeignIdGroupType( string foreignId, int groupTypeId )
         {
-            string expression = string.Format( "ForeignId eq '{0}' AND GroupTypeId eq {1}", foreignId, groupTypeId );
+            string expression = string.Format( "ForeignId eq '{0}' and GroupTypeId eq {1}", foreignId, groupTypeId );
             return GetByFilter( expression ).FirstOrDefault();
         }
 

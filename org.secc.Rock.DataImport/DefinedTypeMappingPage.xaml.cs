@@ -30,6 +30,8 @@ namespace org.secc.Rock.DataImport
         List<MappedDefinedType> MappedDefinedTypes = null;
         List<DefinedValueSummary> SelectableRockDefinedValues = null;
         bool isDirty = false;
+
+        int successCount = 0;
         string currentFKValue;
 
         private DefinedTypeMappingPage()
@@ -109,7 +111,30 @@ namespace org.secc.Rock.DataImport
             {
                 PromptToSave( dgDataMaps.SelectedItem as MappedDefinedType );
             }
+
+            if ( Integration.Component.ExportMaps.Where( m => m.Selected == true ).Where( m => m.Name == "Campus Leader" ).Count() > 0 )
+            {
+                var component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus Leader" ).FirstOrDefault().Component;
+                component.ExportAttemptCompleted += component_ExportAttemptCompleted;
+                foreach ( var identifier in component.GetSubsetIDs(0,1000) )
+                {
+                    component.ExportRecord( identifier );
+                }
+
+                string message = string.Format("Import complete {0} records exported successfully.", successCount);
+
+                MessageBox.Show( message, "Import completed", MessageBoxButton.OK, MessageBoxImage.Information );
+            }
         }
+
+        void component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )
+        {
+            if ( e.IsSuccess )
+            {
+                successCount++;
+            }
+        }
+
 
         private void dgDataMaps_SelectionChanged( object sender, SelectionChangedEventArgs e )
         {
