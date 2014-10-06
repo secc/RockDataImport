@@ -66,6 +66,7 @@
     <Compile Include="Model\ArenaAttribute.cs" />
     <Compile Include="Model\ArenaAttributeGroup.cs" />
     <Compile Include="Model\ArenaContext.cs" />
+    <Compile Include="Model\Blob.cs" />
     <Compile Include="Model\Campus.cs" />
     <Compile Include="Model\Family.cs" />
     <Compile Include="Model\FamilyMember.cs" />

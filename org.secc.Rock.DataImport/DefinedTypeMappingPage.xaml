@@ -10,9 +10,9 @@
       Loaded="Page_Loaded"
       Style="{StaticResource pageBackground}">
 
-    <Page.Resources>
+    <!--<Page.Resources>
         <CollectionViewSource x:Key="rockValueSummaries" />
-    </Page.Resources>
+    </Page.Resources>-->
 
     <Grid>
         <Grid.ColumnDefinitions>

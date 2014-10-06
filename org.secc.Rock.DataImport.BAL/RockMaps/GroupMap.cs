@@ -86,10 +86,10 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             if ( impliedGroupId != null )
             {
                 GroupTypeRoleController roleController = new GroupTypeRoleController( Service );
-                Guid ownerRoleGuid = new Guid( SystemGuid.GroupType.GROUPTYPE_IMPLIED_RELATIONSHIPS );
+                Guid ownerRoleGuid = new Guid( SystemGuid.GroupRole.GROUPROLE_IMPLIED_RELATIONSHIPS_OWNER );
                 int ownerRoleId = roleController.GetByGuid( ownerRoleGuid ).Id;
 
-                SaveGroupMember( (int)impliedGroupId, ownerPersonId, ownerRoleId );
+                SaveGroupMember( (int)impliedGroupId, ownerPersonId, ownerRoleId, 1 );
             }
 
             return impliedGroupId;
@@ -109,7 +109,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
   
                 int roleId = roleController.GetByGuid( roleGuid ).Id;
 
-                SaveGroupMember( (int)knownGroupId, ownerPersonId, roleId );
+                SaveGroupMember( (int)knownGroupId, ownerPersonId, roleId, 1 );
 
             }
 

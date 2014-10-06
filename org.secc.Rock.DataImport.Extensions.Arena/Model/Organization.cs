@@ -25,6 +25,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
             PersonHistory = new HashSet<PersonHistory>();
             PersonPhone = new HashSet<PersonPhone>();
             Campus = new HashSet<Campus>();
+            Blob = new HashSet<Blob>();
         }
 
         [Key]
@@ -105,6 +106,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         public virtual ICollection<PersonHistory> PersonHistory { get; set; }
 
         public virtual ICollection<PersonPhone> PersonPhone { get; set; }
+
+        public virtual Blob OrganizationImage { get; set; }
+
+        public virtual ICollection<Blob> Blob { get; set; }
 
         
     }

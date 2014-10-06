@@ -21,22 +21,51 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             Service = service;
         }
 
-        public Dictionary<string, object> GetByForeignId( string foreignId )
+        public Dictionary<string, object> GetByForeignId( string foreignId, bool includeAlias = false )
         {
             PersonController controller = new PersonController( Service );
             Person person = controller.GetByForeignId( foreignId );
             Dictionary<string, object> personDictionary = ToDictionary( person );
 
+            if ( person != null && includeAlias )
+            {
+                PersonAlias primaryAlias = GetPrimaryAlias( person.Id );
+                if(primaryAlias != null)
+                {
+                    personDictionary.Add( "PrimaryAliasId", primaryAlias.Id );
+                }
+                
+            }
+
             return personDictionary;
         }
 
-        public Dictionary<string, object> GetById( int id )
+        public Dictionary<string, object> GetById( int id, bool includeAlias = false )
         {
             PersonController controller = new PersonController( Service );
             Person person = controller.GetById( id );
+
             Dictionary<string, object> personDictionary = ToDictionary( person );
 
+            if ( person != null && includeAlias )
+            {
+                PersonAlias primaryAlias = GetPrimaryAlias( person.Id );
+                if ( primaryAlias != null )
+                {
+                    personDictionary.Add( "PrimaryAliasId", primaryAlias.Id );
+                }
+
+            }
+
             return personDictionary;
+        }
+
+        public PersonAlias GetPrimaryAlias( int personId )
+        {
+            PersonAliasController aliasController = new PersonAliasController( Service );
+            List<PersonAlias> aliases = aliasController.GetByPersonId( personId );
+
+            return aliases.FirstOrDefault( a => a.AliasPersonId == personId );
         }
 
         public int GetRecordStatusIdActive()
@@ -154,7 +183,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         public int? SaveNewPersonAlias( int personId)
         {
             PersonAliasController aliasController = new PersonAliasController( Service );
-            string expression = string.Format( "PersonId eq {0} and AliasPersonid eq {1}", personId, personId );
+            string expression = string.Format( "PersonId eq {0} and AliasPersonId eq {1}", personId, personId );
             PersonAlias alias = aliasController.GetByFilter( expression ).FirstOrDefault();
 
             PersonController personController = new PersonController( Service );

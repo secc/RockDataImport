@@ -64,9 +64,13 @@
     <Compile Include="Controllers\AttributeQualifiersController.cs" />
     <Compile Include="Controllers\AttributeValuesController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BinaryFileController.cs" />
+    <Compile Include="Controllers\BinaryFileDataController.cs" />
+    <Compile Include="Controllers\BinaryFileTypeController.cs" />
     <Compile Include="Controllers\CampusController.cs" />
     <Compile Include="Controllers\DefinedTypeController.cs" />
     <Compile Include="Controllers\DefinedValueController.cs" />
+    <Compile Include="Controllers\EntityTypeController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\GroupLocationController.cs" />
     <Compile Include="Controllers\GroupMembersController.cs" />
@@ -87,6 +91,8 @@
     <Compile Include="LoginHelper.cs" />
     <Compile Include="Helper\DefinedTypeSummary.cs" />
     <Compile Include="Helper\DefinedValueSummary.cs" />
+    <Compile Include="RockMaps\BinaryFileMap.cs" />
+    <Compile Include="RockMaps\BinaryFileTypeMap.cs" />
     <Compile Include="RockMaps\CampusMap.cs" />
     <Compile Include="RockMaps\DefinedTypeMap.cs" />
     <Compile Include="RockMaps\DefinedValueMap.cs" />

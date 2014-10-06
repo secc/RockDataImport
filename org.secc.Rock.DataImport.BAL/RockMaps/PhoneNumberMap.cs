@@ -53,7 +53,8 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
             phone.IsUnlisted = isUnlisted;
             phone.Description = description;
             phone.ForeignId = foreignId;
-            phone.NumberFormatted = System.Text.RegularExpressions.Regex.Replace( cleanPhone, @"^(\d{3})(\d{3})(\d{4})$", @"($1) $2-$3" );
+            var ncc = phone.NumberFormattedWithCountryCode;
+            //phone.NumberFormatted = System.Text.RegularExpressions.Regex.Replace( cleanPhone, @"^(\d{3})(\d{3})(\d{4})$", @"($1) $2-$3" );
 
             return SavePhone( phone );
         }

@@ -36,6 +36,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         private const int ARENA_ADULT_ROLE_LUID = 29;
         private const int ARENA_CHILD_ROLE_LUID = 31;
+
         #endregion
 
         #region Properties
@@ -103,7 +104,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
             if ( rockPerson == null )
             {
-                int? rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().family_id);
+                int? rockFamilyId = GetRockFamily( arenaPerson.FamilyMember.FirstOrDefault().Family );
 
                 int recordTypeValueId = arenaPerson.business ? rockPersonMap.GetRecordTypeBusiness() : rockPersonMap.GetRecordTypePerson();
 
@@ -203,7 +204,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 int? givingGroupId = null;
 
-                if ( arenaPerson.contribute_individually )
+                if ( !arenaPerson.contribute_individually )
                 {
                     givingGroupId = rockFamilyId;
                 }
@@ -241,11 +242,19 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 string foreignId = arenaPerson.person_id.ToString();
 
+                int? photoId = null;
+
+                if ( arenaPerson.blob_id != null && PhotoUploadEnabled() )
+                {
+                    photoId = SavePersonPhoto( arenaPerson.Blob );
+                }
+
+
                 rockPersonId = rockPersonMap.Save( false, recordTypeValueId: recordTypeValueId, recordStatusValueId: recordStatusValueId, recordStatusReasonValueId: recordStatusReasonId, isDeceased: isDeceased,
                     connectionStatusValueId: connectionStatusValueID, titleValueId: titleValueId, firstName: arenaPerson.first_name, nickName: arenaPerson.nick_name, middleName: arenaPerson.middle_name,
                     lastName: arenaPerson.last_name, suffixValueId: suffixValueId, birthDay: birthDay, birthMonth: birthMonth, birthYear: birthYear, gender: gender, maritalStatusValueId: maritalStatusValueId,
                     anniversaryDate: anniversaryDate, graduationDate: graduationDate, givingGroupId: givingGroupId, email: primaryEmailAddress, isEmailActive: isEmailActive, emailNote: emailNote, emailPreference: emailPreference,
-                    foreignId: foreignId );
+                    foreignId: foreignId, photoId: photoId );
 
                 if ( rockPersonId == null )
                 {
@@ -269,7 +278,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 
 
-                rockGroupMap.SaveGroupMember( (int) rockFamilyId, (int) rockPersonId, familyMemberRoleId );
+                rockGroupMap.SaveGroupMember( (int) rockFamilyId, (int) rockPersonId, familyMemberRoleId, 1 );
 
                 rockGroupMap.SaveKnownRelationshipsGroup( (int)rockPersonId );
                 rockGroupMap.SaveImpliedRelationshipsGroup( (int)rockPersonId );
@@ -296,15 +305,27 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                     }
                 }
 
-                foreach ( var phone in arenaPerson.PersonPhone )
+                foreach ( var phone in arenaPerson.PersonPhone.Where(p => !String.IsNullOrWhiteSpace(p.phone_number) ) )
                 {
                     int? personPhone = SavePersonPhone( (int) rockPersonId, phone );
                 }
+
+
 
             }
             else
             {
                 rockPersonId = (int?)rockPerson["Id"];
+            }
+
+
+            if ( rockPersonId != null )
+            {
+                OnExportAttemptCompleted( identifier, true, rockPersonId, this.GetType() );
+            }
+            else
+            {
+                OnExportAttemptCompleted( identifier, false, mapType: this.GetType() );
             }
 
         }
@@ -413,11 +434,20 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( familyMemberIds.Count > 1 )
                 {
-                    isFamilyAddress = context.PersonAddress.Where( pa => pa.address_id == addressId ).Where( pa => familyMemberIds.Contains( pa.person_id ) ).Count() > 1;
+                    //isFamilyAddress = context.PersonAddress.Where( pa => pa.address_id == addressId ).Where( pa => familyMemberIds.Contains( pa.person_id ) ).Count() > 1;
+
+                    var familyMemberAddresses = context.PersonAddress.Where( pa => familyMemberIds.Contains( pa.person_id ) ).Select( pa => new { pa.person_id, pa.address_id } ).Distinct().ToList();
+
+                    isFamilyAddress = familyMemberAddresses.Where( a => a.address_id == addressId ).Count() > 1;
                 }
 
                 return isFamilyAddress;
             }
+        }
+
+        private bool PhotoUploadEnabled()
+        {
+            return new RockMaps.BinaryFileTypeMap( Service ).IsPhotoUploadEnabled();
         }
 
         private Family GetArenaFamily( int familyId )
@@ -456,11 +486,13 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         {
             using ( ArenaContext Context = ArenaContext.BuildContext( ConnectionInfo ) )
             {
-               
+
                 return Context.Person
                         .Include( "PersonEmail" )
+                        .Include( "PersonPhone" )
                         .Include( "PersonAddress.Address" )
                         .Include( "FamilyMember.Family" )
+                        .Include( "Blob" )
                         .FirstOrDefault( p => p.person_id.Equals( personId ) );
             }
         }
@@ -475,10 +507,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
         }
 
-        private int? GetRockFamily( int arenaFamilyId )
+        private int? GetRockFamily( Model.Family f )
         {
             RockMaps.GroupMap groupMap = new RockMaps.GroupMap( Service );
-            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( arenaFamilyId.ToString() );
+            Dictionary<string, object> rockFamily = groupMap.GetFamilyGroupByForeignId( f.family_id.ToString() );
 
             if ( rockFamily != null )
             {
@@ -486,16 +518,14 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
             else
             {
-                Family arenaFamily = GetArenaFamily(arenaFamilyId);
-
-                if(arenaFamily == null)
+                if(f == null)
                 {
                     return null;
                 }
 
-                int? arenaCampusId = GetArenaFamilyCampusId( arenaFamilyId );
+                int? arenaCampusId = GetArenaFamilyCampusId( f.family_id );
                 int? rockCampusId = (int?) (new RockMaps.CampusMap(Service).GetByForeignId( arenaCampusId.ToString() )["Id"]);
-                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, arenaFamily.family_name, arenaFamilyId.ToString() );
+                int? rockFamilyId = groupMap.SaveFamily( rockCampusId, f.family_name, null, f.family_id.ToString() );
 
                 return rockFamilyId;
             }
@@ -520,6 +550,31 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             }
 
             return rockPhoneId;
+        }
+
+        private int? SavePersonPhoto( Blob photoBlob )
+        {
+            RockMaps.BinaryFileMap binaryFileMap = new RockMaps.BinaryFileMap( Service );
+            Dictionary<string, object> binaryFile = binaryFileMap.GetByForeignId( photoBlob.blob_id.ToString() );
+
+            if ( binaryFile != null )
+            {
+                return (int?)binaryFile["Id"];
+            }
+            string fileName = string.Empty;
+
+            if ( String.IsNullOrWhiteSpace( photoBlob.original_file_name ) )
+            {
+                fileName = string.Format( "{0}.{1}", photoBlob.blob_id, photoBlob.mime_type.Replace( "image/", "" ) );
+            }
+            else
+            {
+                fileName = photoBlob.original_file_name;
+            }
+
+            int? fileId = binaryFileMap.SavePersonPhoto( fileName , photoBlob.mime_type, photoBlob.description, photoBlob.blob, false, false, photoBlob.blob_id.ToString() );
+
+            return fileId;
         }
 
         #endregion
