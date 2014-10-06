@@ -131,7 +131,8 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             string description = (string)rockCampus["Description"];
             bool isActive = (bool)rockCampus["IsActive"];
             string url = (string)rockCampus["Url"];
-            int leaderPersonAliasId = (int)campusLeader["Id"];
+            int leaderPersonAliasId = (int)campusLeader["PrimaryAliasId"];
+
 
             int? campusId = campusMap.SaveCampus( isSystem, name, shortCode, locationId, phoneNumber, leaderPersonAliasId, serviceTimes, foreignId, (int)rockCampus["Id"] );
 
@@ -187,13 +188,13 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         private Dictionary<string, object> GetRockCampusLeader( int personId )
         {
             RockMap.PersonMap personMap = new RockMap.PersonMap( Service );
-            return personMap.GetById( personId );
+            return personMap.GetById( personId, true );
         }
 
         private Dictionary<string, object> GetRockCampusLeaderByArenaId( int arenaLeaderPersonId )
         {
             RockMap.PersonMap personMap = new RockMap.PersonMap( Service );
-            return personMap.GetByForeignId( arenaLeaderPersonId.ToString() );
+            return personMap.GetByForeignId( arenaLeaderPersonId.ToString(), true );
         }
 
         public virtual void OnExportAttemptCompleted( string identifier, bool isSuccess, int? rockId = null, Type mapType = null )
