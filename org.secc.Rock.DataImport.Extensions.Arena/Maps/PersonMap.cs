@@ -204,7 +204,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 int? givingGroupId = null;
 
-                if ( arenaPerson.contribute_individually )
+                if ( !arenaPerson.contribute_individually )
                 {
                     givingGroupId = rockFamilyId;
                 }
@@ -434,7 +434,11 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
                 if ( familyMemberIds.Count > 1 )
                 {
-                    isFamilyAddress = context.PersonAddress.Where( pa => pa.address_id == addressId ).Where( pa => familyMemberIds.Contains( pa.person_id ) ).Count() > 1;
+                    //isFamilyAddress = context.PersonAddress.Where( pa => pa.address_id == addressId ).Where( pa => familyMemberIds.Contains( pa.person_id ) ).Count() > 1;
+
+                    var familyMemberAddresses = context.PersonAddress.Where( pa => familyMemberIds.Contains( pa.person_id ) ).Select( pa => new { pa.person_id, pa.address_id } ).Distinct().ToList();
+
+                    isFamilyAddress = familyMemberAddresses.Where( a => a.address_id == addressId ).Count() > 1;
                 }
 
                 return isFamilyAddress;
