@@ -142,7 +142,8 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Model
         //core_person_phone
         public virtual DbSet<PersonPhone> PersonPhone { get; set; }
 
-
+        //core_person_previous_name
+        public virtual DbSet<PersonPreviousName> PersonPreviousName { get; set; }
 
         protected override void OnModelCreating( DbModelBuilder modelBuilder )
         {

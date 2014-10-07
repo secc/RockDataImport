@@ -32,8 +32,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     {
         #region Fields
 
-
-
         private const int ARENA_ADULT_ROLE_LUID = 29;
         private const int ARENA_CHILD_ROLE_LUID = 31;
 

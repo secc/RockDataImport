@@ -62,6 +62,7 @@
     <Compile Include="Maps\CampusLeaderMap.cs" />
     <Compile Include="Maps\CampusMap.cs" />
     <Compile Include="Maps\PersonMap.cs" />
+    <Compile Include="Maps\PersonPreviousNameMap.cs" />
     <Compile Include="Model\Address.cs" />
     <Compile Include="Model\ArenaAttribute.cs" />
     <Compile Include="Model\ArenaAttributeGroup.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Model\PersonHistory.cs" />
     <Compile Include="Model\PersonMerged.cs" />
     <Compile Include="Model\PersonPhone.cs" />
+    <Compile Include="Model\PersonPreviousName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
