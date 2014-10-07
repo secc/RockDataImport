@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "org.secc.Rock.DataImport", "org.secc.Rock.DataImport\org.secc.Rock.DataImport.csproj", "{7640BBA9-2CDE-4640-9E19-7F5C90F700B5}"
 EndProject
@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "org.secc.Rock.DataImport.Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "org.secc.Rock.DataImport.BAL", "org.secc.Rock.DataImport.BAL\org.secc.Rock.DataImport.BAL.csproj", "{A37BFC29-8CE6-41C2-9219-3D846C1CA32B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock", "..\..\Spark\RockRMS\Rock\Rock.csproj", "{8F8C2A79-24F4-4157-8B99-45F75FA85799}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock", "..\Rock_ChrisFunk\Rock\Rock.csproj", "{8F8C2A79-24F4-4157-8B99-45F75FA85799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock.Wpf", "..\..\Spark\RockRMS\Applications\Wpf\Rock.Wpf\Rock.Wpf.csproj", "{90440596-FA0A-45E7-8872-3DA47786F6A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock.Wpf", "..\Rock_ChrisFunk\Applications\Wpf\Rock.Wpf\Rock.Wpf.csproj", "{90440596-FA0A-45E7-8872-3DA47786F6A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

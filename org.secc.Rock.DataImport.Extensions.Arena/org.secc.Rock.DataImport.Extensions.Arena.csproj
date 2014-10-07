@@ -88,10 +88,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Spark\RockRMS\Applications\Wpf\Rock.Wpf\Rock.Wpf.csproj">
-      <Project>{90440596-fa0a-45e7-8872-3da47786f6a7}</Project>
-      <Name>Rock.Wpf</Name>
-    </ProjectReference>
     <ProjectReference Include="..\org.secc.Rock.DataImport.BAL\org.secc.Rock.DataImport.BAL.csproj">
       <Project>{a37bfc29-8ce6-41c2-9219-3d846c1ca32b}</Project>
       <Name>org.secc.Rock.DataImport.BAL</Name>
