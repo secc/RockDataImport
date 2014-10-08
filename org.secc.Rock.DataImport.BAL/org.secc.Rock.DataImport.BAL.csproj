@@ -68,6 +68,7 @@
     <Compile Include="Controllers\BinaryFileDataController.cs" />
     <Compile Include="Controllers\BinaryFileTypeController.cs" />
     <Compile Include="Controllers\CampusController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\DefinedTypeController.cs" />
     <Compile Include="Controllers\DefinedValueController.cs" />
     <Compile Include="Controllers\EntityTypeController.cs" />
