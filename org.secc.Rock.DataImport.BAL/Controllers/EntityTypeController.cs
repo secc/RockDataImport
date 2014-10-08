@@ -60,5 +60,11 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             string apiPath = string.Format( BaseApiPath + "{0}", entity.Id );
             Service.PutData<EntityType>( apiPath, entity );
         }
+
+        public EntityType GetByFriendlyName( string friendlyName )
+        {
+            string expression = string.Format( "Name eq '{0}'", friendlyName );
+            return GetByFilter( expression ).FirstOrDefault();
+        }
     }
 }
