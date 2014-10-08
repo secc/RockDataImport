@@ -72,6 +72,7 @@
     <Compile Include="Controllers\DefinedTypeController.cs" />
     <Compile Include="Controllers\DefinedValueController.cs" />
     <Compile Include="Controllers\EntityTypeController.cs" />
+    <Compile Include="Controllers\FieldTypeController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\GroupLocationController.cs" />
     <Compile Include="Controllers\GroupMembersController.cs" />
@@ -92,9 +93,11 @@
     <Compile Include="LoginHelper.cs" />
     <Compile Include="Helper\DefinedTypeSummary.cs" />
     <Compile Include="Helper\DefinedValueSummary.cs" />
+    <Compile Include="RockMaps\AttributeMap.cs" />
     <Compile Include="RockMaps\BinaryFileMap.cs" />
     <Compile Include="RockMaps\BinaryFileTypeMap.cs" />
     <Compile Include="RockMaps\CampusMap.cs" />
+    <Compile Include="RockMaps\CategoryMap.cs" />
     <Compile Include="RockMaps\DefinedTypeMap.cs" />
     <Compile Include="RockMaps\DefinedValueMap.cs" />
     <Compile Include="RockMaps\GroupLocationMap.cs" />
