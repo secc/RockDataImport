@@ -51,14 +51,14 @@
                     <ItemsControl Name="icConnectionSettings"
                               Visibility="Hidden" />
                     <Button x:Name="btnTestConnection" 
-                        Style="{StaticResource buttonStylePrimary}"
+                        Style="{StaticResource buttonStyle}"
                         Click="btnTestConnection_Click" 
                         HorizontalAlignment="Left"
                         Visibility="Visible">
                         <StackPanel Orientation="Horizontal">
-                            <Label Style="{StaticResource labelStyleIconPrimary}"
+                            <Label Style="{StaticResource labelStyleIconLeft}"
                                Content="&#xf0ec;" />
-                            <Label Style="{StaticResource labelStyleButtonTextPrimary}"
+                            <Label Style="{StaticResource labelStyleButtonText}"
                                Content="Test Connection" />
                         </StackPanel>
                     </Button>
@@ -84,9 +84,8 @@
                 <StackPanel Orientation="Horizontal">
                     <Label Style="{StaticResource labelStyleButtonTextPrimary }"
                            Content="Next" />
-                    <Label Style="{StaticResource labelStyleIconPrimary}"
-                           Padding="3,0,0,0"
-                           Content="&#xf0da;" />
+                    <Label Style="{StaticResource labelStyleIconPrimaryRight}"
+                           Content="&#xf054;" />
                 </StackPanel>
             </Button>
         </Grid>
