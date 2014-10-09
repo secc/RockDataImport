@@ -48,6 +48,32 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
+                <DataGrid 
+                        Grid.Row="0"
+                        x:Name="grdMaps"
+                          AutoGenerateColumns="False"
+                          ItemsSource="{Binding}"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          BorderThickness="1"
+                          BorderBrush="#d8d8d8"
+                          CellStyle="{StaticResource gridCellStyle}"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          ColumnWidth="SizeToHeader"
+                          Style="{StaticResource gridStyle}"
+                          MaxHeight="250"
+                          Height="Auto"
+                          Width="Auto"
+                          Margin="0,10,0,0"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          ScrollViewer.HorizontalScrollBarVisibility="Hidden" >
+                    <DataGrid.Columns>
+                        
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
                   
             
