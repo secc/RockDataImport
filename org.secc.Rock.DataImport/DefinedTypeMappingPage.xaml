@@ -195,16 +195,16 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Grid.Column="1" VerticalAlignment="Top">
-                            <Button x:Name="btnSave" Click="btnSave_Click" Style="{StaticResource buttonStyleAction}" Margin="0,0,3,0" >
+                            <Button x:Name="btnSave" Click="btnSave_Click" Style="{StaticResource buttonStyle}" Margin="0,0,3,0" >
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="&#xf0c7;" Style="{StaticResource labelStyleIconPrimary}" />
-                                    <Label Content="Save" Style="{StaticResource labelStyleButtonTextPrimary}" />
+                                    <Label Content="&#xf0c7;" Style="{StaticResource labelStyleIconLeft}" />
+                                    <Label Content="Save" Style="{StaticResource labelStyleButtonText}" />
                                 </StackPanel>
                             </Button>
-                            <Button x:Name="btnReset" Click="btnReset_Click" Style="{StaticResource buttonStyleAction}" Margin="3,0,0,0">
+                            <Button x:Name="btnReset" Click="btnReset_Click" Style="{StaticResource buttonStyle}" Margin="3,0,0,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="&#xf0e2;" Style="{StaticResource labelStyleIconPrimary}" />
-                                    <Label Content="Reset" Style="{StaticResource labelStyleButtonTextPrimary}" />
+                                    <Label Content="&#xf0e2;" Style="{StaticResource labelStyleIconLeft}" />
+                                    <Label Content="Reset" Style="{StaticResource labelStyleButtonText}" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -234,13 +234,13 @@
             <Button x:Name="btnBack"
                     Grid.Row="2"
                     HorizontalAlignment="Left"
-                    Style="{StaticResource buttonStyleAction}"
+                    Style="{StaticResource buttonStyle}"
                     Margin="8,8,8,8"
                     Click="btnBack_Click">
                 <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource labelStyleIconPrimaryLeft}"
-                           Content="&#xf0d9;" />
-                    <Label Style="{StaticResource labelStyleButtonTextPrimary}"
+                    <Label Style="{StaticResource labelStyleIconLeft}"
+                           Content="&#xf053;" />
+                    <Label Style="{StaticResource labelStyleButtonText}"
                            Content="Back" />
                 </StackPanel>
             </Button>
@@ -254,9 +254,8 @@
                 <StackPanel Orientation="Horizontal">
                     <Label Style="{StaticResource labelStyleButtonTextPrimary }"
                            Content="Next" />
-                    <Label Style="{StaticResource labelStyleIconPrimary}"
-                           Padding="3,0,0,0"
-                           Content="&#xf0da;" />
+                    <Label Style="{StaticResource labelStyleIconPrimaryRight}"
+                           Content="&#xf054;" />
                 </StackPanel>
             </Button>
             
