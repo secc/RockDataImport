@@ -98,6 +98,7 @@
     <Compile Include="RockMaps\BinaryFileTypeMap.cs" />
     <Compile Include="RockMaps\CampusMap.cs" />
     <Compile Include="RockMaps\CategoryMap.cs" />
+    <Compile Include="RockMaps\FieldTypeMap.cs" />
     <Compile Include="RockMaps\DefinedTypeMap.cs" />
     <Compile Include="RockMaps\DefinedValueMap.cs" />
     <Compile Include="RockMaps\GroupLocationMap.cs" />

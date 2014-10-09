@@ -184,7 +184,16 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
 
             RockMaps.AttributeMap attributeMap = new RockMaps.AttributeMap( Service );
-            //int attributeId = attributeMap.SavePersonAttribute()
+            string personAttributeName = "Previous Last Name";
+            int attributeId = attributeMap.SavePersonAttribute
+                (
+                    fieldTypeId: new RockMaps.FieldTypeMap( Service ).GetValueListFieldTypeId(),
+                    key: personAttributeName.Replace( " ", "" ),
+                    name: personAttributeName,
+                    description: "The person's previous last names. (i.e. maiden name, previous married name, etc.).",
+                    guid: attributeGuid,
+                    categoryId: categoryId
+                );
 
             return PreviousNameAttributeId;
         }
