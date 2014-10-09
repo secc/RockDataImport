@@ -10,7 +10,15 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 {
     public class AttributeValuesController : BaseController<AttributeValue>
     {
+        #region Fields
         string baseAPIPath = "/api/AttributeValues/";
+        #endregion
+
+        #region Constructor
+        private AttributeValuesController() : base() { }
+        public AttributeValuesController( RockService service ) : base( service ) { }
+        #endregion
+
         public override void Add( AttributeValue entity )
         {
             Service.PostData<AttributeValue>( baseAPIPath, entity );
