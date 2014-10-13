@@ -19,6 +19,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [ExportMetadata("Name", "Person")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
     [ExportMetadata("Description", "People records from ArenaChMS")]
+    [ExportMetadata("ImportRanking", 1)]
     [DefinedType("Person Title", "4784CD23-518B-43EE-9B97-225BF6E07846", "3394CA53-5791-42C8-B996-1D77C740CF03")]
     [DefinedType( "Name Suffix", "16F85B3C-B3E8-434C-9094-F3D41F87A740", "011E3ABF-8A27-4773-ACC0-7EF017241B69" )]
     [DefinedType("Record Status Reason", "E17D5988-0372-4792-82CF-9E37C79F7319", "011E6A99-2006-4392-B66E-98B6262E8A45")]
@@ -26,6 +27,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [DefinedType( "Marital Status", "B4B92C3F-A935-40E1-A00B-BA484EAD613B", "0AAD26C7-AD9D-4FE8-96B1-C9BCD033BB5B" )]
     [DefinedType( "Phone Type", "8345DD45-73C6-4F5E-BEBD-B77FC83F18FD", "847C4CB1-0C3F-4B9C-AA97-DC1A5AFEE26B" )]
     [DefinedType( "Address Type", "2E68D37C-FB7B-4AA5-9E09-3785D52156CB", "9B4BE12C-C105-4F80-8254-8639B27D7640" )]
+    [Dependency("Campus", typeof(CampusMap))]
 
     
     public class PersonMap : ArenaMapBase

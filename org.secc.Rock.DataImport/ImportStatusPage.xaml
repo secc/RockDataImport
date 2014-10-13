@@ -22,9 +22,9 @@
         
         <Grid Grid.Column="1" Grid.Row="1" Style="{StaticResource gridPanel}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="70" />
+                <RowDefinition Style="{StaticResource rowDefinitionPanelTitle}" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="50" />
+                <RowDefinition Style="{StaticResource rowDefinitionActions}" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Style="{StaticResource panelBanner}">
                 <Label Content="Step x:"
@@ -37,6 +37,7 @@
             <TextBlock 
                 Name="tbStartMessage"
                 Grid.Row="1" 
+                Visibility="Visible"
                 Style="{StaticResource textBlockStyleTitleParagraph}" 
                 TextWrapping="Wrap" 
                 HorizontalAlignment="Center"
@@ -67,31 +68,85 @@
                           MaxHeight="250"
                           Height="Auto"
                           Width="Auto"
-                          Margin="0,10,0,0"
+                          Margin="10,10,10,10"
                           ScrollViewer.VerticalScrollBarVisibility="Visible"
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" >
                     <DataGrid.Columns>
-                        
+                        <DataGridTextColumn Binding="{Binding Name}"
+                                            HeaderStyle="{StaticResource gridHeaderStyle}"
+                                            CellStyle="{StaticResource gridCellStyle}"
+                                            Header="Name"
+                                            Width="2*"
+                                            CanUserResize="False"
+                                            CanUserSort="False"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding StatusDescription}"
+                                            HeaderStyle="{StaticResource gridHeaderStyle}"
+                                            CellStyle="{StaticResource gridCellStyle}"
+                                            Header="Status"
+                                            Width="*"
+                                            CanUserResize="False"
+                                            CanUserSort="False"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding Component.SuccessCount, StringFormat={}{0:N0}}"
+                                            HeaderStyle="{StaticResource gridHeaderStyleNumber}"
+                                            CellStyle="{StaticResource gridCellStyleNumber}"
+                                            Header="Imported"
+                                            Width="*"
+                                            CanUserResize="False"
+                                            CanUserSort="False"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding Component.FailCount, StringFormat={}{0:N0}}"
+                                            HeaderStyle="{StaticResource gridHeaderStyleNumber}"
+                                            CellStyle="{StaticResource gridCellStyleNumber}"
+                                            Header="Unable to Import"
+                                            Width="*"
+                                            CanUserResize="False"
+                                            CanUserSort="False"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding Component.RecordCount, StringFormat={}{0:N0}}"
+                                            HeaderStyle="{StaticResource gridHeaderStyleNumber}"
+                                            CellStyle="{StaticResource gridCellStyleNumber}"
+                                            Header="Total Records"
+                                            Width="*"
+                                            CanUserResize="False"
+                                            CanUserSort="False"
+                                            IsReadOnly="True" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
                   
             
             <!--Navigation Button Panel-->
-            <Button 
-                Name="btnBack"
-                Grid.Row="2"
-                HorizontalAlignment="Left" 
-                Style="{StaticResource buttonStyle}"
-                Margin="8,8,8,8"
-                Click="btnBack_Click">
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource labelStyleIconLeft}"
+            <StackPanel Grid.Row="2" HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button 
+                    Name="btnBack"
+                    Style="{StaticResource buttonStyle}"
+                    Margin="8,8,8,8"
+                    Click="btnBack_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource labelStyleIconLeft}"
                            Content="&#xf053;" />
-                    <Label Style="{StaticResource labelStyleButtonText}"
+                        <Label Style="{StaticResource labelStyleButtonText}"
                            Content="Back" />
-                </StackPanel>
-            </Button>
+                    </StackPanel>
+                </Button>
+                <Button Name="btnCancel"
+                        Style="{StaticResource buttonStyle}"
+                        Margin="8,8,8,8"
+                        Click="btnCancel_Click"
+                        Visibility="Hidden">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource labelStyleIconLeft}"
+                               Content="&#xf057;" />
+                        <Label Style="{StaticResource labelStyleButtonText}"
+                               Content="Cancel" />
+                    </StackPanel>
+                    
+                </Button>
+
+            </StackPanel>
+
             <Button Name="btnBegin"
                     Visibility="Visible"
                     Grid.Row="2"

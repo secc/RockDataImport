@@ -112,19 +112,21 @@ namespace org.secc.Rock.DataImport
                 PromptToSave( dgDataMaps.SelectedItem as MappedDefinedType );
             }
 
-            if ( Integration.Component.ExportMaps.Where( m => m.Selected == true ).Where( m => m.Name == "Campus Leader" ).Count() > 0 )
-            {
-                var component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus Leader" ).FirstOrDefault().Component;
-                component.ExportAttemptCompleted += component_ExportAttemptCompleted;
-                foreach ( var identifier in component.GetSubsetIDs(0,1000) )
-                {
-                    component.ExportRecord( identifier );
-                }
+            NavigationService.Navigate( new ImportStatusPage( Integration ) );
 
-                string message = string.Format("Import complete {0} records exported successfully.", successCount);
+            //if ( Integration.Component.ExportMaps.Where( m => m.Selected == true ).Where( m => m.Name == "Campus Leader" ).Count() > 0 )
+            //{
+            //    var component = Integration.Component.ExportMaps.Where( m => m.Name == "Campus Leader" ).FirstOrDefault().Component;
+            //    component.ExportAttemptCompleted += component_ExportAttemptCompleted;
+            //    foreach ( var identifier in component.GetSubsetIDs(0,1000) )
+            //    {
+            //        component.ExportRecord( identifier );
+            //    }
 
-                MessageBox.Show( message, "Import completed", MessageBoxButton.OK, MessageBoxImage.Information );
-            }
+            //    string message = string.Format("Import complete {0} records exported successfully.", successCount);
+
+            //    MessageBox.Show( message, "Import completed", MessageBoxButton.OK, MessageBoxImage.Information );
+            //}
         }
 
         void component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )

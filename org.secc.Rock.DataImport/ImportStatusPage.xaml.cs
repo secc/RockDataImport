@@ -38,6 +38,7 @@ namespace org.secc.Rock.DataImport
             InitializeComponent();
         }
 
+        #region Page Events
         private void Page_Loaded( object sender, RoutedEventArgs e )
         {
             SetStartVisibility( true );
@@ -59,6 +60,21 @@ namespace org.secc.Rock.DataImport
 
         private void btnBegin_Click( object sender, RoutedEventArgs e )
         {
+            StartImportProcess();
+        }
+
+        private void btnCancel_Click( object sender, RoutedEventArgs e )
+        {
+
+        }
+        #endregion
+
+        #region Private Methods
+
+        private void BindMapGrid()
+        {
+            grdMaps.ItemsSource =  Integration.Component.ExportMaps.OrderByDescending( m => m.ImportRanking ).ThenBy( m => m.Name );
+            grdMaps.Items.Refresh();
 
         }
 
@@ -66,17 +82,20 @@ namespace org.secc.Rock.DataImport
         {
             if ( display )
             {
-                btnFinish.Visibility = System.Windows.Visibility.Visible;
                 grdContent.Visibility = System.Windows.Visibility.Visible;
+                btnCancel.Visibility = System.Windows.Visibility.Visible;
+                btnFinish.Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
-                btnFinish.Visibility = System.Windows.Visibility.Hidden;
                 grdContent.Visibility = System.Windows.Visibility.Hidden;
+                btnCancel.Visibility = System.Windows.Visibility.Hidden;
+                btnFinish.Visibility = System.Windows.Visibility.Hidden;
+
             }
         }
 
-        private void SetStartVisibility( bool display)
+        private void SetStartVisibility( bool display )
         {
             if ( display )
             {
@@ -89,5 +108,17 @@ namespace org.secc.Rock.DataImport
                 btnBegin.Visibility = System.Windows.Visibility.Hidden;
             }
         }
+
+        private void StartImportProcess()
+        {
+            BindMapGrid();
+            SetStartVisibility( false );
+            SetProgressVisibility( true );
+        
+        }
+
+
+
+        #endregion
     }
 }
