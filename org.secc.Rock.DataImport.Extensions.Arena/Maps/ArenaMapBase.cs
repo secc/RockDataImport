@@ -38,9 +38,9 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             {
                 return mFailCount;
             }
-            protected set
+             set
             {
-                mSuccessCount = value;
+                mFailCount = value;
             }
         }
 
@@ -50,7 +50,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             {
                 return mSuccessCount;
             }
-            protected set
+            set
             {
                 mSuccessCount = value;
             }

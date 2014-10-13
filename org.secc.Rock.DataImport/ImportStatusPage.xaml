@@ -49,7 +49,13 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <DataGrid 
+                <StackPanel Orientation="Vertical"
+                            Margin="10,10,10,10">
+                    <Label Style="{StaticResource labelStyleLegend}"
+                           Content="Import Status" />
+                    <Label Style="{StaticResource labelStyle}"
+                           Content="Displays the import maps by the order that they will be imported." />
+                    <DataGrid 
                         Grid.Row="0"
                         x:Name="grdMaps"
                           AutoGenerateColumns="False"
@@ -62,17 +68,16 @@
                           CanUserAddRows="False"
                           CanUserDeleteRows="False"
                           IsReadOnly="True"
-                          SelectionMode="Single"
+                          SelectionMode="Extended"
                           ColumnWidth="SizeToHeader"
                           Style="{StaticResource gridStyle}"
                           MaxHeight="250"
                           Height="Auto"
                           Width="Auto"
-                          Margin="10,10,10,10"
                           ScrollViewer.VerticalScrollBarVisibility="Visible"
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Name}"
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Name}"
                                             HeaderStyle="{StaticResource gridHeaderStyle}"
                                             CellStyle="{StaticResource gridCellStyle}"
                                             Header="Name"
@@ -80,7 +85,7 @@
                                             CanUserResize="False"
                                             CanUserSort="False"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Binding="{Binding StatusDescription}"
+                            <DataGridTextColumn Binding="{Binding StatusDescription}"
                                             HeaderStyle="{StaticResource gridHeaderStyle}"
                                             CellStyle="{StaticResource gridCellStyle}"
                                             Header="Status"
@@ -88,7 +93,7 @@
                                             CanUserResize="False"
                                             CanUserSort="False"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Binding="{Binding Component.SuccessCount, StringFormat={}{0:N0}}"
+                            <DataGridTextColumn Binding="{Binding Component.SuccessCount, StringFormat={}{0:N0}, UpdateSourceTrigger=PropertyChanged}"
                                             HeaderStyle="{StaticResource gridHeaderStyleNumber}"
                                             CellStyle="{StaticResource gridCellStyleNumber}"
                                             Header="Imported"
@@ -96,7 +101,7 @@
                                             CanUserResize="False"
                                             CanUserSort="False"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Binding="{Binding Component.FailCount, StringFormat={}{0:N0}}"
+                            <DataGridTextColumn Binding="{Binding Component.FailCount, StringFormat={}{0:N0}, UpdateSourceTrigger=PropertyChanged}"
                                             HeaderStyle="{StaticResource gridHeaderStyleNumber}"
                                             CellStyle="{StaticResource gridCellStyleNumber}"
                                             Header="Unable to Import"
@@ -104,7 +109,7 @@
                                             CanUserResize="False"
                                             CanUserSort="False"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Binding="{Binding Component.RecordCount, StringFormat={}{0:N0}}"
+                            <DataGridTextColumn Binding="{Binding Component.RecordCount, StringFormat={}{0:N0}}"
                                             HeaderStyle="{StaticResource gridHeaderStyleNumber}"
                                             CellStyle="{StaticResource gridCellStyleNumber}"
                                             Header="Total Records"
@@ -112,8 +117,10 @@
                                             CanUserResize="False"
                                             CanUserSort="False"
                                             IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label x:Name="lblImportStatus" />
+                </StackPanel>
             </Grid>
                   
             
@@ -131,16 +138,16 @@
                            Content="Back" />
                     </StackPanel>
                 </Button>
-                <Button Name="btnCancel"
+                <Button Name="btnStop"
                         Style="{StaticResource buttonStyle}"
                         Margin="8,8,8,8"
-                        Click="btnCancel_Click"
+                        Click="btnStop_Click"
                         Visibility="Hidden">
                     <StackPanel Orientation="Horizontal">
                         <Label Style="{StaticResource labelStyleIconLeft}"
                                Content="&#xf057;" />
                         <Label Style="{StaticResource labelStyleButtonText}"
-                               Content="Cancel" />
+                               Content="Stop" />
                     </StackPanel>
                     
                 </Button>

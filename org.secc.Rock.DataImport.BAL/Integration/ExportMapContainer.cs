@@ -95,10 +95,20 @@ namespace org.secc.Rock.DataImport.BAL.Integration
             get
             {
                 return mSelected;
+
             }
             set
             {
                 mSelected = value;
+
+                if ( mSelected )
+                {
+                    Status = ExportStatus.Waiting;
+                }
+                else
+                {
+                    Status = ExportStatus.NotSelected;
+                }
             }
         }
 
@@ -121,11 +131,11 @@ namespace org.secc.Rock.DataImport.BAL.Integration
                 Type type = typeof(ExportStatus);
                 var memInfo = type.GetMember( Status.ToString() ).FirstOrDefault();
                 var attributes = memInfo.GetCustomAttributes( typeof( DescriptionAttribute ), false );
-                string description = ( (DescriptionAttribute)attributes[0] ).Description;
+                //string description = ( (DescriptionAttribute)attributes[0] ).Description;
 
-                if ( !String.IsNullOrWhiteSpace( description ) )
+                if ( attributes.Count() > 0)
                 {
-                    return description;
+                    return ( (DescriptionAttribute)attributes[0] ).Description;
                 }
                 else
                 {
@@ -144,6 +154,7 @@ namespace org.secc.Rock.DataImport.BAL.Integration
             Waiting,
             Importing,
             Completed,
+            Failed,
             Cancelled
         }
     }
