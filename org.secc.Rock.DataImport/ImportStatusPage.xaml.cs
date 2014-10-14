@@ -31,7 +31,7 @@ namespace org.secc.Rock.DataImport
         int MaxFailureCount = 0;
         int MaxBatchSize = 0;
         int MaxRecordsToImport = 0;
-
+        List<ExportMap> SelectedMaps;
         private ImportStatusPage()
         {
             InitializeComponent();
@@ -71,19 +71,19 @@ namespace org.secc.Rock.DataImport
         private void btnStop_Click( object sender, RoutedEventArgs e )
         {
             ImportBackgroundWorker.CancelAsync();
-            ShowStatusMessage( "Import Stopped", false );
-
         }
+
         #endregion
 
         #region Private Methods
 
         private void BindMapGrid()
         {
-            grdMaps.ItemsSource =  Integration.Component.ExportMaps
+            SelectedMaps = Integration.Component.ExportMaps
                                     .Where(m => m.Selected)
                                     .OrderByDescending( m => m.ImportRanking )
-                                        .ThenBy( m => m.Name );
+                                        .ThenBy( m => m.Name ).ToList();
+            grdMaps.ItemsSource = SelectedMaps;
             grdMaps.Items.Refresh();
 
         }
@@ -129,7 +129,7 @@ namespace org.secc.Rock.DataImport
             }
         }
 
-        private void ShowStatusMessage( string message, bool isError )
+        private void ShowStatusMessage( string message )
         {
             lblImportStatus.Content = message;
 
@@ -139,39 +139,54 @@ namespace org.secc.Rock.DataImport
             }
             else
             {
-                lblImportStatus.Visibility = System.Windows.Visibility.Hidden;
+                lblImportStatus.Visibility = System.Windows.Visibility.Collapsed;
             }
 
-            if ( isError )
-            {
-                lblImportStatus.Style = (Style)this.Resources["labelStyleAlertError"];
-            }
-            else
-            {
-                lblImportStatus.Style = (Style)this.Resources["lableStyleAlertInfo"];
-            }
+
         }
 
         private void StartImportProcess()
         {
             ImportBackgroundWorker = new BackgroundWorker();
+            ImportBackgroundWorker.WorkerReportsProgress = true;
             ImportBackgroundWorker.WorkerSupportsCancellation = true;
             ImportBackgroundWorker.DoWork += ImportBackgroundWorker_DoWork;
+            ImportBackgroundWorker.ProgressChanged += ImportBackgroundWorker_ProgressChanged;
             ImportBackgroundWorker.RunWorkerCompleted += ImportBackgroundWorker_RunWorkerCompleted;
 
-
+            ShowStatusMessage( String.Empty );
             BindMapGrid();
             SetStartVisibility( false );
             SetProgressVisibility( true );
             SetStopButtonVisibility( true );
             btnBack.IsEnabled = false;
-        
+            this.Cursor = Cursors.AppStarting;
+            ImportBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void ImportBackgroundWorker_ProgressChanged( object sender, ProgressChangedEventArgs e )
+        {
+            grdMaps.Items.Refresh();
         }
 
         void ImportBackgroundWorker_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
         {
-            
-            
+
+            this.Cursor = null;
+            if ( e.Error != null )
+            {
+                throw e.Error;
+            }
+
+            if ( e.Cancelled )
+            {
+                ShowStatusMessage( "Import was stopped successfully.");
+            }
+            else
+            {
+                ShowStatusMessage("Import completed.");
+            }
+
             SetStopButtonVisibility( false );
             btnFinish.IsEnabled = true;
             btnBack.IsEnabled = true;
@@ -190,7 +205,7 @@ namespace org.secc.Rock.DataImport
             MaxFailureCount = Setting.GetMaxFailureCount();
             MaxRecordsToImport = Setting.GetMaxRecordsToImport();
 
-            foreach ( var map in Integration.Component.ExportMaps.Where( x => x.Selected ).OrderByDescending( m => m.ImportRanking ).ThenBy( m => m.Name ) )
+            foreach ( var map in SelectedMaps )
             {
                 if ( ImportBackgroundWorker.CancellationPending )
                 {
@@ -236,7 +251,13 @@ namespace org.secc.Rock.DataImport
 
                 if ( !ImportBackgroundWorker.CancellationPending )
                 {
-                    List<string> identifiers = map.Component.GetSubsetIDs( map.Component.TotalProcessed - 1, batchSize );
+                    int startingRecord = 0;
+
+                    if ( map.Component.TotalProcessed > 0 )
+                    {
+                        startingRecord = map.Component.TotalProcessed - 1;
+                    }
+                    List<string> identifiers = map.Component.GetSubsetIDs( startingRecord, batchSize );
 
                     foreach ( string identifier in identifiers )
                     {
@@ -255,6 +276,12 @@ namespace org.secc.Rock.DataImport
                             break;
                         }
 
+                        var totalProcessed = SelectedMaps.Select( m => m.Component.TotalProcessed ).Sum();
+                        var totalRecords = SelectedMaps.Select( m => m.Component.RecordCount ).Sum();
+
+                        ImportBackgroundWorker.ReportProgress( ( totalProcessed / (int)totalRecords ) * 100 );
+                        
+
                     }
 
                     if ( map.Component.TotalProcessed == totalToImport )
@@ -262,6 +289,8 @@ namespace org.secc.Rock.DataImport
                         map.Status = ExportMap.ExportStatus.Completed;
                         continueImport = false;
                     }
+
+                    ImportBackgroundWorker.ReportProgress( ( SelectedMaps.Select( m => m.Component.TotalProcessed ).Sum() / (int)SelectedMaps.Select( m => m.Component.RecordCount ).Sum() ) * 100 );
                 }
                 else
                 {
@@ -272,7 +301,7 @@ namespace org.secc.Rock.DataImport
 
         void Component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )
         {
-            ExportMap map = Integration.Component.ExportMaps.Where( m => m.Component.GetType() == e.MapType ).FirstOrDefault();
+            ExportMap map = SelectedMaps.Where( m => m.Component.GetType() == e.MapType ).FirstOrDefault();
             if ( e.IsSuccess )
             {
 

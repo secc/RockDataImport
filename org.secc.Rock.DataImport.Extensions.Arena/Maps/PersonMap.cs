@@ -69,6 +69,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
             using ( Model.ArenaContext Context = Model.ArenaContext.BuildContext(ConnectionInfo) )
             {
                 var query = Context.Person
+                               .Where(p => p.FamilyMember.Count > 0)
                                .OrderBy( p => p.person_id )
                                .Skip( startingRecord );
 
@@ -505,7 +506,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         {
             using (Model.ArenaContext Context = Arena.Model.ArenaContext.BuildContext(ConnectionInfo))
             {
-                return Context.Person.Count();
+                return Context.Person.Where(p => p.FamilyMember.Count > 0).Count();
             }
         }
 

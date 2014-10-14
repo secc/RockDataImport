@@ -85,7 +85,7 @@
                                             CanUserResize="False"
                                             CanUserSort="False"
                                             IsReadOnly="True" />
-                            <DataGridTextColumn Binding="{Binding StatusDescription}"
+                            <DataGridTextColumn Binding="{Binding StatusDescription, UpdateSourceTrigger=PropertyChanged}"
                                             HeaderStyle="{StaticResource gridHeaderStyle}"
                                             CellStyle="{StaticResource gridCellStyle}"
                                             Header="Status"
@@ -119,7 +119,7 @@
                                             IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label x:Name="lblImportStatus" />
+                    <Label x:Name="lblImportStatus" Style="{StaticResource labelStyleAlertInfo }" />
                 </StackPanel>
             </Grid>
                   
