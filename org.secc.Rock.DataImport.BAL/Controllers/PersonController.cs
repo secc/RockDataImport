@@ -42,18 +42,15 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public Person GetByGuid(Guid guid, bool includeDeceased)
         {
-            string apiPath = String.Empty;
+            Dictionary<string, string> queryString = null;
 
             if ( includeDeceased )
             {
-                apiPath = baseAPIPath + "IncludeDeceased/";
-            }
-            else
-            {
-                apiPath = baseAPIPath;
+                queryString = new Dictionary<string, string>();
+                queryString.Add( "IncludeDeceased", Boolean.TrueString );
             }
 
-            return Service.GetDataByGuid<Person>( apiPath, guid );
+            return Service.GetDataByGuid<Person>( baseAPIPath, guid, queryString );
         }
 
         public override List<Person> GetAll()
@@ -68,18 +65,15 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public List<Person> GetByFilter( string expression, bool includeDeceased )
         {
-            string apiPath = String.Empty;
+            Dictionary<string, string> queryString = null;
 
             if ( includeDeceased )
             {
-                apiPath = baseAPIPath + "IncludeDeceased/";
-            }
-            else
-            {
-                apiPath = baseAPIPath;
+                queryString = new Dictionary<string, string>();
+                queryString.Add( "IncludeDeceased", Boolean.TrueString );
             }
 
-            return Service.GetData<List<Person>>( apiPath, expression );
+            return Service.GetData<List<Person>>( baseAPIPath, expression, queryString );
         }
 
         public override Person GetByForeignId( string foreignId )

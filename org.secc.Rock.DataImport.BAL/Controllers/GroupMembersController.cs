@@ -40,18 +40,16 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public GroupMember GetByGuid( Guid guid, bool includeDeceased = false )
         {
-            string apiPath = String.Empty;
+            Dictionary<string, string> queryString = new Dictionary<string, string>();
+
 
             if ( includeDeceased )
             {
-                apiPath = BaseAPIPath + "IncludeDeceased/";
-            }
-            else
-            {
-                apiPath = BaseAPIPath;
+                queryString = new Dictionary<string, string>();
+                queryString.Add( "IncludeDeceased", Boolean.TrueString );
             }
 
-            return Service.GetDataByGuid<GroupMember>( apiPath, guid );
+            return Service.GetDataByGuid<GroupMember>( BaseAPIPath, guid, queryString );
         }
 
         public override List<GroupMember> GetAll()
@@ -66,18 +64,15 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public List<GroupMember> GetByFilter( string expression, bool includeDeceased = false )
         {
-            string apiPath = String.Empty;
+            Dictionary<string, string> queryString = null;
 
             if ( includeDeceased )
             {
-                apiPath = BaseAPIPath + "IncludeDeceased/";
-            }
-            else
-            {
-                apiPath = BaseAPIPath;
+                queryString = new Dictionary<string, string>();
+                queryString.Add( "IncludeDeceased", Boolean.TrueString );
             }
 
-            return Service.GetData<List<GroupMember>>( apiPath, expression );
+            return Service.GetData<List<GroupMember>>( BaseAPIPath, expression, queryString );
 
         }
 
