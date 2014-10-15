@@ -54,7 +54,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         public Dictionary<int, Dictionary<string, object>> GetGroupMemberByGroupIdPersonId( int groupId, int personId )
         {
             GroupMembersController groupMemberController = new GroupMembersController( Service );
-            var groupMembers = groupMemberController.GetByGroupIdPersonId( groupId, personId );
+            var groupMembers = groupMemberController.GetByGroupIdPersonId( groupId, personId, true );
 
             Dictionary<int, Dictionary<string, object>> groupMembersDictionary = new Dictionary<int, Dictionary<string, object>>();
 
@@ -201,7 +201,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
                 controller.Update( groupMember );
             }
 
-            groupMember = controller.GetByGuid( groupMember.Guid );
+            groupMember = controller.GetByGuid( groupMember.Guid, true );
 
             return groupMember.Id;
         }

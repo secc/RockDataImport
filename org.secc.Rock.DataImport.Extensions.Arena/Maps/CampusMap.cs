@@ -16,6 +16,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [ExportMetadata("Name", "Campus")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
     [ExportMetadata("Description", "Campus locations from ArenaChMS.")]
+    [ExportMetadata("ImportRanking", 2)]
     public class CampusMap : ArenaMapBase
     {
 

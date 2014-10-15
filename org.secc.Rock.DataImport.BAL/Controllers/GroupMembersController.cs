@@ -35,7 +35,23 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override GroupMember GetByGuid( Guid guid )
         {
-            return Service.GetDataByGuid<GroupMember>( BaseAPIPath, guid );
+            return GetByGuid( guid, false );
+        }
+
+        public GroupMember GetByGuid( Guid guid, bool includeDeceased = false )
+        {
+            string apiPath = String.Empty;
+
+            if ( includeDeceased )
+            {
+                apiPath = BaseAPIPath + "IncludeDeceased/";
+            }
+            else
+            {
+                apiPath = BaseAPIPath;
+            }
+
+            return Service.GetDataByGuid<GroupMember>( apiPath, guid );
         }
 
         public override List<GroupMember> GetAll()
@@ -45,14 +61,36 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override List<GroupMember> GetByFilter( string expression )
         {
-            return Service.GetData<List<GroupMember>>( BaseAPIPath, expression );
+            return GetByFilter( expression, false );
+        }
+
+        public List<GroupMember> GetByFilter( string expression, bool includeDeceased = false )
+        {
+            string apiPath = String.Empty;
+
+            if ( includeDeceased )
+            {
+                apiPath = BaseAPIPath + "IncludeDeceased/";
+            }
+            else
+            {
+                apiPath = BaseAPIPath;
+            }
+
+            return Service.GetData<List<GroupMember>>( apiPath, expression );
+
         }
 
         public override GroupMember GetByForeignId( string foreignId )
         {
+            return GetByForeignId( foreignId, false );
+        }
+
+        public GroupMember GetByForeignId( string foreignId, bool includeDeceased )
+        {
             string expression = string.Format( "ForeignId eq '{0}'", foreignId );
 
-            return GetByFilter( expression ).FirstOrDefault();
+            return GetByFilter( expression, includeDeceased ).FirstOrDefault();
         }
 
         public override void Update( GroupMember entity )
@@ -67,11 +105,11 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
             return GetByFilter( expression );
         }
 
-        public List<GroupMember> GetByGroupIdPersonId( int groupId, int personId )
+        public List<GroupMember> GetByGroupIdPersonId( int groupId, int personId, bool includeDeceased = false )
         {
             string expression = string.Format( "GroupId eq {0} and PersonId eq {1}", groupId, personId );
 
-            return GetByFilter( expression );
+            return GetByFilter( expression, includeDeceased );
         }
     }
 }

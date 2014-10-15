@@ -29,6 +29,13 @@ namespace org.secc.Rock.DataImport
 
         #region Public
 
+        public static string GetApplicationSetting( string settingKey )
+        {
+            var asr = new System.Configuration.AppSettingsReader();
+
+            return (string)asr.GetValue( settingKey, typeof( string ) );
+        }
+
         public static string GetPluginFolderPath()
         {
             return System.IO.Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "Plugins" );
@@ -40,6 +47,36 @@ namespace org.secc.Rock.DataImport
             return App.ApplicaitonSettings.Where( a => a.Category == categoryName ).ToList();
         }
 
+
+        public static int GetImportBatchSize()
+        {
+            string batchSizeString = GetApplicationSetting( "BatchSize" );
+            int batchSize = 0;
+
+            int.TryParse( batchSizeString, out batchSize );
+
+            return batchSize;
+        }
+
+        public static int GetMaxFailureCount()
+        {
+            string maxFailureSettingValue = GetApplicationSetting( "MaximumFailureCount" );
+            int maxFailures = 0;
+
+            int.TryParse( maxFailureSettingValue, out maxFailures );
+
+            return maxFailures;
+        }
+
+        public static int GetMaxRecordsToImport()
+        {
+            string maxRecordsSettingValue = GetApplicationSetting( "RecordsToImport" );
+            int maxRecords = 0;
+
+            int.TryParse( maxRecordsSettingValue, out maxRecords );
+
+            return maxRecords;
+        }
 
         public static string GetSettingValue( string name )
         {
