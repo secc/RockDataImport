@@ -32,6 +32,8 @@ namespace org.secc.Rock.DataImport
         int MaxBatchSize = 0;
         int MaxRecordsToImport = 0;
         List<ExportMap> SelectedMaps;
+
+        #region Constructors
         private ImportStatusPage()
         {
             InitializeComponent();
@@ -42,6 +44,7 @@ namespace org.secc.Rock.DataImport
             Integration = integration;
             InitializeComponent();
         }
+        #endregion
 
         #region Page Events
         private void Page_Loaded( object sender, RoutedEventArgs e )
@@ -60,7 +63,7 @@ namespace org.secc.Rock.DataImport
 
         private void btnFinish_Click( object sender, RoutedEventArgs e )
         {
-
+            Application.Current.Shutdown();
         }
 
         private void btnBegin_Click( object sender, RoutedEventArgs e )
@@ -75,95 +78,8 @@ namespace org.secc.Rock.DataImport
 
         #endregion
 
-        #region Private Methods
 
-        private void BindMapGrid()
-        {
-            SelectedMaps = Integration.Component.ExportMaps
-                                    .Where(m => m.Selected)
-                                    .OrderByDescending( m => m.ImportRanking )
-                                        .ThenBy( m => m.Name ).ToList();
-            grdMaps.ItemsSource = SelectedMaps;
-            grdMaps.Items.Refresh();
-
-        }
-
-        private void SetProgressVisibility( bool display )
-        {
-            if ( display )
-            {
-                grdContent.Visibility = System.Windows.Visibility.Visible;
-                btnFinish.Visibility = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                grdContent.Visibility = System.Windows.Visibility.Hidden;
-                btnFinish.Visibility = System.Windows.Visibility.Hidden;
-
-            }
-        }
-
-        private void SetStartVisibility( bool display )
-        {
-            if ( display )
-            {
-                tbStartMessage.Visibility = System.Windows.Visibility.Visible;
-                btnBegin.Visibility = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                tbStartMessage.Visibility = System.Windows.Visibility.Hidden;
-                btnBegin.Visibility = System.Windows.Visibility.Hidden;
-            }
-        }
-
-        private void SetStopButtonVisibility( bool display )
-        {
-            if ( display )
-            {
-                btnStop.Visibility = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                btnStop.Visibility = System.Windows.Visibility.Collapsed;
-            }
-        }
-
-        private void ShowStatusMessage( string message )
-        {
-            lblImportStatus.Content = message;
-
-            if ( !String.IsNullOrWhiteSpace( message ) )
-            {
-                lblImportStatus.Visibility = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                lblImportStatus.Visibility = System.Windows.Visibility.Collapsed;
-            }
-
-
-        }
-
-        private void StartImportProcess()
-        {
-            ImportBackgroundWorker = new BackgroundWorker();
-            ImportBackgroundWorker.WorkerReportsProgress = true;
-            ImportBackgroundWorker.WorkerSupportsCancellation = true;
-            ImportBackgroundWorker.DoWork += ImportBackgroundWorker_DoWork;
-            ImportBackgroundWorker.ProgressChanged += ImportBackgroundWorker_ProgressChanged;
-            ImportBackgroundWorker.RunWorkerCompleted += ImportBackgroundWorker_RunWorkerCompleted;
-
-            ShowStatusMessage( String.Empty );
-            BindMapGrid();
-            SetStartVisibility( false );
-            SetProgressVisibility( true );
-            SetStopButtonVisibility( true );
-            btnBack.IsEnabled = false;
-            this.Cursor = Cursors.AppStarting;
-            ImportBackgroundWorker.RunWorkerAsync();
-        }
-
+        #region Background Worker
         private void ImportBackgroundWorker_ProgressChanged( object sender, ProgressChangedEventArgs e )
         {
             grdMaps.Items.Refresh();
@@ -180,11 +96,11 @@ namespace org.secc.Rock.DataImport
 
             if ( e.Cancelled )
             {
-                ShowStatusMessage( "Import was stopped successfully.");
+                ShowStatusMessage( "Import was stopped successfully." );
             }
             else
             {
-                ShowStatusMessage("Import completed.");
+                ShowStatusMessage( "Import completed." );
             }
 
             SetStopButtonVisibility( false );
@@ -214,6 +130,36 @@ namespace org.secc.Rock.DataImport
 
                 ProcessImport( map );
 
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void BindMapGrid()
+        {
+            SelectedMaps = Integration.Component.ExportMaps
+                                    .Where(m => m.Selected)
+                                    .OrderByDescending( m => m.ImportRanking )
+                                        .ThenBy( m => m.Name ).ToList();
+            grdMaps.ItemsSource = SelectedMaps;
+            grdMaps.Items.Refresh();
+
+        }
+
+        void Component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )
+        {
+            ExportMap map = SelectedMaps.Where( m => m.Component.GetType() == e.MapType ).FirstOrDefault();
+            if ( e.IsSuccess )
+            {
+
+                map.Component.SuccessCount++;
+
+            }
+            else
+            {
+                map.Component.FailCount++;
             }
         }
 
@@ -280,7 +226,7 @@ namespace org.secc.Rock.DataImport
                         var totalRecords = SelectedMaps.Select( m => m.Component.RecordCount ).Sum();
 
                         ImportBackgroundWorker.ReportProgress( ( totalProcessed / (int)totalRecords ) * 100 );
-                        
+
 
                     }
 
@@ -299,24 +245,80 @@ namespace org.secc.Rock.DataImport
             }
         }
 
-        void Component_ExportAttemptCompleted( object sender, ExportMapEventArgs e )
+        private void SetProgressVisibility( bool display )
         {
-            ExportMap map = SelectedMaps.Where( m => m.Component.GetType() == e.MapType ).FirstOrDefault();
-            if ( e.IsSuccess )
+            if ( display )
             {
-
-                map.Component.SuccessCount++;
-
+                grdContent.Visibility = System.Windows.Visibility.Visible;
+                btnFinish.Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
-                map.Component.FailCount++;
+                grdContent.Visibility = System.Windows.Visibility.Hidden;
+                btnFinish.Visibility = System.Windows.Visibility.Hidden;
+
             }
         }
 
+        private void SetStartVisibility( bool display )
+        {
+            if ( display )
+            {
+                tbStartMessage.Visibility = System.Windows.Visibility.Visible;
+                btnBegin.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                tbStartMessage.Visibility = System.Windows.Visibility.Hidden;
+                btnBegin.Visibility = System.Windows.Visibility.Hidden;
+            }
+        }
 
+        private void SetStopButtonVisibility( bool display )
+        {
+            if ( display )
+            {
+                btnStop.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                btnStop.Visibility = System.Windows.Visibility.Collapsed;
+            }
+        }
 
+        private void ShowStatusMessage( string message )
+        {
+            lblImportStatus.Content = message;
 
+            if ( !String.IsNullOrWhiteSpace( message ) )
+            {
+                lblImportStatus.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                lblImportStatus.Visibility = System.Windows.Visibility.Collapsed;
+            }
+
+        }
+
+        private void StartImportProcess()
+        {
+            ImportBackgroundWorker = new BackgroundWorker();
+            ImportBackgroundWorker.WorkerReportsProgress = true;
+            ImportBackgroundWorker.WorkerSupportsCancellation = true;
+            ImportBackgroundWorker.DoWork += ImportBackgroundWorker_DoWork;
+            ImportBackgroundWorker.ProgressChanged += ImportBackgroundWorker_ProgressChanged;
+            ImportBackgroundWorker.RunWorkerCompleted += ImportBackgroundWorker_RunWorkerCompleted;
+
+            ShowStatusMessage( String.Empty );
+            BindMapGrid();
+            SetStartVisibility( false );
+            SetProgressVisibility( true );
+            SetStopButtonVisibility( true );
+            btnBack.IsEnabled = false;
+            this.Cursor = Cursors.AppStarting;
+            ImportBackgroundWorker.RunWorkerAsync();
+        }
 
         #endregion
     }
