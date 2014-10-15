@@ -197,7 +197,7 @@ namespace org.secc.Rock.DataImport
         {
             MaxBatchSize = Setting.GetImportBatchSize();
 
-            if(MaxBatchSize == 0)
+            if ( MaxBatchSize == 0 )
             {
                 MaxBatchSize = 1000;
             }
@@ -205,7 +205,7 @@ namespace org.secc.Rock.DataImport
             MaxFailureCount = Setting.GetMaxFailureCount();
             MaxRecordsToImport = Setting.GetMaxRecordsToImport();
 
-            foreach ( var map in SelectedMaps )
+            foreach ( var map in SelectedMaps.OrderByDescending( m => m.ImportRanking ).ThenBy( m => m.Name ) )
             {
                 if ( ImportBackgroundWorker.CancellationPending )
                 {
