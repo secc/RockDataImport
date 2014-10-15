@@ -201,7 +201,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
                 controller.Update( groupMember );
             }
 
-            groupMember = controller.GetByGuid( groupMember.Guid );
+            groupMember = controller.GetByGuid( groupMember.Guid, true );
 
             return groupMember.Id;
         }

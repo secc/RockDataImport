@@ -35,7 +35,23 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override GroupMember GetByGuid( Guid guid )
         {
-            return Service.GetDataByGuid<GroupMember>( BaseAPIPath, guid );
+            return GetByGuid( guid, false );
+        }
+
+        public GroupMember GetByGuid( Guid guid, bool includeDeceased = false )
+        {
+            string apiPath = String.Empty;
+
+            if ( includeDeceased )
+            {
+                apiPath = BaseAPIPath + "IncludeDeceased/";
+            }
+            else
+            {
+                apiPath = BaseAPIPath;
+            }
+
+            return Service.GetDataByGuid<GroupMember>( apiPath, guid );
         }
 
         public override List<GroupMember> GetAll()
@@ -45,7 +61,24 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override List<GroupMember> GetByFilter( string expression )
         {
-            return Service.GetData<List<GroupMember>>( BaseAPIPath, expression );
+            return GetByFilter( expression, false );
+        }
+
+        public List<GroupMember> GetByFilter( string expression, bool includeDeceased = false )
+        {
+            string apiPath = String.Empty;
+
+            if ( includeDeceased )
+            {
+                apiPath = BaseAPIPath + "IncludeDeceased/";
+            }
+            else
+            {
+                apiPath = BaseAPIPath;
+            }
+
+            return Service.GetData<List<GroupMember>>( apiPath, expression );
+
         }
 
         public override GroupMember GetByForeignId( string foreignId )

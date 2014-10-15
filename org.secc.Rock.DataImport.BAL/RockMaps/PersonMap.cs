@@ -175,7 +175,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
                 controller.Update( p );
             }
 
-            p = controller.GetByGuid( p.Guid );
+            p = controller.GetByGuid( p.Guid, true );
 
             return p.Id;
         }
