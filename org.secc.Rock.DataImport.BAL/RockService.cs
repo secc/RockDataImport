@@ -115,9 +115,9 @@ namespace org.secc.Rock.DataImport.BAL
         /// <typeparam name="T">The Rock entity to return.</typeparam>
         /// <param name="apiPath">The API method path.</param>
         /// <returns>The requested object.</returns>
-        public T  GetData<T>( string apiPath )
+        public T  GetData<T>( string apiPath, Dictionary<string,string> queryString = null )
         {
-            return GetData<T>( apiPath, null );
+            return GetData<T>( apiPath, null, queryString );
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace org.secc.Rock.DataImport.BAL
         /// <param name="filterExpression">The OData filter.</param>
         /// <returns> The requested data.</returns>
         /// <exception cref="org.secc.Rock.DataImport.BAL.RockServiceException">Unexpected Status Code returned.</exception>
-        public T GetData<T>( string apiPath, string filterExpression )
+        public T GetData<T>( string apiPath, string filterExpression, Dictionary<string,string> queryString = null )
         {
             T Data = default( T );
             var request = new RestRequest( apiPath, Method.GET );
@@ -137,6 +137,14 @@ namespace org.secc.Rock.DataImport.BAL
             if(!String.IsNullOrWhiteSpace(filterExpression))
             {
                 request.AddParameter( "$filter", filterExpression, ParameterType.QueryString );
+            }
+
+            if ( queryString != null )
+            {
+                foreach ( var qsv in queryString )
+                {
+                    request.AddParameter( qsv.Key, qsv.Value, ParameterType.QueryString );
+                }
             }
 
             var response = Client.Execute( request );
@@ -161,10 +169,10 @@ namespace org.secc.Rock.DataImport.BAL
             return Data;
         }
 
-        public T GetDataByGuid<T>(string apiPath, Guid guid)
+        public T GetDataByGuid<T>(string apiPath, Guid guid, Dictionary<string,string> queryString = null)
         {
             string filter = string.Format( "Guid eq (guid'{0}')", guid.ToString() );
-            return GetData<List<T>>( apiPath, filter ).FirstOrDefault();
+            return GetData<List<T>>( apiPath, filter, queryString ).FirstOrDefault();
 
         }
 
