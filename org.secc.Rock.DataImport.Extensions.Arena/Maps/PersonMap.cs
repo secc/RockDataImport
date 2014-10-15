@@ -215,7 +215,7 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                 string primaryEmailAddress = null;
                 string emailNote = null;
                 bool isEmailActive = false;
-                int? emailPreference = null;
+                int emailPreference = 2;
 
                 if ( arenaPerson.PersonEmail.Count > 0 )
                 {
@@ -236,10 +236,6 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
                         {
                             emailPreference = 1;
                         }
-                    }
-                    else
-                    {
-                        emailPreference = 2;
                     }
                 }
 
