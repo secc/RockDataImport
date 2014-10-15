@@ -125,11 +125,16 @@ namespace org.secc.Rock.DataImport
             {
                 if ( ImportBackgroundWorker.CancellationPending )
                 {
+                    e.Cancel = true;
                     return;
                 }
 
                 ProcessImport( map );
 
+                if ( ImportBackgroundWorker.CancellationPending && SelectedMaps.Where( m => m.Status == ExportMap.ExportStatus.Cancelled ).Count() > 0 )
+                {
+                    e.Cancel = true;
+                }
             }
         }
 
@@ -145,6 +150,15 @@ namespace org.secc.Rock.DataImport
                                         .ThenBy( m => m.Name ).ToList();
             grdMaps.ItemsSource = SelectedMaps;
             grdMaps.Items.Refresh();
+
+        }
+
+        private void CancelImport()
+        {
+            foreach ( var map in SelectedMaps.Where(m => m.Status == ExportMap.ExportStatus.Waiting || m.Status == ExportMap.ExportStatus.Importing ) )
+            {
+                map.Status = ExportMap.ExportStatus.Cancelled;
+            }
 
         }
 
@@ -209,6 +223,7 @@ namespace org.secc.Rock.DataImport
                     {
                         if ( ImportBackgroundWorker.CancellationPending )
                         {
+                            CancelImport();
                             continueImport = false;
                             break;
                         }
@@ -240,6 +255,7 @@ namespace org.secc.Rock.DataImport
                 }
                 else
                 {
+                    CancelImport();
                     continueImport = false;
                 }
             }
