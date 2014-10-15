@@ -84,8 +84,13 @@ namespace org.secc.Rock.DataImport.BAL.Controllers
 
         public override Person GetByForeignId( string foreignId )
         {
+            return GetByForeignId( foreignId, false );
+        }
+
+        public Person GetByForeignId( string foreignId, bool includeDeceased )
+        {
             string expression = string.Format( "ForeignId eq '{0}'", foreignId );
-            return (GetByFilter( expression )).FirstOrDefault();
+            return ( GetByFilter( expression, includeDeceased ) ).FirstOrDefault();
         }
 
         public override void Update( Person entity )
