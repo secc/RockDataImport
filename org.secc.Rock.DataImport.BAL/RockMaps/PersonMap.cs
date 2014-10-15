@@ -24,7 +24,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
         public Dictionary<string, object> GetByForeignId( string foreignId, bool includeAlias = false )
         {
             PersonController controller = new PersonController( Service );
-            Person person = controller.GetByForeignId( foreignId );
+            Person person = controller.GetByForeignId( foreignId, true );
             Dictionary<string, object> personDictionary = ToDictionary( person );
 
             if ( person != null && includeAlias )
@@ -175,7 +175,7 @@ namespace org.secc.Rock.DataImport.BAL.RockMaps
                 controller.Update( p );
             }
 
-            p = controller.GetByGuid( p.Guid );
+            p = controller.GetByGuid( p.Guid, true );
 
             return p.Id;
         }

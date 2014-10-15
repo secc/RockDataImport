@@ -9,6 +9,10 @@ namespace org.secc.Rock.DataImport.BAL.Integration
     public interface iExportMapComponent
     {
         int? RecordCount { get; }
+        int SuccessCount { get; set; }
+        int FailCount { get; set; }
+        int TotalProcessed { get; }
+        decimal PercentProcessed { get; }
         List<string> GetSubsetIDs( int startingRecord, int size );
         //List<string> GetDependencies();
         void ExportRecord( string identifier );

@@ -17,9 +17,10 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
     [Export(typeof(iExportMapComponent))]
     [ExportMetadata("Name", "Campus Leader")]
     [ExportMetadata("Integration", ArenaIntegration.IDENTIFIER)]
-    [ExportMetadata("Description", "Maps a campus leader from Arena to their Campus in Rock. Separate integration is used because of the dependencies that exist between Campus and Person.")]
-    [Dependency("Campus", typeof(CampusMap), 0)]
-    [Dependency("Person", typeof(PersonMap), 1)]
+    [ExportMetadata("Description", "Maps a campus leader from Arena to their Campus in Rock. Separate integration is used because of the relationships that exists between Person and Campus.")]
+    [ExportMetadata("ImportRanking", 1)]
+    [Dependency("Person", typeof(PersonMap))]
+    [Dependency("Campus", typeof(CampusMap))]
     
     public class CampusLeaderMap : ArenaMapBase
     {

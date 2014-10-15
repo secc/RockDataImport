@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
@@ -56,7 +57,8 @@ namespace org.secc.Rock.DataImport.BAL.Integration
                     {
                         Name = c.Metadata.Name,
                         Description = c.Metadata.Description,
-                        Component = c.Value
+                        Component = c.Value,
+                        ImportRanking = c.Metadata.ImportRanking
                     } ).ToList();
         }
     }
@@ -64,7 +66,9 @@ namespace org.secc.Rock.DataImport.BAL.Integration
     public class ExportMap
     {
         #region Fields
+        private int mImportRanking = 0;
         private bool mSelected = false;
+        private ExportStatus mStatus = ExportStatus.NotSelected;
         #endregion
 
         #region Properties
@@ -73,18 +77,87 @@ namespace org.secc.Rock.DataImport.BAL.Integration
         public string Description { get; set; }
         
         public iExportMapComponent Component { get; set; }
+
+        public int ImportRanking
+        {
+            get
+            {
+                return mImportRanking;
+            }
+            set
+            {
+                mImportRanking = value;
+            }
+        }
         
         public bool Selected
         {
             get
             {
                 return mSelected;
+
             }
             set
             {
                 mSelected = value;
+
+                if ( mSelected )
+                {
+                    Status = ExportStatus.Waiting;
+                }
+                else
+                {
+                    Status = ExportStatus.NotSelected;
+                }
             }
         }
+
+        public ExportStatus Status
+        {
+            get
+            {
+                return mStatus;
+            }
+            set
+            {
+                mStatus = value;
+            }
+        }
+
+        public string StatusDescription
+        {
+            get
+            {
+                Type type = typeof(ExportStatus);
+                var memInfo = type.GetMember( Status.ToString() ).FirstOrDefault();
+                var attributes = memInfo.GetCustomAttributes( typeof( DescriptionAttribute ), false );
+                //string description = ( (DescriptionAttribute)attributes[0] ).Description;
+
+                if ( attributes.Count() > 0)
+                {
+                    return ( (DescriptionAttribute)attributes[0] ).Description;
+                }
+                else
+                {
+                    return Status.ToString();
+                }
+
+            }
+        }
+
         #endregion
+
+        public enum ExportStatus
+        {
+            [Description("Not Selected")]
+            NotSelected,
+            Waiting,
+            Importing,
+            Completed,
+            Failed,
+            Cancelled
+        }
     }
+
+
 }

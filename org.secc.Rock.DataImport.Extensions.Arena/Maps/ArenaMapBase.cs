@@ -24,10 +24,52 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
 
         #region Properties
         protected Dictionary<string, string> ConnectionInfo { get; set; }
-       
+        protected int mSuccessCount = 0;
+        protected int mFailCount = 0;
+        
         public abstract int? RecordCount
         {
             get;
+        }
+
+        public int FailCount
+        {
+            get
+            {
+                return mFailCount;
+            }
+             set
+            {
+                mFailCount = value;
+            }
+        }
+
+        public int SuccessCount
+        {
+            get
+            {
+                return mSuccessCount;
+            }
+            set
+            {
+                mSuccessCount = value;
+            }
+        }
+
+        public int TotalProcessed
+        {
+            get
+            {
+                return mSuccessCount + mFailCount;
+            }
+        }
+
+        public decimal PercentProcessed
+        {
+            get
+            {
+                return TotalProcessed / (int) RecordCount;
+            }
         }
 
         #endregion
@@ -154,4 +196,5 @@ namespace org.secc.Rock.DataImport.Extensions.Arena.Maps
         }
 
     }
+
 }
