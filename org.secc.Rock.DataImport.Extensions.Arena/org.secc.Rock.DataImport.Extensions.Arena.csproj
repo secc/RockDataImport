@@ -102,7 +102,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)$(TargetFileName)" "$(SolutionDir)org.secc.Rock.DataImport\bin\debug\Plugins\"
-xcopy /Y "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)org.secc.Rock.DataImport\bin\debug\Plugins\"</PostBuildEvent>
+xcopy /Y "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)org.secc.Rock.DataImport\bin\debug\Plugins\"
+xcopy /Y "$(TargetDir)$(TargetFileName)" "$(SolutionDir)org.secc.Rock.DataImport\bin\release\Plugins\"
+xcopy /Y "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)org.secc.Rock.DataImport\bin\release\Plugins\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
