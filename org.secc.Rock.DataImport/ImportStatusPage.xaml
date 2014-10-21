@@ -27,7 +27,7 @@
                 <RowDefinition Style="{StaticResource rowDefinitionActions}" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Style="{StaticResource panelBanner}">
-                <Label Content="Step x:"
+                <Label Content="Final Step:"
                        VerticalAlignment="Center"
                        Style="{StaticResource labelStyleBannerTitle}" />
                 <Label Content="Import Data"
