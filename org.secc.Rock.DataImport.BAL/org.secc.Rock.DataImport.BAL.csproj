@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A37BFC29-8CE6-41C2-9219-3D846C1CA32B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>org.secc.Rock.DataImport.BAL</RootNamespace>
+    <AssemblyName>org.secc.Rock.DataImport.BAL</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotLiquid">
+      <HintPath>..\..\..\Spark\RockRMS\RockWeb\Bin\DotLiquid.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attribute\DefinedTypeAttribute.cs" />
+    <Compile Include="Attribute\DependencyAttribute.cs" />
+    <Compile Include="Controllers\AttributeController.cs" />
+    <Compile Include="Controllers\AttributeQualifiersController.cs" />
+    <Compile Include="Controllers\AttributeValuesController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BinaryFileController.cs" />
+    <Compile Include="Controllers\BinaryFileDataController.cs" />
+    <Compile Include="Controllers\BinaryFileTypeController.cs" />
+    <Compile Include="Controllers\CampusController.cs" />
+    <Compile Include="Controllers\DefinedTypeController.cs" />
+    <Compile Include="Controllers\DefinedValueController.cs" />
+    <Compile Include="Controllers\EntityTypeController.cs" />
+    <Compile Include="Controllers\GroupController.cs" />
+    <Compile Include="Controllers\GroupLocationController.cs" />
+    <Compile Include="Controllers\GroupMembersController.cs" />
+    <Compile Include="Controllers\GroupTypeController.cs" />
+    <Compile Include="Controllers\GroupTypeRoleController.cs" />
+    <Compile Include="Controllers\LocationController.cs" />
+    <Compile Include="Controllers\PersonAliasControler.cs" />
+    <Compile Include="Controllers\PersonController.cs" />
+    <Compile Include="Controllers\PhoneNumberController.cs" />
+    <Compile Include="Integration\ExportMapContainer.cs" />
+    <Compile Include="Integration\iExportMapComponent.cs" />
+    <Compile Include="Integration\iExportMapData.cs" />
+    <Compile Include="Integration\IIntegrationComponent.cs" />
+    <Compile Include="Integration\IIntegrationData.cs" />
+    <Compile Include="Integration\IntegrationConnectionControl.cs" />
+    <Compile Include="Integration\IntegrationContainer.cs" />
+    <Compile Include="Integration\ExportMapEventArgs.cs" />
+    <Compile Include="LoginHelper.cs" />
+    <Compile Include="Helper\DefinedTypeSummary.cs" />
+    <Compile Include="Helper\DefinedValueSummary.cs" />
+    <Compile Include="RockMaps\BinaryFileMap.cs" />
+    <Compile Include="RockMaps\BinaryFileTypeMap.cs" />
+    <Compile Include="RockMaps\CampusMap.cs" />
+    <Compile Include="RockMaps\DefinedTypeMap.cs" />
+    <Compile Include="RockMaps\DefinedValueMap.cs" />
+    <Compile Include="RockMaps\GroupLocationMap.cs" />
+    <Compile Include="RockMaps\GroupMap.cs" />
+    <Compile Include="RockMaps\LocationMap.cs" />
+    <Compile Include="RockMaps\MapBase.cs" />
+    <Compile Include="RockMaps\PersonMap.cs" />
+    <Compile Include="RockMaps\PhoneNumberMap.cs" />
+    <Compile Include="RockService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Rock_ChrisFunk\Rock\Rock.csproj">
+      <Project>{8f8c2a79-24f4-4157-8b99-45f75fa85799}</Project>
+      <Name>Rock</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
